@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .btn-std {
+    @apply px-2 py-2 rounded text-white bg-[#19191B];
+  }
+}
