@@ -3,8 +3,8 @@ import DataPlatformApi from "../../domain/grpc-client/DataPlatformApi";
 function Home() {
 
     function testApi() {
-        const testApi = new DataPlatformApi();
-        testApi.queryMetadata();
+        const test = new DataPlatformApi();
+        test.queryMetadata();
     }
 
     return (
