@@ -14,17 +14,21 @@ export default class DataPlatformApi {
         this.client = new DpQueryServiceClient(transport);
     }
 
-    queryMetadata() {
+    queryMetadata = async () => {
         const queryMetadataRequest = {
-            QuerySpec: {
-                PvNameList: ["dpTest_401"]
+            querySpec: {
+                pvNameSpec: {
+                    pvNameList: {
+                        pvNames: ["dpTest_401"]
+                    }
+                }
             }
         }
         // new QueryMetadataRequest();
         // QueryMetadataRequest.QuerySpec = QueryMetadataRequest_QuerySpec;
         // QueryMetadataRequest.QuerySpec.PvNameList = ["dpTest_401"];
-
-        this.client.queryMetadata(queryMetadataRequest, {}, (err, response) => {
+        console.log("querying")
+        const { err, response } = await this.client.queryMetadata(queryMetadataRequest, {}, (err, response) => {
             if (err) {
                 console.log("===================== error thrown =====================")
                 console.log(err);
@@ -34,10 +38,17 @@ export default class DataPlatformApi {
                 console.log("===================== no response =====================");
                 return;
             }
-            console.log(response);
+            console.log("====================== response! =====================")
+            if (response.hasMetadataResult()) console.log(response.getMetadataResult());
             return;
 
         });
+        if (err) {
+            console.log("===================== error thrown =====================")
+            console.log(err);
+            return;
+        }
+        console.log(response);
     }
 }
 
