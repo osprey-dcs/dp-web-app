@@ -18,8 +18,9 @@ export default class DataPlatformApi {
         const queryMetadataRequest = {
             querySpec: {
                 pvNameSpec: {
+                    oneofKind: "pvNameList",
                     pvNameList: {
-                        pvNames: ["dpTest_401"]
+                        pvNames: ["dpTest_601", "dpTest_602"]
                     }
                 }
             }
@@ -27,28 +28,18 @@ export default class DataPlatformApi {
         // new QueryMetadataRequest();
         // QueryMetadataRequest.QuerySpec = QueryMetadataRequest_QuerySpec;
         // QueryMetadataRequest.QuerySpec.PvNameList = ["dpTest_401"];
-        console.log("querying")
-        const { err, response } = await this.client.queryMetadata(queryMetadataRequest, {}, (err, response) => {
-            if (err) {
-                console.log("===================== error thrown =====================")
-                console.log(err);
-                return;
-            }
-            if (response === null) {
-                console.log("===================== no response =====================");
-                return;
-            }
-            console.log("====================== response! =====================")
-            if (response.hasMetadataResult()) console.log(response.getMetadataResult());
-            return;
+        const { status, response } = await this.client.queryMetadata(queryMetadataRequest, {});
+        const result = response.result;
 
-        });
-        if (err) {
+        if (status.code !== 200 && status.code !== "OK") {
             console.log("===================== error thrown =====================")
-            console.log(err);
+            console.error("Error Code: " + status.code);
             return;
         }
-        console.log(response);
+        console.log(result);
+        if (result.exceptionalResult) {
+            console.error("Exceptional Result: " + response.result.exceptionalResult.message);
+        }
     }
 }
 
