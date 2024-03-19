@@ -1,11 +1,12 @@
 import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport'
-import { QueryMetadataRequest, QueryMetadataRequest_QuerySpec } from "./proto-ts/query";
 import { DpQueryServiceClient } from "./proto-ts/query.client";
 
 const hostname = import.meta.env.VITE_QUERY_HOSTNAME;
 const transport = new GrpcWebFetchTransport({
     baseUrl: `http://localhost:${hostname}`
 })
+
+const nano = 999000000
 
 export default class DataPlatformApi {
 
@@ -14,8 +15,52 @@ export default class DataPlatformApi {
         this.client = new DpQueryServiceClient(transport);
     }
 
+    handleStatus = (statusObj) => {
+        if (statusObj.code !== 200 && statusObj.code !== "OK") {
+            console.log("===================== error thrown =====================")
+            console.error("Error Code: " + statusObj.code);
+            return false;
+        }
+        return true;
+    }
+
+    handleExceptionalResult = (result) => {
+        if (result.exceptionalResult) {
+            console.error("Exceptional Result: " + response.result.exceptionalResult.message);
+            return false;
+        }
+        return true;
+    }
+
+    queryData = async () => {
+        const query = {
+            request: {
+                oneofKind: "querySpec",
+                querySpec: {
+                    beginTime: {
+                        epochSeconds: 1698767462,
+                        nanoseconds: 0
+                    },
+                    endTime: {
+                        epochSeconds: 1698767462,
+                        nanoseconds: 999000000
+                    },
+                    pvNames: ["dpTest_602"]
+                }
+            }
+        }
+
+        const { status, response } = await this.client.queryData(query);
+        const result = response.result;
+
+        if (!this.handleStatus(status)) return;
+        if (!this.handleExceptionalResult(result)) return;
+
+        console.log(result.queryData);
+    }
+
     queryMetadata = async () => {
-        const queryMetadataRequest = {
+        const pvNamesQuery = {
             querySpec: {
                 pvNameSpec: {
                     oneofKind: "pvNameList",
@@ -25,23 +70,24 @@ export default class DataPlatformApi {
                 }
             }
         }
-        // new QueryMetadataRequest();
-        // QueryMetadataRequest.QuerySpec = QueryMetadataRequest_QuerySpec;
-        // QueryMetadataRequest.QuerySpec.PvNameList = ["dpTest_401"];
-        const { status, response } = await this.client.queryMetadata(queryMetadataRequest, {});
+
+        const pvPatternQuery = {
+            querySpec: {
+                pvNameSpec: {
+                    oneofKind: "pvNamePattern",
+                    pvNamePattern: {
+                        pattern: "^dpTest_"
+                    }
+                }
+            }
+        }
+
+        const { status, response } = await this.client.queryMetadata(pvPatternQuery);
         const result = response.result;
 
-        if (status.code !== 200 && status.code !== "OK") {
-            console.log("===================== error thrown =====================")
-            console.error("Error Code: " + status.code);
-            return;
-        }
-        console.log(result);
-        if (result.exceptionalResult) {
-            console.error("Exceptional Result: " + response.result.exceptionalResult.message);
-        }
+        if (!this.handleStatus(status)) return;
+        if (!this.handleExceptionalResult(result)) return;
+
+        console.log(result.metadataResult);
     }
 }
-
-// const testApi = new DataPlatformApi();
-// testApi.queryMetadata();
