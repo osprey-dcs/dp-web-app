@@ -32,7 +32,7 @@ export default class DataPlatformApi {
         return true;
     }
 
-    queryData = async () => {
+    queryDataTable = async () => {
         const query = {
             request: {
                 oneofKind: "querySpec",
@@ -43,20 +43,20 @@ export default class DataPlatformApi {
                     },
                     endTime: {
                         epochSeconds: 1698767462,
-                        nanoseconds: 999000000
+                        nanoseconds: 5000000
                     },
                     pvNames: ["dpTest_602"]
                 }
             }
         }
 
-        const { status, response } = await this.client.queryData(query);
+        const { status, response } = await this.client.queryDataTable(query);
         const result = response.result;
 
         if (!this.handleStatus(status)) return;
         if (!this.handleExceptionalResult(result)) return;
 
-        console.log(result.queryData);
+        console.log(result.tableResult);
     }
 
     queryMetadata = async () => {
