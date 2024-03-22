@@ -12,6 +12,7 @@
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@carbon/react": "^1.53.1",
     "@floating-ui/react": "^0.26.9",
     "@protobuf-ts/grpcweb-transport": "^2.9.3",
     "@protobuf-ts/plugin": "^2.9.3",

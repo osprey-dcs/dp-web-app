@@ -1,21 +1,39 @@
-import { useState } from "react";
-import { FloatingFocusManager, offset, useClick, useDismiss, useFloating, useInteractions, useRole, useTransitionStyles } from "@floating-ui/react";
+import { useRef, useState } from "react";
+import { FloatingFocusManager, offset, useClick, useDelayGroupContext, useDismiss, useFloating, useInteractions, useListNavigation, useRole, useTransitionStyles } from "@floating-ui/react";
+import { Link, useRoute } from "wouter";
 import NavLink from "../navlink/NavLink";
 
 function PopoverMenu() {
+    const [homeActive] = useRoute("/");
+    const [setsActive] = useRoute("saved-sets");
+    const [accountActive] = useRoute("account");
+
     const [isOpen, setIsOpen] = useState();
+    const [activeIndex, setActiveIndex] = useState(null);
     const { refs, floatingStyles, context } = useFloating({
         open: isOpen,
         onOpenChange: setIsOpen,
         placement: 'bottom-end',
-        middleware: [offset(8)]
+        middleware: [offset(4)]
     });
     const { isMounted, styles: transitionStyles } = useTransitionStyles(context);
+
+    const listRef = useRef([]);
+    const listNavigation = useListNavigation(context, {
+        listRef,
+        activeIndex,
+        onNavigate: setActiveIndex,
+    });
 
     const click = useClick(context);
     const dismiss = useDismiss(context);
     const role = useRole(context)
-    const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss, role]);
+    const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions([click, dismiss, role, listNavigation]);
+    const items = [
+        ["Browse Data", "/", homeActive],
+        ["Saved Sets", "saved-sets", setsActive],
+        ["Account", "account", accountActive]
+    ];
 
     return (
         <div className="flex justify-end items-center sm:hidden">
@@ -29,9 +47,24 @@ function PopoverMenu() {
                     <FloatingFocusManager context={context} modal={false}>
                         <div ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
                             <div style={transitionStyles} className="p-3 flex flex-col items-start border rounded bg-white">
-                                <NavLink text="Browse Data" href="/" />
-                                <NavLink text="Saved Sets" href="saved-sets" />
-                                <NavLink text="Account" href="account" />
+                                {items.map((item, index) => (
+                                    <Link
+                                        key={item[0]}
+                                        tabIndex={activeIndex === index ? 0 : -1}
+                                        ref={(node) => {
+                                            listRef.current[index] = node;
+                                        }}
+                                        {...getItemProps()}
+                                        href={item[1]}
+                                        onClick={() => setIsOpen(false)}
+                                        className={item[2] ? "text-black" : "text-gray-500"}
+                                    >
+                                        {item[0]}
+                                    </Link>
+                                ))}
+                                {/* <div onClick={() => setIsOpen(false)}><NavLink text="Browse Data" href="/" /></div>
+                                <div onClick={() => setIsOpen(false)}><NavLink text="Saved Sets" href="saved-sets" /></div>
+                                <div onClick={() => setIsOpen(false)}><NavLink text="Account" href="account" /></div> */}
                             </div>
                         </div>
                     </FloatingFocusManager>

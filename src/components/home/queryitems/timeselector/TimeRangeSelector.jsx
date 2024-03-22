@@ -1,5 +1,6 @@
 import { Fragment, useState } from "react";
 import { FloatingFocusManager, offset, useClick, useDismiss, useFloating, useInteractions, useRole, useTransitionStyles } from "@floating-ui/react";
+import { AddFilled, CloseFilled } from "@carbon/react/icons"
 
 function TimeRangeSelector() {
     const [isOpen, setIsOpen] = useState();
@@ -7,7 +8,7 @@ function TimeRangeSelector() {
         open: isOpen,
         onOpenChange: setIsOpen,
         placement: 'bottom-start',
-        middleware: [offset(8)]
+        middleware: [offset(4)]
     });
     const { isMounted, styles: transitionStyles } = useTransitionStyles(context);
 
@@ -18,10 +19,17 @@ function TimeRangeSelector() {
 
     return (
         <Fragment>
-            <div className="mr-4 px-2 border border-black border-dashed rounded-full hover:cursor-default" ref={refs.setReference} {...getReferenceProps()}>Time Range</div>
+            <button ref={refs.setReference} {...getReferenceProps()} className="mr-4 px-2 flex items-center border border-black border-dashed rounded-full hover:cursor-pointer">
+                {
+                    isOpen ?
+                        <CloseFilled /> :
+                        <AddFilled />
+                }
+                <span className="ml-1">Time Range</span>
+            </button>
             {
                 isMounted && (
-                    <FloatingFocusManager context={context} modal={false}>
+                    <FloatingFocusManager context={context} modal={true}>
                         <div ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
                             <div style={transitionStyles} className="p-5 border rounded bg-white">
                                 Time Range Selector

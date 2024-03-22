@@ -10,7 +10,7 @@ function QueryItems() {
     }
 
     return (
-        <div className="py-3 flex items-center justify-between bg-blue-200">
+        <div className="py-3 flex items-center justify-between">
             <div className="flex flex-row">
                 <TimeRangeSelector />
                 <div className="mr-4">Data Sources</div>
