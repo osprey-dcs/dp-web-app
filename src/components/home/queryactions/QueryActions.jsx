@@ -1,8 +1,8 @@
-import TimeRangeSelector from "./timeselector/TimeRangeSelector";
+import TimeRangeChip from "./timechip/TimeRangeChip";
 
 import DataPlatformApi from "../../../domain/grpc-client/DataPlatformApi";
 
-function QueryItems() {
+function QueryActions() {
 
     function testApi() {
         const test = new DataPlatformApi();
@@ -12,7 +12,7 @@ function QueryItems() {
     return (
         <div className="py-3 flex items-center justify-between">
             <div className="flex flex-row">
-                <TimeRangeSelector />
+                <TimeRangeChip />
                 <div className="mr-4">Data Sources</div>
                 <div>Attributes</div>
             </div>
@@ -21,4 +21,4 @@ function QueryItems() {
     )
 }
 
-export default QueryItems;
+export default QueryActions;

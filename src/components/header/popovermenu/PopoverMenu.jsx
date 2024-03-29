@@ -46,7 +46,7 @@ function PopoverMenu() {
                 isMounted && (
                     <FloatingFocusManager context={context} modal={false}>
                         <div ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
-                            <div style={transitionStyles} className="p-3 flex flex-col items-start border rounded bg-white">
+                            <div style={transitionStyles} className="p-3 flex flex-col items-start border rounded bg-white shadow-md">
                                 {items.map((item, index) => (
                                     <Link
                                         key={item[0]}

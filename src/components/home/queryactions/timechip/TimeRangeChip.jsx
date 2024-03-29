@@ -1,8 +1,9 @@
-import { Fragment, useState } from "react";
+import TimeRangeActions from "./timeactions";
+import { Fragment, useEffect, useState } from "react";
 import { FloatingFocusManager, offset, useClick, useDismiss, useFloating, useInteractions, useRole, useTransitionStyles } from "@floating-ui/react";
-import { AddFilled, CloseFilled } from "@carbon/react/icons"
+import { AddFilled, CloseFilled } from "@carbon/icons-react";
 
-function TimeRangeSelector() {
+function TimeRangeChip() {
     const [isOpen, setIsOpen] = useState();
     const { refs, floatingStyles, context } = useFloating({
         open: isOpen,
@@ -25,14 +26,14 @@ function TimeRangeSelector() {
                         <CloseFilled /> :
                         <AddFilled />
                 }
-                <span className="ml-1">Time Range</span>
+                <span className="ml-1 text-sm font-medium">Time Range</span>
             </button>
             {
                 isMounted && (
                     <FloatingFocusManager context={context} modal={true}>
                         <div ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
-                            <div style={transitionStyles} className="p-5 border rounded bg-white">
-                                Time Range Selector
+                            <div style={transitionStyles} className="p-5 border rounded bg-white shadow-md">
+                                <TimeRangeActions setIsOpen={setIsOpen} />
                             </div>
                         </div>
                     </FloatingFocusManager>
@@ -42,4 +43,4 @@ function TimeRangeSelector() {
     )
 }
 
-export default TimeRangeSelector;
+export default TimeRangeChip;
