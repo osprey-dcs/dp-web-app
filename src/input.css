@@ -4,6 +4,10 @@
 
 @layer components {
   .btn-std {
-    @apply px-2 py-2 rounded text-white bg-[#19191B];
+    @apply rounded text-sm font-medium text-snow-text bg-primary;
+  }
+
+  .input-std {
+    @apply px-2 py-1 rounded border focus:outline outline-1 outline-primary placeholder:text-sub-text;
   }
 }

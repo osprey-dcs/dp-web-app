@@ -1,9 +1,14 @@
+import PropTypes from "prop-types";
 import TimeRangeActions from "./timeactions";
 import { Fragment, useEffect, useState } from "react";
 import { FloatingFocusManager, offset, useClick, useDismiss, useFloating, useInteractions, useRole, useTransitionStyles } from "@floating-ui/react";
 import { AddFilled, CloseFilled } from "@carbon/icons-react";
 
-function TimeRangeChip() {
+const propTypes = {
+    setTimeRange: PropTypes.func
+}
+
+function TimeRangeChip(props) {
     const [isOpen, setIsOpen] = useState();
     const { refs, floatingStyles, context } = useFloating({
         open: isOpen,
@@ -20,7 +25,7 @@ function TimeRangeChip() {
 
     return (
         <Fragment>
-            <button ref={refs.setReference} {...getReferenceProps()} className="mr-4 px-2 flex items-center border border-black border-dashed rounded-full hover:cursor-pointer">
+            <button ref={refs.setReference} {...getReferenceProps()} className="mr-4 px-2 flex items-center border border-primary border-dashed rounded-full hover:cursor-pointer">
                 {
                     isOpen ?
                         <CloseFilled /> :
@@ -33,7 +38,7 @@ function TimeRangeChip() {
                     <FloatingFocusManager context={context} modal={true}>
                         <div ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
                             <div style={transitionStyles} className="p-5 border rounded bg-white shadow-md">
-                                <TimeRangeActions setIsOpen={setIsOpen} />
+                                <TimeRangeActions setIsOpen={setIsOpen} setTimeRange={props.setTimeRange} />
                             </div>
                         </div>
                     </FloatingFocusManager>
@@ -43,4 +48,5 @@ function TimeRangeChip() {
     )
 }
 
+TimeRangeChip.propTypes = propTypes;
 export default TimeRangeChip;

@@ -32,17 +32,17 @@ export default class DataPlatformApi {
         return true;
     }
 
-    queryDataTable = async () => {
+    queryDataTable = async (startEpochs, endEpochs) => {
         const query = {
             request: {
                 oneofKind: "querySpec",
                 querySpec: {
                     beginTime: {
-                        epochSeconds: 1698767462,
+                        epochSeconds: startEpochs,
                         nanoseconds: 0
                     },
                     endTime: {
-                        epochSeconds: 1698767462,
+                        epochSeconds: endEpochs,
                         nanoseconds: 5000000
                     },
                     pvNames: ["dpTest_602"]
