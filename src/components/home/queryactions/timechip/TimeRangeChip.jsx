@@ -9,6 +9,9 @@ const propTypes = {
 }
 
 function TimeRangeChip(props) {
+    const [timeRangeSet, setTimeRangeSet] = useState(false);
+    const [timeRangeString, setTimeRangeString] = useState('');
+
     const [isOpen, setIsOpen] = useState();
     const { refs, floatingStyles, context } = useFloating({
         open: isOpen,
@@ -25,26 +28,34 @@ function TimeRangeChip(props) {
 
     return (
         <Fragment>
-            <button ref={refs.setReference} {...getReferenceProps()} className="mr-4 px-2 flex items-center border border-primary border-dashed rounded-full hover:cursor-pointer">
+            <button ref={refs.setReference} {...getReferenceProps()} className={"mr-4 px-2 flex items-center border border-sub-text rounded-full hover:cursor-pointer" + (timeRangeSet ? '' : ' border-dashed')}>
                 {
-                    isOpen ?
-                        <CloseFilled /> :
-                        <AddFilled />
+                    isOpen || timeRangeSet ?
+                        <CloseFilled className="text-sub-text" /> :
+                        <AddFilled className="text-sub-text" />
                 }
-                <span className="ml-1 text-sm font-medium">Time Range</span>
+                <span className="ml-1 text-sm text-sub-text font-medium">
+                    {
+                        timeRangeSet ? <>
+                            <span className=" mr-1 pr-1 border-r border-sub-text">Time Range</span>
+                            <span className="text-main-text">{timeRangeString}</span>
+                        </> :
+                            "Time Range"
+                    }
+                </span>
             </button>
             {
                 isMounted && (
                     <FloatingFocusManager context={context} modal={true}>
                         <div ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
                             <div style={transitionStyles} className="p-5 border rounded bg-white shadow-md">
-                                <TimeRangeActions setIsOpen={setIsOpen} setTimeRange={props.setTimeRange} />
+                                <TimeRangeActions setIsOpen={setIsOpen} setTimeRange={props.setTimeRange} setTimeRangeSet={setTimeRangeSet} setTimeRangeString={setTimeRangeString} />
                             </div>
                         </div>
                     </FloatingFocusManager>
                 )
             }
-        </Fragment>
+        </Fragment >
     )
 }
 

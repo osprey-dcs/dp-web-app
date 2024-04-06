@@ -26,7 +26,7 @@ export default class DataPlatformApi {
 
     handleExceptionalResult = (result) => {
         if (result.exceptionalResult) {
-            console.error("Exceptional Result: " + response.result.exceptionalResult.message);
+            console.error("ERROR: Exceptional Result. " + result.exceptionalResult.message);
             return false;
         }
         return true;
