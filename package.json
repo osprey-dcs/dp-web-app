@@ -16,6 +16,7 @@
     "@floating-ui/react": "^0.26.9",
     "@protobuf-ts/grpcweb-transport": "^2.9.3",
     "@protobuf-ts/plugin": "^2.9.3",
+    "ag-grid-react": "^31.2.1",
     "google-protobuf": "^3.21.2",
     "grpc-web": "^1.5.0",
     "react": "^18.2.0",

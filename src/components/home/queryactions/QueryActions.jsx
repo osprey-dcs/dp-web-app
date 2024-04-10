@@ -6,28 +6,27 @@ import { useEffect, useState } from "react";
 
 function QueryActions() {
     const [timeRange, setTimeRange] = useState({});
+    const [dataSources, setDataSources] = useState([]);
     const api = new DataPlatformApi();
-
-    useEffect(() => {
-        console.log(timeRange);
-    }, [timeRange])
 
     function queryDataTable() {
         const queryParams = {
             startEpochs: timeRange.startEpochs,
             endEpochs: timeRange.endEpochs,
             startNanos: timeRange.startNanos,
-            endNanos: timeRange.endNanos
+            endNanos: timeRange.endNanos,
+            dataSources: dataSources,
         }
 
-        api.queryDataTable(timeRange);
+        console.log(queryParams);
+        api.queryDataTable(queryParams);
     }
 
     return (
         <div className="py-3 flex items-center justify-between">
             <div className="flex flex-row">
                 <TimeRangeChip setTimeRange={setTimeRange} />
-                <DataSourcesChip />
+                <DataSourcesChip dataSources={dataSources} setDataSources={setDataSources} />
                 <div>Attributes</div>
             </div>
             <button className="btn-std px-5 py-2" onClick={queryDataTable}>Run Query</button>
