@@ -9,7 +9,10 @@ const propTypes = {
 }
 
 function TimeRangeChip(props) {
-    const [timeRangeSet, setTimeRangeSet] = useState(false);
+    const [startDatetime, setStartDatetime] = useState('');
+    const [endDatetime, setEndDatetime] = useState('');
+    const [startNanos, setStartNanos] = useState('');
+    const [endNanos, setEndNanos] = useState('');
     const [timeRangeString, setTimeRangeString] = useState('');
 
     const [isOpen, setIsOpen] = useState();
@@ -26,30 +29,41 @@ function TimeRangeChip(props) {
     const role = useRole(context);
     const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss, role]);
 
+    function handleClear() {
+        setStartDatetime('');
+        setEndDatetime('');
+        setTimeRangeString('');
+        props.setTimeRange({});
+    }
+
     return (
         <Fragment>
-            <button ref={refs.setReference} {...getReferenceProps()} className={"mr-4 px-2 flex items-center border border-sub-text rounded-full hover:cursor-pointer" + (timeRangeSet ? '' : ' border-dashed')}>
-                {
-                    isOpen || timeRangeSet ?
-                        <CloseFilled className="text-sub-text" /> :
-                        <AddFilled className="text-sub-text" />
-                }
-                <span className="ml-1 text-sm text-sub-text font-medium">
+            <div ref={refs.setPositionReference} className={"mr-4 px-2 max-w-sm overflow-hidden sm:max-w-none flex items-center border border-sub-text rounded-full hover:cursor-pointer" + (timeRangeString !== '' ? '' : ' border-dashed')}>
+                <button>{
+                    isOpen || (timeRangeString !== '') ?
+                        <CloseFilled className="text-sub-text" onClick={handleClear} /> :
+                        <AddFilled className="text-sub-text" onClick={() => setIsOpen(true)} />
+                }</button>
+                <button ref={refs.setReference} {...getReferenceProps()} className="pl-1 text-sm text-sub-text font-medium">
                     {
-                        timeRangeSet ? <>
-                            <span className=" mr-1 pr-1 border-r border-sub-text">Time Range</span>
-                            <span className="text-main-text">{timeRangeString}</span>
+                        timeRangeString !== '' ? <>
+                            <span className=" mr-1 pr-1 border-r border-sub-text text-nowrap">Time Range</span>
+                            <span className="text-main-text text-nowrap">{timeRangeString}</span>
                         </> :
                             "Time Range"
                     }
-                </span>
-            </button>
+                </button>
+            </div>
             {
                 isMounted && (
                     <FloatingFocusManager context={context} modal={true}>
                         <div ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
                             <div style={transitionStyles} className="p-5 border rounded bg-white shadow-md">
-                                <TimeRangeActions setIsOpen={setIsOpen} setTimeRange={props.setTimeRange} setTimeRangeSet={setTimeRangeSet} setTimeRangeString={setTimeRangeString} />
+                                <TimeRangeActions setTimeRange={props.setTimeRange} startDatetime={startDatetime} setStartDatetime={setStartDatetime}
+                                    endDatetime={endDatetime} setEndDatetime={setEndDatetime}
+                                    startNanos={startNanos} setStartNanos={setStartNanos}
+                                    endNanos={endNanos} setEndNanos={setEndNanos}
+                                    setTimeRangeString={setTimeRangeString} setIsOpen={setIsOpen} />
                             </div>
                         </div>
                     </FloatingFocusManager>
