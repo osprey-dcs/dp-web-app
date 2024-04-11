@@ -72,7 +72,7 @@ function TimeRangeChip(props) {
                     </FloatingFocusManager>
                 )
             }
-        </Fragment >
+        </Fragment>
     )
 }
 
