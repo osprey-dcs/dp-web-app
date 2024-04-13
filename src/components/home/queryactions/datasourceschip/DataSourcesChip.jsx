@@ -40,20 +40,20 @@ function DataSourcesChip(props) {
 
     return (
         <Fragment>
-            <div ref={refs.setPositionReference} className={"mr-4 px-2 max-w-sm overflow-hidden sm:max-w-none flex items-center border border-sub-text rounded-full hover:cursor-pointer" + (dataSources.length > 0 ? '' : ' border-dashed')}>
-                <button className="text-sub-text">
+            <div ref={refs.setPositionReference} className={"mr-4 px-2 max-w-sm overflow-hidden sm:max-w-none flex items-center border border-muted-foreground rounded-full hover:cursor-pointer" + (dataSources.length > 0 ? '' : ' border-dashed')}>
+                <button className="text-muted-foreground">
                     {
                         isOpen || dataSources.length > 0 ?
                             <CloseFilled onClick={handleClear} /> :
                             <AddFilled onClick={() => setIsOpen(true)} />
                     }
                 </button>
-                <button ref={refs.setReference} {...getReferenceProps()} className="pl-1 text-sm text-sub-text font-medium">
+                <button ref={refs.setReference} {...getReferenceProps()} className="pl-1 text-sm text-muted-foreground font-medium">
                     {
                         dataSources.length > 0 ?
                             <Fragment>
-                                <span className=" mr-1 pr-1 border-r border-sub-text text-nowrap">Data Sources</span>
-                                <span className="text-main-text text-nowrap">{dataSources.length} Items</span>
+                                <span className=" mr-1 pr-1 border-r border-muted-foreground text-nowrap">Data Sources</span>
+                                <span className="text-foreground text-nowrap">{dataSources.length} Items</span>
                             </Fragment> :
                             "Data Sources"
                     }

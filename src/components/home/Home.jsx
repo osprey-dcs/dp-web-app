@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-import QueryActions from "./queryactions/QueryActions";
-import QueryResults from "./queryresults/QueryResults";
+import QueryActions from "@/components/home/queryactions/QueryActions";
+import QueryResults from "@/components/home/queryresults/QueryResults";
 
 function Home() {
     const [resultData, setResultData] = useState({})

@@ -11,7 +11,7 @@ function NavLink(props) {
 
     return (
         <div className="flex justify-center">
-            <Link href={props.href} className={isActive ? "text-main-text" : "text-sub-text"} data-testid="nav-link">{props.text}</Link>
+            <Link href={props.href} className={isActive ? "text-foreground" : "text-muted-foreground"} data-testid="nav-link">{props.text}</Link>
         </div>
     )
 }
