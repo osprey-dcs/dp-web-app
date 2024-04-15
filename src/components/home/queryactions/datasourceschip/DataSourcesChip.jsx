@@ -63,7 +63,7 @@ function DataSourcesChip(props) {
                 isMounted && (
                     <FloatingFocusManager context={context} modal={true}>
                         <div ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
-                            <div style={transitionStyles} className="p-5 border rounded bg-white shadow-md">
+                            <div style={transitionStyles} className="p-5 border rounded bg-background shadow-md">
                                 <DataSourcesActions handleApply={handleApply} />
                             </div>
                         </div>

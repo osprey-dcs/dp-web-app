@@ -48,10 +48,16 @@ function TimeRangeActions(props) {
             return false;
         }
 
-        if (startDate > endDate || (startDate === endDate && Number(startNanos) > Number(endNanos))) {
+        if (startDate > endDate) {
             setStartDateErrClass("border-red-500");
             setEndDateErrClass("border-red-500");
             return false
+        }
+
+        if (startDate.getTime() === endDate.getTime() && Number(startNanos) > Number(endNanos)) {
+            setStartNanosErrClass("border-red-500");
+            setEndNanosErrClass("border-red-500");
+            return false;
         }
 
         const now = new Date()
