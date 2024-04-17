@@ -64,6 +64,12 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
   }
+
+  .ag-theme-quartz {
+    --ag-border-color: hsl(214.3, 31.8%, 91.4%);
+    --ag-background-color: hsl(0, 0%, 100%);
+    --ag-header-background-color: hsla(217.2, 32.6%, 17.5%, 0.025);
+  }
 }
 
 @layer base {

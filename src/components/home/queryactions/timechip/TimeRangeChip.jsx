@@ -9,17 +9,17 @@ const propTypes = {
 }
 
 const TimeRangeChip = memo(function TimeRangeChip(props) {
-    const [startDatetime, setStartDatetime] = useState('');
-    const [endDatetime, setEndDatetime] = useState('');
-    const [startNanos, setStartNanos] = useState('');
-    const [endNanos, setEndNanos] = useState('');
-    const [timeRangeString, setTimeRangeString] = useState('');
+    const [startDatetime, setStartDatetime] = useState("");
+    const [endDatetime, setEndDatetime] = useState("");
+    const [startNanos, setStartNanos] = useState("");
+    const [endNanos, setEndNanos] = useState("");
+    const [timeRangeString, setTimeRangeString] = useState("");
 
     const [isOpen, setIsOpen] = useState();
     const { refs, floatingStyles, context } = useFloating({
         open: isOpen,
         onOpenChange: setIsOpen,
-        placement: 'bottom-start',
+        placement: "bottom-start",
         middleware: [offset(4)]
     });
     const { isMounted, styles: transitionStyles } = useTransitionStyles(context);
@@ -30,28 +30,28 @@ const TimeRangeChip = memo(function TimeRangeChip(props) {
     const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss, role]);
 
     function handleClear() {
-        setStartDatetime('');
-        setEndDatetime('');
-        setTimeRangeString('');
+        setStartDatetime("");
+        setEndDatetime("");
+        setTimeRangeString("");
         props.setTimeRange({});
     }
 
     return (
         <Fragment>
-            <div ref={refs.setPositionReference} className={"mr-4 px-2 max-w-sm overflow-hidden sm:max-w-none flex items-center border border-muted-foreground rounded-full hover:cursor-pointer" + (timeRangeString !== '' ? '' : ' border-dashed')}>
+            <div ref={refs.setPositionReference} className={"mr-4 px-2 max-w-sm overflow-hidden sm:max-w-none flex items-center border border-muted-foreground rounded-full hover:cursor-pointer" + (timeRangeString !== "" ? "" : " border-dashed")}>
                 <button className="text-muted-foreground">
                     {
-                        isOpen || timeRangeString !== '' ?
+                        isOpen || startDatetime !== "" || endDatetime !== "" ?
                             <CloseFilled onClick={handleClear} /> :
                             <AddFilled onClick={() => setIsOpen(true)} />
                     }
                 </button>
                 <button ref={refs.setReference} {...getReferenceProps()} className="pl-1 text-sm text-muted-foreground font-medium">
                     {
-                        timeRangeString !== '' ?
+                        startDatetime !== "" || endDatetime !== "" ?
                             <Fragment>
                                 <span className=" mr-1 pr-1 border-r border-muted-foreground text-nowrap">Time Range</span>
-                                <span className="text-foreground text-nowrap">{timeRangeString}</span>
+                                <span className="text-foreground text-nowrap">{startDatetime} - {endDatetime}</span>
                             </Fragment> :
                             "Time Range"
                     }
