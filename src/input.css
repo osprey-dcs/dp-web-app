@@ -81,6 +81,6 @@
   }
 
   .input-std {
-    @apply px-2 py-1 rounded border border-input focus:outline outline-1 outline-ring bg-transparent placeholder:text-muted-foreground;
+    @apply px-2 py-1 h-9 text-sm rounded border border-input focus:outline outline-1 outline-ring bg-transparent placeholder:text-muted-foreground;
   }
 }

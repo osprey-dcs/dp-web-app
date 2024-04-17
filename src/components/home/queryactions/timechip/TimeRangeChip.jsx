@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import TimeRangeActions from "./timeactions";
-import { Fragment, useState } from "react";
+import { Fragment, memo, useState } from "react";
 import { FloatingFocusManager, offset, useClick, useDismiss, useFloating, useInteractions, useRole, useTransitionStyles } from "@floating-ui/react";
 import { AddFilled, CloseFilled } from "@carbon/icons-react";
 
@@ -8,7 +8,7 @@ const propTypes = {
     setTimeRange: PropTypes.func
 }
 
-function TimeRangeChip(props) {
+const TimeRangeChip = memo(function TimeRangeChip(props) {
     const [startDatetime, setStartDatetime] = useState('');
     const [endDatetime, setEndDatetime] = useState('');
     const [startNanos, setStartNanos] = useState('');
@@ -62,7 +62,8 @@ function TimeRangeChip(props) {
                     <FloatingFocusManager context={context} modal={true}>
                         <div ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
                             <div style={transitionStyles} className="p-5 border rounded bg-background shadow-md">
-                                <TimeRangeActions setTimeRange={props.setTimeRange} startDatetime={startDatetime} setStartDatetime={setStartDatetime}
+                                <TimeRangeActions
+                                    setTimeRange={props.setTimeRange} startDatetime={startDatetime} setStartDatetime={setStartDatetime}
                                     endDatetime={endDatetime} setEndDatetime={setEndDatetime}
                                     startNanos={startNanos} setStartNanos={setStartNanos}
                                     endNanos={endNanos} setEndNanos={setEndNanos}
@@ -74,7 +75,7 @@ function TimeRangeChip(props) {
             }
         </Fragment>
     )
-}
+});
 
 TimeRangeChip.propTypes = propTypes;
 export default TimeRangeChip;

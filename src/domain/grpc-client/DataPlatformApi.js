@@ -43,7 +43,7 @@ export default class DataPlatformApi {
                         epochSeconds: queryParams.endEpochs,
                         nanoseconds: queryParams.endNanos
                     },
-                    pvNames: queryParams.dataSources
+                    pvNames: queryParams.pvNames
                 }
             }
         }

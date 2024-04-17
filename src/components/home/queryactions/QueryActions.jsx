@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
 
 import DataSourcesChip from "./datasourceschip/DataSourcesChip";
@@ -9,10 +9,14 @@ const propTypes = {
     setResultData: PropTypes.func,
 }
 
-function QueryActions(props) {
+const QueryActions = memo(function QueryActions(props) {
     const [timeRange, setTimeRange] = useState({});
-    const [dataSources, setDataSources] = useState([]);
-    const api = new DataPlatformApi();
+    const [dataSources, setDataSources] = useState({});
+    const api = useMemo(() => new DataPlatformApi(), []);
+
+    useEffect(() => {
+        console.log(dataSources);
+    }, [dataSources])
 
     async function queryDataTable() {
         const queryParams = {
@@ -20,7 +24,7 @@ function QueryActions(props) {
             endEpochs: timeRange.endEpochs,
             startNanos: timeRange.startNanos,
             endNanos: timeRange.endNanos,
-            dataSources: dataSources,
+            pvNames: dataSources.pvNames
         }
 
         console.log(queryParams);
@@ -38,6 +42,7 @@ function QueryActions(props) {
             <button className="btn-std px-5 py-2" onClick={queryDataTable}>Run Query</button>
         </div>
     )
-}
+});
 
+QueryActions.propTypes = propTypes;
 export default QueryActions;

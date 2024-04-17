@@ -9,9 +9,7 @@ function Home() {
     return (
         <div className="h-full flex flex-col" data-testid="home">
             <QueryActions setResultData={setResultData} />
-            {/* <main className="flex-grow"> */}
             <QueryResults resultData={resultData} />
-            {/* </main> */}
         </div>
     );
 }

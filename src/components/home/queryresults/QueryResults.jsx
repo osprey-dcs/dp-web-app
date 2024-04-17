@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { Profiler, memo, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { getColDefs } from "/src/lib/utils";
 
 import { AgGridReact } from 'ag-grid-react';
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
-import { QueryDataResponse } from "../../../domain/grpc-client/proto-ts/query";
 
 const propTypes = {
     resultData: PropTypes.object
@@ -30,7 +29,7 @@ function QueryResults(props) {
             />
         </div>
     )
-}
+};
 
 QueryResults.propTypes = propTypes;
 export default QueryResults;
