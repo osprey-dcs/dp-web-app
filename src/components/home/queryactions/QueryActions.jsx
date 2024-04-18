@@ -34,12 +34,12 @@ const QueryActions = memo(function QueryActions(props) {
         }
         if (!queryParams.startEpochs || !queryParams.endEpochs || !(queryParams.pvNames || queryParams.regexPattern)) {
             toast({
-                title: "Something Went Wrong",
+                title: "Error: Invalid Query",
                 description: "Specify a time range and data sources to run a query",
                 variant: "destructive"
             })
+            return;
         }
-        console.log(queryParams)
 
         queryDataTable();
     }
