@@ -32,6 +32,11 @@ function DataSourcesActions(props) {
     }
 
     function handleApply(inputString) {
+        if (inputString === "") {
+            if (props.useRegex) setRegexPatternErrClass("border-red-500");
+            else setDataSourcesErrClass("border-red-500");
+            return;
+        }
         if (props.useRegex) {
             if (!validateRegex(inputString)) {
                 setErrText("Invalid RegEx pattern");
@@ -46,6 +51,12 @@ function DataSourcesActions(props) {
         props.setDataSourcesPopulated(true);
         props.setDataSources(dataSourcesObj);
         props.setIsOpen(false);
+    }
+
+    function clearErrors() {
+        setErrText("");
+        setDataSourcesErrClass("");
+        setRegexPatternErrClass("");
     }
 
     return (
@@ -65,7 +76,7 @@ function DataSourcesActions(props) {
                     ></input>
             }
             <div className="flex items-center space-x-2">
-                <Switch id="regex" checked={props.useRegex} onClick={() => props.setUseRegex(prevState => !prevState)} />
+                <Switch id="regex" checked={props.useRegex} onClick={() => props.setUseRegex(prevState => !prevState)} onFocus={clearErrors} />
                 <Label htmlFor="regex">RegEx</Label>
             </div>
             <FilterErrorMessage>{errText}</FilterErrorMessage>

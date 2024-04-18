@@ -1,4 +1,5 @@
 import { Route, Switch } from "wouter";
+import { Toaster } from "@/components/ui/toaster"
 import Header from "./components/header";
 import Home from "./components/home";
 
@@ -14,6 +15,7 @@ function App() {
                     <Route path="/" component={Home} />
                 </Switch>
             </div>
+            <Toaster />
         </div>
     );
 }

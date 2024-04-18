@@ -1,4 +1,6 @@
 import { memo, useEffect, useMemo, useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
+
 import PropTypes from "prop-types";
 
 import DataSourcesChip from "./datasourceschip/DataSourcesChip";
@@ -13,23 +15,33 @@ const QueryActions = memo(function QueryActions(props) {
     const [timeRange, setTimeRange] = useState({});
     const [dataSources, setDataSources] = useState({});
     const api = useMemo(() => new DataPlatformApi(), []);
-
-    useEffect(() => {
-        console.log(dataSources);
-    }, [dataSources])
+    const { toast } = useToast();
 
     async function queryDataTable() {
+        const result = await api.queryDataTable(queryParams);
+        props.setResultData(result);
+    }
+
+    function handleSubmit() {
         const queryParams = {
             startEpochs: timeRange.startEpochs,
             endEpochs: timeRange.endEpochs,
             startNanos: timeRange.startNanos,
             endNanos: timeRange.endNanos,
-            pvNames: dataSources.pvNames
+            pvNames: dataSources.pvNames,
+            useRegex: dataSources.useRegex,
+            regexPattern: dataSources.regexPattern
         }
+        if (!queryParams.startEpochs || !queryParams.endEpochs || !(queryParams.pvNames || queryParams.regexPattern)) {
+            toast({
+                title: "Something Went Wrong",
+                description: "Specify a time range and data sources to run a query",
+                variant: "destructive"
+            })
+        }
+        console.log(queryParams)
 
-        console.log(queryParams);
-        const result = await api.queryDataTable(queryParams);
-        props.setResultData(result);
+        queryDataTable();
     }
 
     return (
@@ -39,7 +51,7 @@ const QueryActions = memo(function QueryActions(props) {
                 <DataSourcesChip dataSources={dataSources} setDataSources={setDataSources} />
                 <div>Attributes</div>
             </div>
-            <button className="btn-std px-5 py-2" onClick={queryDataTable}>Run Query</button>
+            <button className="btn-std px-5 py-2" onClick={handleSubmit}>Run Query</button>
         </div>
     )
 });

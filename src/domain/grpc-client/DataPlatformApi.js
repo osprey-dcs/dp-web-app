@@ -58,7 +58,7 @@ export default class DataPlatformApi {
         return result.tableResult;
     }
 
-    queryMetadata = async () => {
+    queryMetadata = async (queryParams) => {
         const pvNamesQuery = {
             querySpec: {
                 pvNameSpec: {
