@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
+import { FilterErrorMessage } from "@/components/ui/FilterErrorMessage";
 
 const propTypes = {
     setTimeRange: PropTypes.func,
@@ -48,10 +49,16 @@ function TimeRangeActions(props) {
             return false;
         }
 
-        if (startDate > endDate || (startDate === endDate && Number(startNanos) > Number(endNanos))) {
+        if (startDate > endDate) {
             setStartDateErrClass("border-red-500");
             setEndDateErrClass("border-red-500");
             return false
+        }
+
+        if (startDate.getTime() === endDate.getTime() && Number(startNanos) > Number(endNanos)) {
+            setStartNanosErrClass("border-red-500");
+            setEndNanosErrClass("border-red-500");
+            return false;
         }
 
         const now = new Date()
@@ -116,18 +123,34 @@ function TimeRangeActions(props) {
 
     return (
         <div className="flex flex-col items-center">
-            <div className="mb-4 flex flex-row items-center">
+            <div className="flex flex-row items-center">
                 <div className="flex flex-col">
-                    <input aria-label="Date and time" name="start-time" type="datetime-local" value={props.startDatetime} max={maxDate} step="1" onChange={e => props.setStartDatetime(e.target.value)} onFocus={() => setStartDateErrClass("")} className={"input-std mb-2 " + startDateErrClass} />
-                    <input type="number" placeholder="Nanoseconds" value={props.startNanos} onChange={e => props.setStartNanos(e.target.value)} onFocus={() => setStartNanosErrClass("")} className={"input-std " + startNanosErrClass} />
+                    <input
+                        aria-label="Date and time" name="start-time" type="datetime-local" value={props.startDatetime}
+                        max={maxDate} step="1"
+                        onChange={e => props.setStartDatetime(e.target.value)} onFocus={() => setStartDateErrClass("")}
+                        className={"input-std mb-2 " + startDateErrClass}
+                    />
+                    <input
+                        type="number" name="start-nanos" placeholder="Nanoseconds" value={props.startNanos}
+                        onChange={e => props.setStartNanos(e.target.value)} onFocus={() => setStartNanosErrClass("")}
+                        className={"input-std " + startNanosErrClass}
+                    />
                 </div>
-                <span className="px-4">to</span>
+                <span className="px-4 font-medium text-sm">to</span>
                 <div className="flex flex-col">
-                    <input aria-label="Date and time" name="end-time" type="datetime-local" value={props.endDatetime} max={maxDate} step="1" onChange={e => props.setEndDatetime(e.target.value)} onFocus={() => setEndDateErrClass("")} className={"input-std mb-2 " + endDateErrClass} />
-                    <input type="number" placeholder="Nanoseconds" step="1" value={props.endNanos} onChange={e => props.setEndNanos(e.target.value)} onFocus={() => setEndNanosErrClass("")} className={"input-std " + endNanosErrClass} />
+                    <input aria-label="Date and time" name="end-time" type="datetime-local" value={props.endDatetime}
+                        max={maxDate} step="1"
+                        onChange={e => props.setEndDatetime(e.target.value)} onFocus={() => setEndDateErrClass("")}
+                        className={"input-std mb-2 " + endDateErrClass}
+                    />
+                    <input type="number" name="end-nanos" placeholder="Nanoseconds" step="1" value={props.endNanos}
+                        onChange={e => props.setEndNanos(e.target.value)} onFocus={() => setEndNanosErrClass("")}
+                        className={"input-std " + endNanosErrClass}
+                    />
                 </div>
             </div>
-            <div className={errText !== "" ? "mb-2 font-medium text-red-500" : ""}>{errText}</div>
+            <FilterErrorMessage>{errText}</FilterErrorMessage>
             <button onClick={handleApply} className="btn-std w-1/2 py-2">
                 Apply
             </button>
