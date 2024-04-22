@@ -6,8 +6,6 @@ const transport = new GrpcWebFetchTransport({
     baseUrl: `http://localhost:${hostname}`
 })
 
-const nano = 999000000
-
 export default class DataPlatformApi {
 
     constructor() {
@@ -45,7 +43,7 @@ export default class DataPlatformApi {
                         epochSeconds: queryParams.endEpochs,
                         nanoseconds: queryParams.endNanos
                     },
-                    pvNames: ["dpTest_602"]
+                    pvNames: queryParams.pvNames
                 }
             }
         }
@@ -57,9 +55,10 @@ export default class DataPlatformApi {
         if (!this.handleExceptionalResult(result)) return;
 
         console.log(result.tableResult);
+        return result.tableResult;
     }
 
-    queryMetadata = async () => {
+    queryMetadata = async (queryParams) => {
         const pvNamesQuery = {
             querySpec: {
                 pvNameSpec: {

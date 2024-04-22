@@ -57,7 +57,7 @@ function PopoverMenu() {
                                         {...getItemProps()}
                                         href={item[1]}
                                         onClick={() => setIsOpen(false)}
-                                        className={item[2] ? "text-main-text text-sm" : "text-sub-text text-sm"}
+                                        className={item[2] ? "text-foreground text-sm" : "text-muted-foreground text-sm"}
                                     >
                                         {item[0]}
                                     </Link>
