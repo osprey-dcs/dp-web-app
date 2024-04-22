@@ -5,7 +5,7 @@ const propTypes = {
     href: PropTypes.string
 }
 
-function NavLink({ children, href }) {
+const NavLink = (({ children, href }) => {
     const [isActive] = useRoute(href);
 
     return (
@@ -13,7 +13,7 @@ function NavLink({ children, href }) {
             <Link href={href} className={isActive ? "text-foreground" : "text-muted-foreground"} data-testid="nav-link">{children}</Link>
         </div>
     )
-}
+})
 
 NavLink.propTypes = propTypes;
 export default NavLink;
