@@ -1,5 +1,8 @@
-import { Profiler, memo, useEffect, useState } from "react";
 import PropTypes from "prop-types";
+import { useMemo, useState } from "react";
+
+import DataValueCellRenderer from "./dataValueCellRenderer/DataValueCellRenderer";
+import TimestampCellRenderer from "./timestampCellRenderer/TimestampCellRenderer";
 import { getColDefs } from "/src/lib/utils";
 
 import { AgGridReact } from 'ag-grid-react';
@@ -14,16 +17,24 @@ function QueryResults(props) {
     const [rowData, setRowData] = useState([]);
     const [colDefs, setColDefs] = useState([]);
 
-    useEffect(() => {
+    const components = useMemo(() => ({
+        dataValueCellRenderer: DataValueCellRenderer,
+        timestampCellRenderer: TimestampCellRenderer,
+    }), []);
+
+    useMemo(() => {
+        console.log("useMemo ran");
         if (Object.keys(props.resultData).length !== 0) {
-            console.log("setting col defs")
             setColDefs(getColDefs(props.resultData))
+            setRowData(props.resultData.tableResult.rowMapTable.rows.map(row => row.columnValues))
         }
-    }, [props.resultData])
+    }, [props.resultData]);
+
 
     return (
         <div className="ag-theme-quartz h-full pb-4 flex-grow">
             <AgGridReact
+                components={components}
                 rowData={rowData}
                 columnDefs={colDefs}
             />

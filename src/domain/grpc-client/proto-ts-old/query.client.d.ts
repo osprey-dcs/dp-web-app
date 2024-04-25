@@ -13,12 +13,13 @@
 //
 import type { RpcTransport } from "@protobuf-ts/runtime-rpc";
 import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
+import type { QueryAnnotationsResponse } from "./query";
+import type { QueryAnnotationsRequest } from "./query";
 import type { QueryMetadataResponse } from "./query";
 import type { QueryMetadataRequest } from "./query";
-import type { QueryTableResponse } from "./query";
-import type { QueryTableRequest } from "./query";
 import type { DuplexStreamingCall } from "@protobuf-ts/runtime-rpc";
 import type { ServerStreamingCall } from "@protobuf-ts/runtime-rpc";
+import type { QueryTableResponse } from "./query";
 import type { QueryDataResponse } from "./query";
 import type { QueryDataRequest } from "./query";
 import type { UnaryCall } from "@protobuf-ts/runtime-rpc";
@@ -43,6 +44,18 @@ export interface IDpQueryServiceClient {
      * @generated from protobuf rpc: queryData(dp.service.query.QueryDataRequest) returns (dp.service.query.QueryDataResponse);
      */
     queryData(input: QueryDataRequest, options?: RpcOptions): UnaryCall<QueryDataRequest, QueryDataResponse>;
+    /**
+     *
+     * queryDataTable: Unary (non-streaming) time series data query with tabular result.
+     *
+     * This time series data query returns its result in a tabular format, for use by the Data Platform web application.
+     * The client sends a single QueryDataRequest with the query parameters and receives a single QueryTableResponse.
+     * The response content may indicate rejection, error in handling, no data matching query, or otherwise contains
+     * the tabular data matching the query specification.
+     *
+     * @generated from protobuf rpc: queryDataTable(dp.service.query.QueryDataRequest) returns (dp.service.query.QueryTableResponse);
+     */
+    queryDataTable(input: QueryDataRequest, options?: RpcOptions): UnaryCall<QueryDataRequest, QueryTableResponse>;
     /**
      *
      * queryDataStream: Server-side streaming time series data query.
@@ -82,18 +95,6 @@ export interface IDpQueryServiceClient {
     queryDataBidiStream(options?: RpcOptions): DuplexStreamingCall<QueryDataRequest, QueryDataResponse>;
     /**
      *
-     * queryDataTable: Unary (non-streaming) time series data query with tabular result.
-     *
-     * This time series data query returns its result in a tabular format, for use by the Data Platform web application.
-     * The client sends a single QueryDataRequest with the query parameters and receives a single QueryTableResponse.
-     * The response content may indicate rejection, error in handling, no data matching query, or otherwise contains
-     * the tabular data matching the query specification.
-     *
-     * @generated from protobuf rpc: queryTable(dp.service.query.QueryTableRequest) returns (dp.service.query.QueryTableResponse);
-     */
-    queryTable(input: QueryTableRequest, options?: RpcOptions): UnaryCall<QueryTableRequest, QueryTableResponse>;
-    /**
-     *
      * queryMetadata: Unary (non-streaming) metadata query.
      *
      * This RPC is used by clients to learn about data sources (PVs/columns) available in the archive.  Client sends
@@ -104,6 +105,20 @@ export interface IDpQueryServiceClient {
      * @generated from protobuf rpc: queryMetadata(dp.service.query.QueryMetadataRequest) returns (dp.service.query.QueryMetadataResponse);
      */
     queryMetadata(input: QueryMetadataRequest, options?: RpcOptions): UnaryCall<QueryMetadataRequest, QueryMetadataResponse>;
+    /**
+     *
+     * queryAnnotations: Unary (non-streaming) annotations query.
+     *
+     * This RPC is used by clients to query over annotations added to ingested data, and is not yet implemented.
+     * Client sends a single QueryAnnotationsRequest with the query parameters, and receives a single
+     * QueryAnnotationsResponse with the query results. The response may indicate rejection, error in handling,
+     * no data matching query, or otherwise contains the data matching the query specification.
+     *
+     * TODO: this RPC is not yet implmented.
+     *
+     * @generated from protobuf rpc: queryAnnotations(dp.service.query.QueryAnnotationsRequest) returns (dp.service.query.QueryAnnotationsResponse);
+     */
+    queryAnnotations(input: QueryAnnotationsRequest, options?: RpcOptions): UnaryCall<QueryAnnotationsRequest, QueryAnnotationsResponse>;
 }
 /**
  *
@@ -132,6 +147,18 @@ export declare class DpQueryServiceClient implements IDpQueryServiceClient, Serv
     queryData(input: QueryDataRequest, options?: RpcOptions): UnaryCall<QueryDataRequest, QueryDataResponse>;
     /**
      *
+     * queryDataTable: Unary (non-streaming) time series data query with tabular result.
+     *
+     * This time series data query returns its result in a tabular format, for use by the Data Platform web application.
+     * The client sends a single QueryDataRequest with the query parameters and receives a single QueryTableResponse.
+     * The response content may indicate rejection, error in handling, no data matching query, or otherwise contains
+     * the tabular data matching the query specification.
+     *
+     * @generated from protobuf rpc: queryDataTable(dp.service.query.QueryDataRequest) returns (dp.service.query.QueryTableResponse);
+     */
+    queryDataTable(input: QueryDataRequest, options?: RpcOptions): UnaryCall<QueryDataRequest, QueryTableResponse>;
+    /**
+     *
      * queryDataStream: Server-side streaming time series data query.
      *
      * Client sends a single QueryDataRequest with the query parameters, and receives a stream of QueryDataResponse
@@ -169,18 +196,6 @@ export declare class DpQueryServiceClient implements IDpQueryServiceClient, Serv
     queryDataBidiStream(options?: RpcOptions): DuplexStreamingCall<QueryDataRequest, QueryDataResponse>;
     /**
      *
-     * queryDataTable: Unary (non-streaming) time series data query with tabular result.
-     *
-     * This time series data query returns its result in a tabular format, for use by the Data Platform web application.
-     * The client sends a single QueryDataRequest with the query parameters and receives a single QueryTableResponse.
-     * The response content may indicate rejection, error in handling, no data matching query, or otherwise contains
-     * the tabular data matching the query specification.
-     *
-     * @generated from protobuf rpc: queryTable(dp.service.query.QueryTableRequest) returns (dp.service.query.QueryTableResponse);
-     */
-    queryTable(input: QueryTableRequest, options?: RpcOptions): UnaryCall<QueryTableRequest, QueryTableResponse>;
-    /**
-     *
      * queryMetadata: Unary (non-streaming) metadata query.
      *
      * This RPC is used by clients to learn about data sources (PVs/columns) available in the archive.  Client sends
@@ -191,4 +206,18 @@ export declare class DpQueryServiceClient implements IDpQueryServiceClient, Serv
      * @generated from protobuf rpc: queryMetadata(dp.service.query.QueryMetadataRequest) returns (dp.service.query.QueryMetadataResponse);
      */
     queryMetadata(input: QueryMetadataRequest, options?: RpcOptions): UnaryCall<QueryMetadataRequest, QueryMetadataResponse>;
+    /**
+     *
+     * queryAnnotations: Unary (non-streaming) annotations query.
+     *
+     * This RPC is used by clients to query over annotations added to ingested data, and is not yet implemented.
+     * Client sends a single QueryAnnotationsRequest with the query parameters, and receives a single
+     * QueryAnnotationsResponse with the query results. The response may indicate rejection, error in handling,
+     * no data matching query, or otherwise contains the data matching the query specification.
+     *
+     * TODO: this RPC is not yet implmented.
+     *
+     * @generated from protobuf rpc: queryAnnotations(dp.service.query.QueryAnnotationsRequest) returns (dp.service.query.QueryAnnotationsResponse);
+     */
+    queryAnnotations(input: QueryAnnotationsRequest, options?: RpcOptions): UnaryCall<QueryAnnotationsRequest, QueryAnnotationsResponse>;
 }

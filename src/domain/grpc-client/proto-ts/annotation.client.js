@@ -34,7 +34,34 @@ export class DpAnnotationServiceClient {
     }
     /**
      *
-     * createComment: Add a comment annotation to a DataSet.
+     * createDataSet: Create a DataSet.
+     *
+     * This RPC sends a request to the annotation service to create a DataSet with the specified parameters.
+     * The annotation service performs validation, and for a valid request, attempts to create the DataSet.
+     * The response may indicate rejection, an error in handling the request, or successful handling of the request.
+     * See CreateDataSetResponse for more details.
+     *
+     * @generated from protobuf rpc: createDataSet(dp.service.annotation.CreateDataSetRequest) returns (dp.service.annotation.CreateDataSetResponse);
+     */
+    createDataSet(input, options) {
+        const method = this.methods[0], opt = this._transport.mergeOptions(options);
+        return stackIntercept("unary", this._transport, method, opt, input);
+    }
+    /**
+     *
+     * queryDataSets: Unary (non-streaming) data sets query.
+     *
+     * TODO: this API is not yet implemented
+     *
+     * @generated from protobuf rpc: queryDataSets(dp.service.annotation.QueryDataSetsRequest) returns (dp.service.annotation.QueryDataSetsResponse);
+     */
+    queryDataSets(input, options) {
+        const method = this.methods[1], opt = this._transport.mergeOptions(options);
+        return stackIntercept("unary", this._transport, method, opt, input);
+    }
+    /**
+     *
+     * createAnnotation: Add annotation to a DataSet.
      *
      * This RPC sends a request to the annotation service to create an annotation with the specified parameters.
      * The annotation service performs validation, and for a valid request, attempts to create the annotation.
@@ -44,7 +71,22 @@ export class DpAnnotationServiceClient {
      * @generated from protobuf rpc: createAnnotation(dp.service.annotation.CreateAnnotationRequest) returns (dp.service.annotation.CreateAnnotationResponse);
      */
     createAnnotation(input, options) {
-        const method = this.methods[0], opt = this._transport.mergeOptions(options);
+        const method = this.methods[2], opt = this._transport.mergeOptions(options);
+        return stackIntercept("unary", this._transport, method, opt, input);
+    }
+    /**
+     *
+     * queryAnnotations: Unary (non-streaming) annotations query.
+     *
+     * This RPC is used by clients to query over annotations added to ingested data, and is not yet implemented.
+     * Client sends a single QueryAnnotationsRequest with the query parameters, and receives a single
+     * QueryAnnotationsResponse with the query results. The response may indicate rejection, error in handling,
+     * no data matching query, or otherwise contains the data matching the query specification.
+     *
+     * @generated from protobuf rpc: queryAnnotations(dp.service.annotation.QueryAnnotationsRequest) returns (dp.service.annotation.QueryAnnotationsResponse);
+     */
+    queryAnnotations(input, options) {
+        const method = this.methods[3], opt = this._transport.mergeOptions(options);
         return stackIntercept("unary", this._transport, method, opt, input);
     }
 }

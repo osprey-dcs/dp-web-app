@@ -655,6 +655,10 @@ body {
   z-index: 10;
 }
 
+.z-20 {
+  z-index: 20;
+}
+
 .z-\[100\] {
   z-index: 100;
 }
@@ -888,11 +892,6 @@ body {
 
 .bg-transparent {
   background-color: transparent;
-}
-
-.bg-white {
-  --tw-bg-opacity: 1;
-  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
 .p-1 {

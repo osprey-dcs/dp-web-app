@@ -32,6 +32,42 @@ export default class DataPlatformApi {
 
     queryDataTable = async (queryParams) => {
         const query = {
+            format: 0,
+            beginTime: {
+                epochSeconds: queryParams.startEpochs,
+                nanoseconds: queryParams.startNanos
+            },
+            endTime: {
+                epochSeconds: queryParams.endEpochs,
+                nanoseconds: queryParams.endNanos
+            },
+            // pvNameSpec: {
+            // oneofKind: "pvNameList",
+            // pvNameList: {
+            //     pvNames: queryParams.pvNames
+            // }
+            // }
+
+        }
+
+        if (queryParams.useRegex) {
+            query.pvNameSpec = {
+                oneofKind: "pvNamePattern",
+                pvNamePattern: {
+                    pattern: queryParams.regexPattern
+                }
+            }
+        } else {
+            query.pvNameSpec = {
+                oneofKind: "pvNameList",
+                pvNameList: {
+                    pvNames: queryParams.pvNames
+                }
+            }
+        }
+        console.log(query)
+
+        const oldQuery = {
             request: {
                 oneofKind: "querySpec",
                 querySpec: {
@@ -48,7 +84,7 @@ export default class DataPlatformApi {
             }
         }
 
-        const { status, response } = await this.client.queryDataTable(query);
+        const { status, response } = await this.client.queryTable(query);
         const result = response.result;
 
         if (!this.handleStatus(status)) return;

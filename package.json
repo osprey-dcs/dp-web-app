@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "tailwind": "npx tailwindcss -i ./src/input.css -o ./src/output.css --watch"
+    "tailwind": "npx tailwindcss -i ./src/input.css -o ./src/output.css --watch",
+    "protos": "npx protoc --ts_out src/domain/grpc-client/proto-ts --ts_opt output_javascript_es2020 --proto_path protos annotation.proto common.proto query.proto"
   },
   "dependencies": {
     "@carbon/icons-react": "^11.39.0",

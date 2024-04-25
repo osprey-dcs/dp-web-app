@@ -18,7 +18,6 @@ import type { IBinaryReader } from "@protobuf-ts/runtime";
 import type { PartialMessage } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
 import { SamplingClock } from "./common";
-import { DataValue } from "./common";
 import { DataColumn } from "./common";
 import { EventMetadata } from "./common";
 import { Attribute } from "./common";
@@ -170,61 +169,6 @@ export interface QueryDataResponse_QueryData_DataBucket {
 }
 /**
  *
- * Time Series Data Query With Tabular Result Format.
- *
- * Describes the parameters for a time series data query that returns data in a tabular format.
- *
- * @generated from protobuf message dp.service.query.QueryTableRequest
- */
-export interface QueryTableRequest {
-    /**
-     * @generated from protobuf field: dp.service.query.QueryTableRequest.TableResultFormat format = 1;
-     */
-    format: QueryTableRequest_TableResultFormat;
-    /**
-     * @generated from protobuf field: Timestamp beginTime = 2;
-     */
-    beginTime?: Timestamp;
-    /**
-     * @generated from protobuf field: Timestamp endTime = 3;
-     */
-    endTime?: Timestamp;
-    /**
-     * @generated from protobuf oneof: pvNameSpec
-     */
-    pvNameSpec: {
-        oneofKind: "pvNameList";
-        /**
-         * @generated from protobuf field: dp.service.query.PvNameList pvNameList = 11;
-         */
-        pvNameList: PvNameList;
-    } | {
-        oneofKind: "pvNamePattern";
-        /**
-         * @generated from protobuf field: dp.service.query.PvNamePattern pvNamePattern = 12;
-         */
-        pvNamePattern: PvNamePattern;
-    } | {
-        oneofKind: undefined;
-    };
-}
-/**
- * @generated from protobuf enum dp.service.query.QueryTableRequest.TableResultFormat
- */
-export declare enum QueryTableRequest_TableResultFormat {
-    /**
-     * default value if not explicitly set
-     *
-     * @generated from protobuf enum value: TABLE_FORMAT_ROW_MAP = 0;
-     */
-    TABLE_FORMAT_ROW_MAP = 0,
-    /**
-     * @generated from protobuf enum value: TABLE_FORMAT_COLUMN = 1;
-     */
-    TABLE_FORMAT_COLUMN = 1
-}
-/**
- *
  * Tabular Time Series Data Query Response.
  *
  * Contains results from a time series data query in a tabular format for use by the DP web application (and other similar
@@ -266,32 +210,6 @@ export interface QueryTableResponse {
  */
 export interface QueryTableResponse_TableResult {
     /**
-     * @generated from protobuf oneof: tableResult
-     */
-    tableResult: {
-        oneofKind: "columnTable";
-        /**
-         * @generated from protobuf field: dp.service.query.QueryTableResponse.ColumnTable columnTable = 1;
-         */
-        columnTable: QueryTableResponse_ColumnTable;
-    } | {
-        oneofKind: "rowMapTable";
-        /**
-         * @generated from protobuf field: dp.service.query.QueryTableResponse.RowMapTable rowMapTable = 2;
-         */
-        rowMapTable: QueryTableResponse_RowMapTable;
-    } | {
-        oneofKind: undefined;
-    };
-}
-/**
- *
- * Column-oriented table result with list of columns.
- *
- * @generated from protobuf message dp.service.query.QueryTableResponse.ColumnTable
- */
-export interface QueryTableResponse_ColumnTable {
-    /**
      * @generated from protobuf field: DataTimestamps dataTimestamps = 1;
      */
     dataTimestamps?: DataTimestamps;
@@ -302,62 +220,61 @@ export interface QueryTableResponse_ColumnTable {
 }
 /**
  *
- * Row-oriented table result where each row is a map whose keys are the column names and values are the column values
- * for that row.
- *
- * @generated from protobuf message dp.service.query.QueryTableResponse.RowMapTable
- */
-export interface QueryTableResponse_RowMapTable {
-    /**
-     * @generated from protobuf field: repeated string columnNames = 1;
-     */
-    columnNames: string[];
-    /**
-     * @generated from protobuf field: repeated dp.service.query.QueryTableResponse.RowMapTable.DataRow rows = 2;
-     */
-    rows: QueryTableResponse_RowMapTable_DataRow[];
-}
-/**
- * @generated from protobuf message dp.service.query.QueryTableResponse.RowMapTable.DataRow
- */
-export interface QueryTableResponse_RowMapTable_DataRow {
-    /**
-     * @generated from protobuf field: map<string, DataValue> columnValues = 1;
-     */
-    columnValues: {
-        [key: string]: DataValue;
-    };
-}
-/**
- *
  * Metadata Query Request.
  *
  * Describes the parameters for a metadata query over available data sources in the archive.
  *
- * A request may contain one of two payloads, either a PvNameList with an explicit list of
+ * A request may contain one of two payloads in the QuerySpec, either a PvNameList with an explicit list of
  * column/PV names, or a regular expression pattern used to match against column/PV names.
  *
  * @generated from protobuf message dp.service.query.QueryMetadataRequest
  */
 export interface QueryMetadataRequest {
     /**
+     * @generated from protobuf field: dp.service.query.QueryMetadataRequest.QuerySpec querySpec = 1;
+     */
+    querySpec?: QueryMetadataRequest_QuerySpec;
+}
+/**
+ * @generated from protobuf message dp.service.query.QueryMetadataRequest.QuerySpec
+ */
+export interface QueryMetadataRequest_QuerySpec {
+    /**
      * @generated from protobuf oneof: pvNameSpec
      */
     pvNameSpec: {
         oneofKind: "pvNameList";
         /**
-         * @generated from protobuf field: dp.service.query.PvNameList pvNameList = 1;
+         * @generated from protobuf field: dp.service.query.QueryMetadataRequest.QuerySpec.PvNameList pvNameList = 1;
          */
-        pvNameList: PvNameList;
+        pvNameList: QueryMetadataRequest_QuerySpec_PvNameList;
     } | {
         oneofKind: "pvNamePattern";
         /**
-         * @generated from protobuf field: dp.service.query.PvNamePattern pvNamePattern = 2;
+         * @generated from protobuf field: dp.service.query.QueryMetadataRequest.QuerySpec.PvNamePattern pvNamePattern = 2;
          */
-        pvNamePattern: PvNamePattern;
+        pvNamePattern: QueryMetadataRequest_QuerySpec_PvNamePattern;
     } | {
         oneofKind: undefined;
     };
+}
+/**
+ * @generated from protobuf message dp.service.query.QueryMetadataRequest.QuerySpec.PvNameList
+ */
+export interface QueryMetadataRequest_QuerySpec_PvNameList {
+    /**
+     * @generated from protobuf field: repeated string pvNames = 1;
+     */
+    pvNames: string[];
+}
+/**
+ * @generated from protobuf message dp.service.query.QueryMetadataRequest.QuerySpec.PvNamePattern
+ */
+export interface QueryMetadataRequest_QuerySpec_PvNamePattern {
+    /**
+     * @generated from protobuf field: string pattern = 1;
+     */
+    pattern: string;
 }
 /**
  *
@@ -422,31 +339,76 @@ export interface QueryMetadataResponse_MetadataResult_PvInfo {
      */
     lastSamplingClock?: SamplingClock;
     /**
-     * @generated from protobuf field: Timestamp firstTimestamp = 4;
+     * @generated from protobuf field: Timestamp firstTimestamp = 5;
      */
     firstTimestamp?: Timestamp;
     /**
-     * @generated from protobuf field: Timestamp lastTimestamp = 5;
+     * @generated from protobuf field: Timestamp lastTimestamp = 6;
      */
     lastTimestamp?: Timestamp;
 }
 /**
- * @generated from protobuf message dp.service.query.PvNameList
+ *
+ * Annotations Query Request.
+ *
+ * This is a placeholder, annotation query is not yet implemented.
+ *
+ * @generated from protobuf message dp.service.query.QueryAnnotationsRequest
  */
-export interface PvNameList {
+export interface QueryAnnotationsRequest {
     /**
-     * @generated from protobuf field: repeated string pvNames = 1;
+     * @generated from protobuf field: dp.service.query.QueryAnnotationsRequest.QuerySpec querySpec = 1;
      */
-    pvNames: string[];
+    querySpec?: QueryAnnotationsRequest_QuerySpec;
 }
 /**
- * @generated from protobuf message dp.service.query.PvNamePattern
+ * @generated from protobuf message dp.service.query.QueryAnnotationsRequest.QuerySpec
  */
-export interface PvNamePattern {
+export interface QueryAnnotationsRequest_QuerySpec {
+}
+/**
+ *
+ * Annotations Query Response.
+ *
+ * This is a placeholder, annotation query is not yet implemented.
+ *
+ * Contains results from an annotations query. Types of response and corresponding message payloads include:
+ *
+ * @generated from protobuf message dp.service.query.QueryAnnotationsResponse
+ */
+export interface QueryAnnotationsResponse {
     /**
-     * @generated from protobuf field: string pattern = 1;
+     * @generated from protobuf field: Timestamp responseTime = 2;
      */
-    pattern: string;
+    responseTime?: Timestamp;
+    /**
+     * @generated from protobuf oneof: result
+     */
+    result: {
+        oneofKind: "exceptionalResult";
+        /**
+         * @generated from protobuf field: ExceptionalResult exceptionalResult = 10;
+         */
+        exceptionalResult: ExceptionalResult;
+    } | {
+        oneofKind: "annotationsResult";
+        /**
+         * @generated from protobuf field: dp.service.query.QueryAnnotationsResponse.AnnotationsResult annotationsResult = 11;
+         */
+        annotationsResult: QueryAnnotationsResponse_AnnotationsResult;
+    } | {
+        oneofKind: undefined;
+    };
+}
+/**
+ *
+ * Annotations Query Result Content.
+ *
+ * This is a placeholder, annotation query is not yet implemented.
+ *
+ * @generated from protobuf message dp.service.query.QueryAnnotationsResponse.AnnotationsResult
+ */
+export interface QueryAnnotationsResponse_AnnotationsResult {
 }
 declare class QueryDataRequest$Type extends MessageType<QueryDataRequest> {
     constructor();
@@ -508,16 +470,6 @@ declare class QueryDataResponse_QueryData_DataBucket$Type extends MessageType<Qu
  * @generated MessageType for protobuf message dp.service.query.QueryDataResponse.QueryData.DataBucket
  */
 export declare const QueryDataResponse_QueryData_DataBucket: QueryDataResponse_QueryData_DataBucket$Type;
-declare class QueryTableRequest$Type extends MessageType<QueryTableRequest> {
-    constructor();
-    create(value?: PartialMessage<QueryTableRequest>): QueryTableRequest;
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryTableRequest): QueryTableRequest;
-    internalBinaryWrite(message: QueryTableRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
-}
-/**
- * @generated MessageType for protobuf message dp.service.query.QueryTableRequest
- */
-export declare const QueryTableRequest: QueryTableRequest$Type;
 declare class QueryTableResponse$Type extends MessageType<QueryTableResponse> {
     constructor();
     create(value?: PartialMessage<QueryTableResponse>): QueryTableResponse;
@@ -538,37 +490,6 @@ declare class QueryTableResponse_TableResult$Type extends MessageType<QueryTable
  * @generated MessageType for protobuf message dp.service.query.QueryTableResponse.TableResult
  */
 export declare const QueryTableResponse_TableResult: QueryTableResponse_TableResult$Type;
-declare class QueryTableResponse_ColumnTable$Type extends MessageType<QueryTableResponse_ColumnTable> {
-    constructor();
-    create(value?: PartialMessage<QueryTableResponse_ColumnTable>): QueryTableResponse_ColumnTable;
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryTableResponse_ColumnTable): QueryTableResponse_ColumnTable;
-    internalBinaryWrite(message: QueryTableResponse_ColumnTable, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
-}
-/**
- * @generated MessageType for protobuf message dp.service.query.QueryTableResponse.ColumnTable
- */
-export declare const QueryTableResponse_ColumnTable: QueryTableResponse_ColumnTable$Type;
-declare class QueryTableResponse_RowMapTable$Type extends MessageType<QueryTableResponse_RowMapTable> {
-    constructor();
-    create(value?: PartialMessage<QueryTableResponse_RowMapTable>): QueryTableResponse_RowMapTable;
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryTableResponse_RowMapTable): QueryTableResponse_RowMapTable;
-    internalBinaryWrite(message: QueryTableResponse_RowMapTable, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
-}
-/**
- * @generated MessageType for protobuf message dp.service.query.QueryTableResponse.RowMapTable
- */
-export declare const QueryTableResponse_RowMapTable: QueryTableResponse_RowMapTable$Type;
-declare class QueryTableResponse_RowMapTable_DataRow$Type extends MessageType<QueryTableResponse_RowMapTable_DataRow> {
-    constructor();
-    create(value?: PartialMessage<QueryTableResponse_RowMapTable_DataRow>): QueryTableResponse_RowMapTable_DataRow;
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryTableResponse_RowMapTable_DataRow): QueryTableResponse_RowMapTable_DataRow;
-    private binaryReadMap1;
-    internalBinaryWrite(message: QueryTableResponse_RowMapTable_DataRow, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
-}
-/**
- * @generated MessageType for protobuf message dp.service.query.QueryTableResponse.RowMapTable.DataRow
- */
-export declare const QueryTableResponse_RowMapTable_DataRow: QueryTableResponse_RowMapTable_DataRow$Type;
 declare class QueryMetadataRequest$Type extends MessageType<QueryMetadataRequest> {
     constructor();
     create(value?: PartialMessage<QueryMetadataRequest>): QueryMetadataRequest;
@@ -579,6 +500,36 @@ declare class QueryMetadataRequest$Type extends MessageType<QueryMetadataRequest
  * @generated MessageType for protobuf message dp.service.query.QueryMetadataRequest
  */
 export declare const QueryMetadataRequest: QueryMetadataRequest$Type;
+declare class QueryMetadataRequest_QuerySpec$Type extends MessageType<QueryMetadataRequest_QuerySpec> {
+    constructor();
+    create(value?: PartialMessage<QueryMetadataRequest_QuerySpec>): QueryMetadataRequest_QuerySpec;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryMetadataRequest_QuerySpec): QueryMetadataRequest_QuerySpec;
+    internalBinaryWrite(message: QueryMetadataRequest_QuerySpec, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.query.QueryMetadataRequest.QuerySpec
+ */
+export declare const QueryMetadataRequest_QuerySpec: QueryMetadataRequest_QuerySpec$Type;
+declare class QueryMetadataRequest_QuerySpec_PvNameList$Type extends MessageType<QueryMetadataRequest_QuerySpec_PvNameList> {
+    constructor();
+    create(value?: PartialMessage<QueryMetadataRequest_QuerySpec_PvNameList>): QueryMetadataRequest_QuerySpec_PvNameList;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryMetadataRequest_QuerySpec_PvNameList): QueryMetadataRequest_QuerySpec_PvNameList;
+    internalBinaryWrite(message: QueryMetadataRequest_QuerySpec_PvNameList, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.query.QueryMetadataRequest.QuerySpec.PvNameList
+ */
+export declare const QueryMetadataRequest_QuerySpec_PvNameList: QueryMetadataRequest_QuerySpec_PvNameList$Type;
+declare class QueryMetadataRequest_QuerySpec_PvNamePattern$Type extends MessageType<QueryMetadataRequest_QuerySpec_PvNamePattern> {
+    constructor();
+    create(value?: PartialMessage<QueryMetadataRequest_QuerySpec_PvNamePattern>): QueryMetadataRequest_QuerySpec_PvNamePattern;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryMetadataRequest_QuerySpec_PvNamePattern): QueryMetadataRequest_QuerySpec_PvNamePattern;
+    internalBinaryWrite(message: QueryMetadataRequest_QuerySpec_PvNamePattern, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.query.QueryMetadataRequest.QuerySpec.PvNamePattern
+ */
+export declare const QueryMetadataRequest_QuerySpec_PvNamePattern: QueryMetadataRequest_QuerySpec_PvNamePattern$Type;
 declare class QueryMetadataResponse$Type extends MessageType<QueryMetadataResponse> {
     constructor();
     create(value?: PartialMessage<QueryMetadataResponse>): QueryMetadataResponse;
@@ -609,26 +560,46 @@ declare class QueryMetadataResponse_MetadataResult_PvInfo$Type extends MessageTy
  * @generated MessageType for protobuf message dp.service.query.QueryMetadataResponse.MetadataResult.PvInfo
  */
 export declare const QueryMetadataResponse_MetadataResult_PvInfo: QueryMetadataResponse_MetadataResult_PvInfo$Type;
-declare class PvNameList$Type extends MessageType<PvNameList> {
+declare class QueryAnnotationsRequest$Type extends MessageType<QueryAnnotationsRequest> {
     constructor();
-    create(value?: PartialMessage<PvNameList>): PvNameList;
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: PvNameList): PvNameList;
-    internalBinaryWrite(message: PvNameList, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+    create(value?: PartialMessage<QueryAnnotationsRequest>): QueryAnnotationsRequest;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryAnnotationsRequest): QueryAnnotationsRequest;
+    internalBinaryWrite(message: QueryAnnotationsRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
 }
 /**
- * @generated MessageType for protobuf message dp.service.query.PvNameList
+ * @generated MessageType for protobuf message dp.service.query.QueryAnnotationsRequest
  */
-export declare const PvNameList: PvNameList$Type;
-declare class PvNamePattern$Type extends MessageType<PvNamePattern> {
+export declare const QueryAnnotationsRequest: QueryAnnotationsRequest$Type;
+declare class QueryAnnotationsRequest_QuerySpec$Type extends MessageType<QueryAnnotationsRequest_QuerySpec> {
     constructor();
-    create(value?: PartialMessage<PvNamePattern>): PvNamePattern;
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: PvNamePattern): PvNamePattern;
-    internalBinaryWrite(message: PvNamePattern, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+    create(value?: PartialMessage<QueryAnnotationsRequest_QuerySpec>): QueryAnnotationsRequest_QuerySpec;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryAnnotationsRequest_QuerySpec): QueryAnnotationsRequest_QuerySpec;
+    internalBinaryWrite(message: QueryAnnotationsRequest_QuerySpec, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
 }
 /**
- * @generated MessageType for protobuf message dp.service.query.PvNamePattern
+ * @generated MessageType for protobuf message dp.service.query.QueryAnnotationsRequest.QuerySpec
  */
-export declare const PvNamePattern: PvNamePattern$Type;
+export declare const QueryAnnotationsRequest_QuerySpec: QueryAnnotationsRequest_QuerySpec$Type;
+declare class QueryAnnotationsResponse$Type extends MessageType<QueryAnnotationsResponse> {
+    constructor();
+    create(value?: PartialMessage<QueryAnnotationsResponse>): QueryAnnotationsResponse;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryAnnotationsResponse): QueryAnnotationsResponse;
+    internalBinaryWrite(message: QueryAnnotationsResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.query.QueryAnnotationsResponse
+ */
+export declare const QueryAnnotationsResponse: QueryAnnotationsResponse$Type;
+declare class QueryAnnotationsResponse_AnnotationsResult$Type extends MessageType<QueryAnnotationsResponse_AnnotationsResult> {
+    constructor();
+    create(value?: PartialMessage<QueryAnnotationsResponse_AnnotationsResult>): QueryAnnotationsResponse_AnnotationsResult;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryAnnotationsResponse_AnnotationsResult): QueryAnnotationsResponse_AnnotationsResult;
+    internalBinaryWrite(message: QueryAnnotationsResponse_AnnotationsResult, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.query.QueryAnnotationsResponse.AnnotationsResult
+ */
+export declare const QueryAnnotationsResponse_AnnotationsResult: QueryAnnotationsResponse_AnnotationsResult$Type;
 /**
  * @generated ServiceType for protobuf service dp.service.query.DpQueryService
  */

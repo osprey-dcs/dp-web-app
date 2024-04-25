@@ -30,7 +30,6 @@ import { UnknownFieldHandler } from "@protobuf-ts/runtime";
 import { reflectionMergePartial } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
 import { SamplingClock } from "./common";
-import { DataValue } from "./common";
 import { DataColumn } from "./common";
 import { EventMetadata } from "./common";
 import { Attribute } from "./common";
@@ -49,22 +48,6 @@ export var QueryDataRequest_CursorOperation_CursorOperationType;
      */
     QueryDataRequest_CursorOperation_CursorOperationType[QueryDataRequest_CursorOperation_CursorOperationType["CURSOR_OP_NEXT"] = 0] = "CURSOR_OP_NEXT";
 })(QueryDataRequest_CursorOperation_CursorOperationType || (QueryDataRequest_CursorOperation_CursorOperationType = {}));
-/**
- * @generated from protobuf enum dp.service.query.QueryTableRequest.TableResultFormat
- */
-export var QueryTableRequest_TableResultFormat;
-(function (QueryTableRequest_TableResultFormat) {
-    /**
-     * default value if not explicitly set
-     *
-     * @generated from protobuf enum value: TABLE_FORMAT_ROW_MAP = 0;
-     */
-    QueryTableRequest_TableResultFormat[QueryTableRequest_TableResultFormat["TABLE_FORMAT_ROW_MAP"] = 0] = "TABLE_FORMAT_ROW_MAP";
-    /**
-     * @generated from protobuf enum value: TABLE_FORMAT_COLUMN = 1;
-     */
-    QueryTableRequest_TableResultFormat[QueryTableRequest_TableResultFormat["TABLE_FORMAT_COLUMN"] = 1] = "TABLE_FORMAT_COLUMN";
-})(QueryTableRequest_TableResultFormat || (QueryTableRequest_TableResultFormat = {}));
 // @generated message type with reflection information, may provide speed optimized methods
 class QueryDataRequest$Type extends MessageType {
     constructor() {
@@ -416,88 +399,6 @@ class QueryDataResponse_QueryData_DataBucket$Type extends MessageType {
  */
 export const QueryDataResponse_QueryData_DataBucket = new QueryDataResponse_QueryData_DataBucket$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class QueryTableRequest$Type extends MessageType {
-    constructor() {
-        super("dp.service.query.QueryTableRequest", [
-            { no: 1, name: "format", kind: "enum", T: () => ["dp.service.query.QueryTableRequest.TableResultFormat", QueryTableRequest_TableResultFormat] },
-            { no: 2, name: "beginTime", kind: "message", T: () => Timestamp },
-            { no: 3, name: "endTime", kind: "message", T: () => Timestamp },
-            { no: 11, name: "pvNameList", kind: "message", oneof: "pvNameSpec", T: () => PvNameList },
-            { no: 12, name: "pvNamePattern", kind: "message", oneof: "pvNameSpec", T: () => PvNamePattern }
-        ]);
-    }
-    create(value) {
-        const message = globalThis.Object.create((this.messagePrototype));
-        message.format = 0;
-        message.pvNameSpec = { oneofKind: undefined };
-        if (value !== undefined)
-            reflectionMergePartial(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader, length, options, target) {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* dp.service.query.QueryTableRequest.TableResultFormat format */ 1:
-                    message.format = reader.int32();
-                    break;
-                case /* Timestamp beginTime */ 2:
-                    message.beginTime = Timestamp.internalBinaryRead(reader, reader.uint32(), options, message.beginTime);
-                    break;
-                case /* Timestamp endTime */ 3:
-                    message.endTime = Timestamp.internalBinaryRead(reader, reader.uint32(), options, message.endTime);
-                    break;
-                case /* dp.service.query.PvNameList pvNameList */ 11:
-                    message.pvNameSpec = {
-                        oneofKind: "pvNameList",
-                        pvNameList: PvNameList.internalBinaryRead(reader, reader.uint32(), options, message.pvNameSpec.pvNameList)
-                    };
-                    break;
-                case /* dp.service.query.PvNamePattern pvNamePattern */ 12:
-                    message.pvNameSpec = {
-                        oneofKind: "pvNamePattern",
-                        pvNamePattern: PvNamePattern.internalBinaryRead(reader, reader.uint32(), options, message.pvNameSpec.pvNamePattern)
-                    };
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message, writer, options) {
-        /* dp.service.query.QueryTableRequest.TableResultFormat format = 1; */
-        if (message.format !== 0)
-            writer.tag(1, WireType.Varint).int32(message.format);
-        /* Timestamp beginTime = 2; */
-        if (message.beginTime)
-            Timestamp.internalBinaryWrite(message.beginTime, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
-        /* Timestamp endTime = 3; */
-        if (message.endTime)
-            Timestamp.internalBinaryWrite(message.endTime, writer.tag(3, WireType.LengthDelimited).fork(), options).join();
-        /* dp.service.query.PvNameList pvNameList = 11; */
-        if (message.pvNameSpec.oneofKind === "pvNameList")
-            PvNameList.internalBinaryWrite(message.pvNameSpec.pvNameList, writer.tag(11, WireType.LengthDelimited).fork(), options).join();
-        /* dp.service.query.PvNamePattern pvNamePattern = 12; */
-        if (message.pvNameSpec.oneofKind === "pvNamePattern")
-            PvNamePattern.internalBinaryWrite(message.pvNameSpec.pvNamePattern, writer.tag(12, WireType.LengthDelimited).fork(), options).join();
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message dp.service.query.QueryTableRequest
- */
-export const QueryTableRequest = new QueryTableRequest$Type();
-// @generated message type with reflection information, may provide speed optimized methods
 class QueryTableResponse$Type extends MessageType {
     constructor() {
         super("dp.service.query.QueryTableResponse", [
@@ -568,66 +469,6 @@ export const QueryTableResponse = new QueryTableResponse$Type();
 class QueryTableResponse_TableResult$Type extends MessageType {
     constructor() {
         super("dp.service.query.QueryTableResponse.TableResult", [
-            { no: 1, name: "columnTable", kind: "message", oneof: "tableResult", T: () => QueryTableResponse_ColumnTable },
-            { no: 2, name: "rowMapTable", kind: "message", oneof: "tableResult", T: () => QueryTableResponse_RowMapTable }
-        ]);
-    }
-    create(value) {
-        const message = globalThis.Object.create((this.messagePrototype));
-        message.tableResult = { oneofKind: undefined };
-        if (value !== undefined)
-            reflectionMergePartial(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader, length, options, target) {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* dp.service.query.QueryTableResponse.ColumnTable columnTable */ 1:
-                    message.tableResult = {
-                        oneofKind: "columnTable",
-                        columnTable: QueryTableResponse_ColumnTable.internalBinaryRead(reader, reader.uint32(), options, message.tableResult.columnTable)
-                    };
-                    break;
-                case /* dp.service.query.QueryTableResponse.RowMapTable rowMapTable */ 2:
-                    message.tableResult = {
-                        oneofKind: "rowMapTable",
-                        rowMapTable: QueryTableResponse_RowMapTable.internalBinaryRead(reader, reader.uint32(), options, message.tableResult.rowMapTable)
-                    };
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message, writer, options) {
-        /* dp.service.query.QueryTableResponse.ColumnTable columnTable = 1; */
-        if (message.tableResult.oneofKind === "columnTable")
-            QueryTableResponse_ColumnTable.internalBinaryWrite(message.tableResult.columnTable, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
-        /* dp.service.query.QueryTableResponse.RowMapTable rowMapTable = 2; */
-        if (message.tableResult.oneofKind === "rowMapTable")
-            QueryTableResponse_RowMapTable.internalBinaryWrite(message.tableResult.rowMapTable, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message dp.service.query.QueryTableResponse.TableResult
- */
-export const QueryTableResponse_TableResult = new QueryTableResponse_TableResult$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class QueryTableResponse_ColumnTable$Type extends MessageType {
-    constructor() {
-        super("dp.service.query.QueryTableResponse.ColumnTable", [
             { no: 1, name: "dataTimestamps", kind: "message", T: () => DataTimestamps },
             { no: 2, name: "dataColumns", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => DataColumn }
         ]);
@@ -675,137 +516,61 @@ class QueryTableResponse_ColumnTable$Type extends MessageType {
     }
 }
 /**
- * @generated MessageType for protobuf message dp.service.query.QueryTableResponse.ColumnTable
+ * @generated MessageType for protobuf message dp.service.query.QueryTableResponse.TableResult
  */
-export const QueryTableResponse_ColumnTable = new QueryTableResponse_ColumnTable$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class QueryTableResponse_RowMapTable$Type extends MessageType {
-    constructor() {
-        super("dp.service.query.QueryTableResponse.RowMapTable", [
-            { no: 1, name: "columnNames", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "rows", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => QueryTableResponse_RowMapTable_DataRow }
-        ]);
-    }
-    create(value) {
-        const message = globalThis.Object.create((this.messagePrototype));
-        message.columnNames = [];
-        message.rows = [];
-        if (value !== undefined)
-            reflectionMergePartial(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader, length, options, target) {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* repeated string columnNames */ 1:
-                    message.columnNames.push(reader.string());
-                    break;
-                case /* repeated dp.service.query.QueryTableResponse.RowMapTable.DataRow rows */ 2:
-                    message.rows.push(QueryTableResponse_RowMapTable_DataRow.internalBinaryRead(reader, reader.uint32(), options));
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message, writer, options) {
-        /* repeated string columnNames = 1; */
-        for (let i = 0; i < message.columnNames.length; i++)
-            writer.tag(1, WireType.LengthDelimited).string(message.columnNames[i]);
-        /* repeated dp.service.query.QueryTableResponse.RowMapTable.DataRow rows = 2; */
-        for (let i = 0; i < message.rows.length; i++)
-            QueryTableResponse_RowMapTable_DataRow.internalBinaryWrite(message.rows[i], writer.tag(2, WireType.LengthDelimited).fork(), options).join();
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message dp.service.query.QueryTableResponse.RowMapTable
- */
-export const QueryTableResponse_RowMapTable = new QueryTableResponse_RowMapTable$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class QueryTableResponse_RowMapTable_DataRow$Type extends MessageType {
-    constructor() {
-        super("dp.service.query.QueryTableResponse.RowMapTable.DataRow", [
-            { no: 1, name: "columnValues", kind: "map", K: 9 /*ScalarType.STRING*/, V: { kind: "message", T: () => DataValue } }
-        ]);
-    }
-    create(value) {
-        const message = globalThis.Object.create((this.messagePrototype));
-        message.columnValues = {};
-        if (value !== undefined)
-            reflectionMergePartial(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader, length, options, target) {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* map<string, DataValue> columnValues */ 1:
-                    this.binaryReadMap1(message.columnValues, reader, options);
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    binaryReadMap1(map, reader, options) {
-        let len = reader.uint32(), end = reader.pos + len, key, val;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case 1:
-                    key = reader.string();
-                    break;
-                case 2:
-                    val = DataValue.internalBinaryRead(reader, reader.uint32(), options);
-                    break;
-                default: throw new globalThis.Error("unknown map entry field for field dp.service.query.QueryTableResponse.RowMapTable.DataRow.columnValues");
-            }
-        }
-        map[key ?? ""] = val ?? DataValue.create();
-    }
-    internalBinaryWrite(message, writer, options) {
-        /* map<string, DataValue> columnValues = 1; */
-        for (let k of globalThis.Object.keys(message.columnValues)) {
-            writer.tag(1, WireType.LengthDelimited).fork().tag(1, WireType.LengthDelimited).string(k);
-            writer.tag(2, WireType.LengthDelimited).fork();
-            DataValue.internalBinaryWrite(message.columnValues[k], writer, options);
-            writer.join().join();
-        }
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message dp.service.query.QueryTableResponse.RowMapTable.DataRow
- */
-export const QueryTableResponse_RowMapTable_DataRow = new QueryTableResponse_RowMapTable_DataRow$Type();
+export const QueryTableResponse_TableResult = new QueryTableResponse_TableResult$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class QueryMetadataRequest$Type extends MessageType {
     constructor() {
         super("dp.service.query.QueryMetadataRequest", [
-            { no: 1, name: "pvNameList", kind: "message", oneof: "pvNameSpec", T: () => PvNameList },
-            { no: 2, name: "pvNamePattern", kind: "message", oneof: "pvNameSpec", T: () => PvNamePattern }
+            { no: 1, name: "querySpec", kind: "message", T: () => QueryMetadataRequest_QuerySpec }
+        ]);
+    }
+    create(value) {
+        const message = globalThis.Object.create((this.messagePrototype));
+        if (value !== undefined)
+            reflectionMergePartial(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* dp.service.query.QueryMetadataRequest.QuerySpec querySpec */ 1:
+                    message.querySpec = QueryMetadataRequest_QuerySpec.internalBinaryRead(reader, reader.uint32(), options, message.querySpec);
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* dp.service.query.QueryMetadataRequest.QuerySpec querySpec = 1; */
+        if (message.querySpec)
+            QueryMetadataRequest_QuerySpec.internalBinaryWrite(message.querySpec, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message dp.service.query.QueryMetadataRequest
+ */
+export const QueryMetadataRequest = new QueryMetadataRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class QueryMetadataRequest_QuerySpec$Type extends MessageType {
+    constructor() {
+        super("dp.service.query.QueryMetadataRequest.QuerySpec", [
+            { no: 1, name: "pvNameList", kind: "message", oneof: "pvNameSpec", T: () => QueryMetadataRequest_QuerySpec_PvNameList },
+            { no: 2, name: "pvNamePattern", kind: "message", oneof: "pvNameSpec", T: () => QueryMetadataRequest_QuerySpec_PvNamePattern }
         ]);
     }
     create(value) {
@@ -820,16 +585,16 @@ class QueryMetadataRequest$Type extends MessageType {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* dp.service.query.PvNameList pvNameList */ 1:
+                case /* dp.service.query.QueryMetadataRequest.QuerySpec.PvNameList pvNameList */ 1:
                     message.pvNameSpec = {
                         oneofKind: "pvNameList",
-                        pvNameList: PvNameList.internalBinaryRead(reader, reader.uint32(), options, message.pvNameSpec.pvNameList)
+                        pvNameList: QueryMetadataRequest_QuerySpec_PvNameList.internalBinaryRead(reader, reader.uint32(), options, message.pvNameSpec.pvNameList)
                     };
                     break;
-                case /* dp.service.query.PvNamePattern pvNamePattern */ 2:
+                case /* dp.service.query.QueryMetadataRequest.QuerySpec.PvNamePattern pvNamePattern */ 2:
                     message.pvNameSpec = {
                         oneofKind: "pvNamePattern",
-                        pvNamePattern: PvNamePattern.internalBinaryRead(reader, reader.uint32(), options, message.pvNameSpec.pvNamePattern)
+                        pvNamePattern: QueryMetadataRequest_QuerySpec_PvNamePattern.internalBinaryRead(reader, reader.uint32(), options, message.pvNameSpec.pvNamePattern)
                     };
                     break;
                 default:
@@ -844,12 +609,12 @@ class QueryMetadataRequest$Type extends MessageType {
         return message;
     }
     internalBinaryWrite(message, writer, options) {
-        /* dp.service.query.PvNameList pvNameList = 1; */
+        /* dp.service.query.QueryMetadataRequest.QuerySpec.PvNameList pvNameList = 1; */
         if (message.pvNameSpec.oneofKind === "pvNameList")
-            PvNameList.internalBinaryWrite(message.pvNameSpec.pvNameList, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
-        /* dp.service.query.PvNamePattern pvNamePattern = 2; */
+            QueryMetadataRequest_QuerySpec_PvNameList.internalBinaryWrite(message.pvNameSpec.pvNameList, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        /* dp.service.query.QueryMetadataRequest.QuerySpec.PvNamePattern pvNamePattern = 2; */
         if (message.pvNameSpec.oneofKind === "pvNamePattern")
-            PvNamePattern.internalBinaryWrite(message.pvNameSpec.pvNamePattern, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
+            QueryMetadataRequest_QuerySpec_PvNamePattern.internalBinaryWrite(message.pvNameSpec.pvNamePattern, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -857,9 +622,103 @@ class QueryMetadataRequest$Type extends MessageType {
     }
 }
 /**
- * @generated MessageType for protobuf message dp.service.query.QueryMetadataRequest
+ * @generated MessageType for protobuf message dp.service.query.QueryMetadataRequest.QuerySpec
  */
-export const QueryMetadataRequest = new QueryMetadataRequest$Type();
+export const QueryMetadataRequest_QuerySpec = new QueryMetadataRequest_QuerySpec$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class QueryMetadataRequest_QuerySpec_PvNameList$Type extends MessageType {
+    constructor() {
+        super("dp.service.query.QueryMetadataRequest.QuerySpec.PvNameList", [
+            { no: 1, name: "pvNames", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value) {
+        const message = globalThis.Object.create((this.messagePrototype));
+        message.pvNames = [];
+        if (value !== undefined)
+            reflectionMergePartial(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* repeated string pvNames */ 1:
+                    message.pvNames.push(reader.string());
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* repeated string pvNames = 1; */
+        for (let i = 0; i < message.pvNames.length; i++)
+            writer.tag(1, WireType.LengthDelimited).string(message.pvNames[i]);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message dp.service.query.QueryMetadataRequest.QuerySpec.PvNameList
+ */
+export const QueryMetadataRequest_QuerySpec_PvNameList = new QueryMetadataRequest_QuerySpec_PvNameList$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class QueryMetadataRequest_QuerySpec_PvNamePattern$Type extends MessageType {
+    constructor() {
+        super("dp.service.query.QueryMetadataRequest.QuerySpec.PvNamePattern", [
+            { no: 1, name: "pattern", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value) {
+        const message = globalThis.Object.create((this.messagePrototype));
+        message.pattern = "";
+        if (value !== undefined)
+            reflectionMergePartial(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string pattern */ 1:
+                    message.pattern = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* string pattern = 1; */
+        if (message.pattern !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.pattern);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message dp.service.query.QueryMetadataRequest.QuerySpec.PvNamePattern
+ */
+export const QueryMetadataRequest_QuerySpec_PvNamePattern = new QueryMetadataRequest_QuerySpec_PvNamePattern$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class QueryMetadataResponse$Type extends MessageType {
     constructor() {
@@ -981,8 +840,8 @@ class QueryMetadataResponse_MetadataResult_PvInfo$Type extends MessageType {
             { no: 1, name: "pvName", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 2, name: "lastBucketDataType", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 3, name: "lastSamplingClock", kind: "message", T: () => SamplingClock },
-            { no: 4, name: "firstTimestamp", kind: "message", T: () => Timestamp },
-            { no: 5, name: "lastTimestamp", kind: "message", T: () => Timestamp }
+            { no: 5, name: "firstTimestamp", kind: "message", T: () => Timestamp },
+            { no: 6, name: "lastTimestamp", kind: "message", T: () => Timestamp }
         ]);
     }
     create(value) {
@@ -1007,10 +866,10 @@ class QueryMetadataResponse_MetadataResult_PvInfo$Type extends MessageType {
                 case /* SamplingClock lastSamplingClock */ 3:
                     message.lastSamplingClock = SamplingClock.internalBinaryRead(reader, reader.uint32(), options, message.lastSamplingClock);
                     break;
-                case /* Timestamp firstTimestamp */ 4:
+                case /* Timestamp firstTimestamp */ 5:
                     message.firstTimestamp = Timestamp.internalBinaryRead(reader, reader.uint32(), options, message.firstTimestamp);
                     break;
-                case /* Timestamp lastTimestamp */ 5:
+                case /* Timestamp lastTimestamp */ 6:
                     message.lastTimestamp = Timestamp.internalBinaryRead(reader, reader.uint32(), options, message.lastTimestamp);
                     break;
                 default:
@@ -1034,12 +893,12 @@ class QueryMetadataResponse_MetadataResult_PvInfo$Type extends MessageType {
         /* SamplingClock lastSamplingClock = 3; */
         if (message.lastSamplingClock)
             SamplingClock.internalBinaryWrite(message.lastSamplingClock, writer.tag(3, WireType.LengthDelimited).fork(), options).join();
-        /* Timestamp firstTimestamp = 4; */
+        /* Timestamp firstTimestamp = 5; */
         if (message.firstTimestamp)
-            Timestamp.internalBinaryWrite(message.firstTimestamp, writer.tag(4, WireType.LengthDelimited).fork(), options).join();
-        /* Timestamp lastTimestamp = 5; */
+            Timestamp.internalBinaryWrite(message.firstTimestamp, writer.tag(5, WireType.LengthDelimited).fork(), options).join();
+        /* Timestamp lastTimestamp = 6; */
         if (message.lastTimestamp)
-            Timestamp.internalBinaryWrite(message.lastTimestamp, writer.tag(5, WireType.LengthDelimited).fork(), options).join();
+            Timestamp.internalBinaryWrite(message.lastTimestamp, writer.tag(6, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1051,15 +910,14 @@ class QueryMetadataResponse_MetadataResult_PvInfo$Type extends MessageType {
  */
 export const QueryMetadataResponse_MetadataResult_PvInfo = new QueryMetadataResponse_MetadataResult_PvInfo$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class PvNameList$Type extends MessageType {
+class QueryAnnotationsRequest$Type extends MessageType {
     constructor() {
-        super("dp.service.query.PvNameList", [
-            { no: 1, name: "pvNames", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ }
+        super("dp.service.query.QueryAnnotationsRequest", [
+            { no: 1, name: "querySpec", kind: "message", T: () => QueryAnnotationsRequest_QuerySpec }
         ]);
     }
     create(value) {
         const message = globalThis.Object.create((this.messagePrototype));
-        message.pvNames = [];
         if (value !== undefined)
             reflectionMergePartial(this, message, value);
         return message;
@@ -1069,8 +927,8 @@ class PvNameList$Type extends MessageType {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* repeated string pvNames */ 1:
-                    message.pvNames.push(reader.string());
+                case /* dp.service.query.QueryAnnotationsRequest.QuerySpec querySpec */ 1:
+                    message.querySpec = QueryAnnotationsRequest_QuerySpec.internalBinaryRead(reader, reader.uint32(), options, message.querySpec);
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1084,10 +942,9 @@ class PvNameList$Type extends MessageType {
         return message;
     }
     internalBinaryWrite(message, writer, options) {
-        /* repeated string pvNames = 1; */
-        console.log(message)
-        for (let i = 0; i < message.pvNames.length; i++)
-            writer.tag(1, WireType.LengthDelimited).string(message.pvNames[i]);
+        /* dp.service.query.QueryAnnotationsRequest.QuerySpec querySpec = 1; */
+        if (message.querySpec)
+            QueryAnnotationsRequest_QuerySpec.internalBinaryWrite(message.querySpec, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1095,19 +952,46 @@ class PvNameList$Type extends MessageType {
     }
 }
 /**
- * @generated MessageType for protobuf message dp.service.query.PvNameList
+ * @generated MessageType for protobuf message dp.service.query.QueryAnnotationsRequest
  */
-export const PvNameList = new PvNameList$Type();
+export const QueryAnnotationsRequest = new QueryAnnotationsRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class PvNamePattern$Type extends MessageType {
+class QueryAnnotationsRequest_QuerySpec$Type extends MessageType {
     constructor() {
-        super("dp.service.query.PvNamePattern", [
-            { no: 1, name: "pattern", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        super("dp.service.query.QueryAnnotationsRequest.QuerySpec", []);
+    }
+    create(value) {
+        const message = globalThis.Object.create((this.messagePrototype));
+        if (value !== undefined)
+            reflectionMergePartial(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        return target ?? this.create();
+    }
+    internalBinaryWrite(message, writer, options) {
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message dp.service.query.QueryAnnotationsRequest.QuerySpec
+ */
+export const QueryAnnotationsRequest_QuerySpec = new QueryAnnotationsRequest_QuerySpec$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class QueryAnnotationsResponse$Type extends MessageType {
+    constructor() {
+        super("dp.service.query.QueryAnnotationsResponse", [
+            { no: 2, name: "responseTime", kind: "message", T: () => Timestamp },
+            { no: 10, name: "exceptionalResult", kind: "message", oneof: "result", T: () => ExceptionalResult },
+            { no: 11, name: "annotationsResult", kind: "message", oneof: "result", T: () => QueryAnnotationsResponse_AnnotationsResult }
         ]);
     }
     create(value) {
         const message = globalThis.Object.create((this.messagePrototype));
-        message.pattern = "";
+        message.result = { oneofKind: undefined };
         if (value !== undefined)
             reflectionMergePartial(this, message, value);
         return message;
@@ -1117,8 +1001,20 @@ class PvNamePattern$Type extends MessageType {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* string pattern */ 1:
-                    message.pattern = reader.string();
+                case /* Timestamp responseTime */ 2:
+                    message.responseTime = Timestamp.internalBinaryRead(reader, reader.uint32(), options, message.responseTime);
+                    break;
+                case /* ExceptionalResult exceptionalResult */ 10:
+                    message.result = {
+                        oneofKind: "exceptionalResult",
+                        exceptionalResult: ExceptionalResult.internalBinaryRead(reader, reader.uint32(), options, message.result.exceptionalResult)
+                    };
+                    break;
+                case /* dp.service.query.QueryAnnotationsResponse.AnnotationsResult annotationsResult */ 11:
+                    message.result = {
+                        oneofKind: "annotationsResult",
+                        annotationsResult: QueryAnnotationsResponse_AnnotationsResult.internalBinaryRead(reader, reader.uint32(), options, message.result.annotationsResult)
+                    };
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1132,9 +1028,15 @@ class PvNamePattern$Type extends MessageType {
         return message;
     }
     internalBinaryWrite(message, writer, options) {
-        /* string pattern = 1; */
-        if (message.pattern !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.pattern);
+        /* Timestamp responseTime = 2; */
+        if (message.responseTime)
+            Timestamp.internalBinaryWrite(message.responseTime, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
+        /* ExceptionalResult exceptionalResult = 10; */
+        if (message.result.oneofKind === "exceptionalResult")
+            ExceptionalResult.internalBinaryWrite(message.result.exceptionalResult, writer.tag(10, WireType.LengthDelimited).fork(), options).join();
+        /* dp.service.query.QueryAnnotationsResponse.AnnotationsResult annotationsResult = 11; */
+        if (message.result.oneofKind === "annotationsResult")
+            QueryAnnotationsResponse_AnnotationsResult.internalBinaryWrite(message.result.annotationsResult, writer.tag(11, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1142,16 +1044,42 @@ class PvNamePattern$Type extends MessageType {
     }
 }
 /**
- * @generated MessageType for protobuf message dp.service.query.PvNamePattern
+ * @generated MessageType for protobuf message dp.service.query.QueryAnnotationsResponse
  */
-export const PvNamePattern = new PvNamePattern$Type();
+export const QueryAnnotationsResponse = new QueryAnnotationsResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class QueryAnnotationsResponse_AnnotationsResult$Type extends MessageType {
+    constructor() {
+        super("dp.service.query.QueryAnnotationsResponse.AnnotationsResult", []);
+    }
+    create(value) {
+        const message = globalThis.Object.create((this.messagePrototype));
+        if (value !== undefined)
+            reflectionMergePartial(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        return target ?? this.create();
+    }
+    internalBinaryWrite(message, writer, options) {
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message dp.service.query.QueryAnnotationsResponse.AnnotationsResult
+ */
+export const QueryAnnotationsResponse_AnnotationsResult = new QueryAnnotationsResponse_AnnotationsResult$Type();
 /**
  * @generated ServiceType for protobuf service dp.service.query.DpQueryService
  */
 export const DpQueryService = new ServiceType("dp.service.query.DpQueryService", [
     { name: "queryData", options: {}, I: QueryDataRequest, O: QueryDataResponse },
+    { name: "queryDataTable", options: {}, I: QueryDataRequest, O: QueryTableResponse },
     { name: "queryDataStream", serverStreaming: true, options: {}, I: QueryDataRequest, O: QueryDataResponse },
     { name: "queryDataBidiStream", serverStreaming: true, clientStreaming: true, options: {}, I: QueryDataRequest, O: QueryDataResponse },
-    { name: "queryTable", options: {}, I: QueryTableRequest, O: QueryTableResponse },
-    { name: "queryMetadata", options: {}, I: QueryMetadataRequest, O: QueryMetadataResponse }
+    { name: "queryMetadata", options: {}, I: QueryMetadataRequest, O: QueryMetadataResponse },
+    { name: "queryAnnotations", options: {}, I: QueryAnnotationsRequest, O: QueryAnnotationsResponse }
 ]);

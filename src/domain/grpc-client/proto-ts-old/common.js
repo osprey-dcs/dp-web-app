@@ -15,36 +15,6 @@ import { UnknownFieldHandler } from "@protobuf-ts/runtime";
 import { reflectionMergePartial } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
 /**
- * @generated from protobuf enum ExceptionalResult.ExceptionalResultStatus
- */
-export var ExceptionalResult_ExceptionalResultStatus;
-(function (ExceptionalResult_ExceptionalResultStatus) {
-    /**
-     * Indicates request was rejected during valiaation.
-     *
-     * @generated from protobuf enum value: RESULT_STATUS_REJECT = 0;
-     */
-    ExceptionalResult_ExceptionalResultStatus[ExceptionalResult_ExceptionalResultStatus["RESULT_STATUS_REJECT"] = 0] = "RESULT_STATUS_REJECT";
-    /**
-     * Indicates an error was encountered in handling the request.
-     *
-     * @generated from protobuf enum value: RESULT_STATUS_ERROR = 1;
-     */
-    ExceptionalResult_ExceptionalResultStatus[ExceptionalResult_ExceptionalResultStatus["RESULT_STATUS_ERROR"] = 1] = "RESULT_STATUS_ERROR";
-    /**
-     * Indicates the query returned no data.
-     *
-     * @generated from protobuf enum value: RESULT_STATUS_EMPTY = 2;
-     */
-    ExceptionalResult_ExceptionalResultStatus[ExceptionalResult_ExceptionalResultStatus["RESULT_STATUS_EMPTY"] = 2] = "RESULT_STATUS_EMPTY";
-    /**
-     * Indicates an invalid bidirectional stream query cursor operation request.
-     *
-     * @generated from protobuf enum value: RESULT_STATUS_NOT_READY = 3;
-     */
-    ExceptionalResult_ExceptionalResultStatus[ExceptionalResult_ExceptionalResultStatus["RESULT_STATUS_NOT_READY"] = 3] = "RESULT_STATUS_NOT_READY";
-})(ExceptionalResult_ExceptionalResultStatus || (ExceptionalResult_ExceptionalResultStatus = {}));
-/**
  *
  * Source of an Exceptional Status
  *
@@ -187,6 +157,36 @@ export var Image_FileType;
      */
     Image_FileType[Image_FileType["PDF"] = 8] = "PDF";
 })(Image_FileType || (Image_FileType = {}));
+/**
+ * @generated from protobuf enum ExceptionalResult.ExceptionalResultStatus
+ */
+export var ExceptionalResult_ExceptionalResultStatus;
+(function (ExceptionalResult_ExceptionalResultStatus) {
+    /**
+     * Indicates request was rejected during valiaation.
+     *
+     * @generated from protobuf enum value: RESULT_STATUS_REJECT = 0;
+     */
+    ExceptionalResult_ExceptionalResultStatus[ExceptionalResult_ExceptionalResultStatus["RESULT_STATUS_REJECT"] = 0] = "RESULT_STATUS_REJECT";
+    /**
+     * Indicates an error was encountered in handling the request.
+     *
+     * @generated from protobuf enum value: RESULT_STATUS_ERROR = 1;
+     */
+    ExceptionalResult_ExceptionalResultStatus[ExceptionalResult_ExceptionalResultStatus["RESULT_STATUS_ERROR"] = 1] = "RESULT_STATUS_ERROR";
+    /**
+     * Indicates the query returned no data.
+     *
+     * @generated from protobuf enum value: RESULT_STATUS_EMPTY = 2;
+     */
+    ExceptionalResult_ExceptionalResultStatus[ExceptionalResult_ExceptionalResultStatus["RESULT_STATUS_EMPTY"] = 2] = "RESULT_STATUS_EMPTY";
+    /**
+     * Indicates an invalid bidirectional stream query cursor operation request.
+     *
+     * @generated from protobuf enum value: RESULT_STATUS_NOT_READY = 3;
+     */
+    ExceptionalResult_ExceptionalResultStatus[ExceptionalResult_ExceptionalResultStatus["RESULT_STATUS_NOT_READY"] = 3] = "RESULT_STATUS_NOT_READY";
+})(ExceptionalResult_ExceptionalResultStatus || (ExceptionalResult_ExceptionalResultStatus = {}));
 /**
  * @generated from protobuf enum DataValueType
  */
@@ -606,61 +606,6 @@ class DataTimestamps$Type extends MessageType {
  */
 export const DataTimestamps = new DataTimestamps$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class ExceptionalResult$Type extends MessageType {
-    constructor() {
-        super("ExceptionalResult", [
-            { no: 1, name: "exceptionalResultStatus", kind: "enum", T: () => ["ExceptionalResult.ExceptionalResultStatus", ExceptionalResult_ExceptionalResultStatus] },
-            { no: 2, name: "message", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
-        ]);
-    }
-    create(value) {
-        const message = globalThis.Object.create((this.messagePrototype));
-        message.exceptionalResultStatus = 0;
-        message.message = "";
-        if (value !== undefined)
-            reflectionMergePartial(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader, length, options, target) {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* ExceptionalResult.ExceptionalResultStatus exceptionalResultStatus */ 1:
-                    message.exceptionalResultStatus = reader.int32();
-                    break;
-                case /* string message */ 2:
-                    message.message = reader.string();
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message, writer, options) {
-        /* ExceptionalResult.ExceptionalResultStatus exceptionalResultStatus = 1; */
-        if (message.exceptionalResultStatus !== 0)
-            writer.tag(1, WireType.Varint).int32(message.exceptionalResultStatus);
-        /* string message = 2; */
-        if (message.message !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.message);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message ExceptionalResult
- */
-export const ExceptionalResult = new ExceptionalResult$Type();
-// @generated message type with reflection information, may provide speed optimized methods
 class DataColumn$Type extends MessageType {
     constructor() {
         super("DataColumn", [
@@ -731,7 +676,6 @@ class DataValue$Type extends MessageType {
             { no: 10, name: "arrayValue", kind: "message", oneof: "value", T: () => Array$ },
             { no: 11, name: "structureValue", kind: "message", oneof: "value", T: () => Structure },
             { no: 12, name: "imageValue", kind: "message", oneof: "value", T: () => Image },
-            { no: 13, name: "timestampValue", kind: "message", oneof: "value", T: () => Timestamp },
             { no: 15, name: "valueStatus", kind: "message", T: () => DataValue_ValueStatus }
         ]);
     }
@@ -819,12 +763,6 @@ class DataValue$Type extends MessageType {
                         imageValue: Image.internalBinaryRead(reader, reader.uint32(), options, message.value.imageValue)
                     };
                     break;
-                case /* Timestamp timestampValue */ 13:
-                    message.value = {
-                        oneofKind: "timestampValue",
-                        timestampValue: Timestamp.internalBinaryRead(reader, reader.uint32(), options, message.value.timestampValue)
-                    };
-                    break;
                 case /* DataValue.ValueStatus valueStatus */ 15:
                     message.valueStatus = DataValue_ValueStatus.internalBinaryRead(reader, reader.uint32(), options, message.valueStatus);
                     break;
@@ -876,9 +814,6 @@ class DataValue$Type extends MessageType {
         /* Image imageValue = 12; */
         if (message.value.oneofKind === "imageValue")
             Image.internalBinaryWrite(message.value.imageValue, writer.tag(12, WireType.LengthDelimited).fork(), options).join();
-        /* Timestamp timestampValue = 13; */
-        if (message.value.oneofKind === "timestampValue")
-            Timestamp.internalBinaryWrite(message.value.timestampValue, writer.tag(13, WireType.LengthDelimited).fork(), options).join();
         /* DataValue.ValueStatus valueStatus = 15; */
         if (message.valueStatus)
             DataValue_ValueStatus.internalBinaryWrite(message.valueStatus, writer.tag(15, WireType.LengthDelimited).fork(), options).join();
@@ -1158,3 +1093,58 @@ class Image$Type extends MessageType {
  * @generated MessageType for protobuf message Image
  */
 export const Image = new Image$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ExceptionalResult$Type extends MessageType {
+    constructor() {
+        super("ExceptionalResult", [
+            { no: 1, name: "exceptionalResultStatus", kind: "enum", T: () => ["ExceptionalResult.ExceptionalResultStatus", ExceptionalResult_ExceptionalResultStatus] },
+            { no: 2, name: "message", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value) {
+        const message = globalThis.Object.create((this.messagePrototype));
+        message.exceptionalResultStatus = 0;
+        message.message = "";
+        if (value !== undefined)
+            reflectionMergePartial(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* ExceptionalResult.ExceptionalResultStatus exceptionalResultStatus */ 1:
+                    message.exceptionalResultStatus = reader.int32();
+                    break;
+                case /* string message */ 2:
+                    message.message = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* ExceptionalResult.ExceptionalResultStatus exceptionalResultStatus = 1; */
+        if (message.exceptionalResultStatus !== 0)
+            writer.tag(1, WireType.Varint).int32(message.exceptionalResultStatus);
+        /* string message = 2; */
+        if (message.message !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.message);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message ExceptionalResult
+ */
+export const ExceptionalResult = new ExceptionalResult$Type();

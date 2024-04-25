@@ -31,24 +31,15 @@ import { reflectionMergePartial } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
 import { ExceptionalResult } from "./common";
 import { Timestamp } from "./common";
-import { Attribute } from "./common";
 // @generated message type with reflection information, may provide speed optimized methods
-class CreateAnnotationRequest$Type extends MessageType {
+class CreateDataSetRequest$Type extends MessageType {
     constructor() {
-        super("dp.service.annotation.CreateAnnotationRequest", [
-            { no: 1, name: "authorId", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
-            { no: 2, name: "tags", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "attributes", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => Attribute },
-            { no: 4, name: "dataSet", kind: "message", T: () => DataSet },
-            { no: 10, name: "commentDetails", kind: "message", oneof: "annotationTypeDetails", T: () => CreateAnnotationRequest_CommentDetails }
+        super("dp.service.annotation.CreateDataSetRequest", [
+            { no: 1, name: "dataSet", kind: "message", T: () => DataSet }
         ]);
     }
     create(value) {
         const message = globalThis.Object.create((this.messagePrototype));
-        message.authorId = 0;
-        message.tags = [];
-        message.attributes = [];
-        message.annotationTypeDetails = { oneofKind: undefined };
         if (value !== undefined)
             reflectionMergePartial(this, message, value);
         return message;
@@ -58,22 +49,68 @@ class CreateAnnotationRequest$Type extends MessageType {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* uint32 authorId */ 1:
-                    message.authorId = reader.uint32();
-                    break;
-                case /* repeated string tags */ 2:
-                    message.tags.push(reader.string());
-                    break;
-                case /* repeated Attribute attributes */ 3:
-                    message.attributes.push(Attribute.internalBinaryRead(reader, reader.uint32(), options));
-                    break;
-                case /* dp.service.annotation.DataSet dataSet */ 4:
+                case /* dp.service.annotation.DataSet dataSet */ 1:
                     message.dataSet = DataSet.internalBinaryRead(reader, reader.uint32(), options, message.dataSet);
                     break;
-                case /* dp.service.annotation.CreateAnnotationRequest.CommentDetails commentDetails */ 10:
-                    message.annotationTypeDetails = {
-                        oneofKind: "commentDetails",
-                        commentDetails: CreateAnnotationRequest_CommentDetails.internalBinaryRead(reader, reader.uint32(), options, message.annotationTypeDetails.commentDetails)
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* dp.service.annotation.DataSet dataSet = 1; */
+        if (message.dataSet)
+            DataSet.internalBinaryWrite(message.dataSet, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.CreateDataSetRequest
+ */
+export const CreateDataSetRequest = new CreateDataSetRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class CreateDataSetResponse$Type extends MessageType {
+    constructor() {
+        super("dp.service.annotation.CreateDataSetResponse", [
+            { no: 1, name: "responseTime", kind: "message", T: () => Timestamp },
+            { no: 10, name: "exceptionalResult", kind: "message", oneof: "result", T: () => ExceptionalResult },
+            { no: 11, name: "createDataSetResult", kind: "message", oneof: "result", T: () => CreateDataSetResponse_CreateDataSetResult }
+        ]);
+    }
+    create(value) {
+        const message = globalThis.Object.create((this.messagePrototype));
+        message.result = { oneofKind: undefined };
+        if (value !== undefined)
+            reflectionMergePartial(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* Timestamp responseTime */ 1:
+                    message.responseTime = Timestamp.internalBinaryRead(reader, reader.uint32(), options, message.responseTime);
+                    break;
+                case /* ExceptionalResult exceptionalResult */ 10:
+                    message.result = {
+                        oneofKind: "exceptionalResult",
+                        exceptionalResult: ExceptionalResult.internalBinaryRead(reader, reader.uint32(), options, message.result.exceptionalResult)
+                    };
+                    break;
+                case /* dp.service.annotation.CreateDataSetResponse.CreateDataSetResult createDataSetResult */ 11:
+                    message.result = {
+                        oneofKind: "createDataSetResult",
+                        createDataSetResult: CreateDataSetResponse_CreateDataSetResult.internalBinaryRead(reader, reader.uint32(), options, message.result.createDataSetResult)
                     };
                     break;
                 default:
@@ -88,21 +125,15 @@ class CreateAnnotationRequest$Type extends MessageType {
         return message;
     }
     internalBinaryWrite(message, writer, options) {
-        /* uint32 authorId = 1; */
-        if (message.authorId !== 0)
-            writer.tag(1, WireType.Varint).uint32(message.authorId);
-        /* repeated string tags = 2; */
-        for (let i = 0; i < message.tags.length; i++)
-            writer.tag(2, WireType.LengthDelimited).string(message.tags[i]);
-        /* repeated Attribute attributes = 3; */
-        for (let i = 0; i < message.attributes.length; i++)
-            Attribute.internalBinaryWrite(message.attributes[i], writer.tag(3, WireType.LengthDelimited).fork(), options).join();
-        /* dp.service.annotation.DataSet dataSet = 4; */
-        if (message.dataSet)
-            DataSet.internalBinaryWrite(message.dataSet, writer.tag(4, WireType.LengthDelimited).fork(), options).join();
-        /* dp.service.annotation.CreateAnnotationRequest.CommentDetails commentDetails = 10; */
-        if (message.annotationTypeDetails.oneofKind === "commentDetails")
-            CreateAnnotationRequest_CommentDetails.internalBinaryWrite(message.annotationTypeDetails.commentDetails, writer.tag(10, WireType.LengthDelimited).fork(), options).join();
+        /* Timestamp responseTime = 1; */
+        if (message.responseTime)
+            Timestamp.internalBinaryWrite(message.responseTime, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        /* ExceptionalResult exceptionalResult = 10; */
+        if (message.result.oneofKind === "exceptionalResult")
+            ExceptionalResult.internalBinaryWrite(message.result.exceptionalResult, writer.tag(10, WireType.LengthDelimited).fork(), options).join();
+        /* dp.service.annotation.CreateDataSetResponse.CreateDataSetResult createDataSetResult = 11; */
+        if (message.result.oneofKind === "createDataSetResult")
+            CreateDataSetResponse_CreateDataSetResult.internalBinaryWrite(message.result.createDataSetResult, writer.tag(11, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -110,19 +141,19 @@ class CreateAnnotationRequest$Type extends MessageType {
     }
 }
 /**
- * @generated MessageType for protobuf message dp.service.annotation.CreateAnnotationRequest
+ * @generated MessageType for protobuf message dp.service.annotation.CreateDataSetResponse
  */
-export const CreateAnnotationRequest = new CreateAnnotationRequest$Type();
+export const CreateDataSetResponse = new CreateDataSetResponse$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class CreateAnnotationRequest_CommentDetails$Type extends MessageType {
+class CreateDataSetResponse_CreateDataSetResult$Type extends MessageType {
     constructor() {
-        super("dp.service.annotation.CreateAnnotationRequest.CommentDetails", [
-            { no: 1, name: "comment", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        super("dp.service.annotation.CreateDataSetResponse.CreateDataSetResult", [
+            { no: 1, name: "dataSetId", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value) {
         const message = globalThis.Object.create((this.messagePrototype));
-        message.comment = "";
+        message.dataSetId = "";
         if (value !== undefined)
             reflectionMergePartial(this, message, value);
         return message;
@@ -132,8 +163,8 @@ class CreateAnnotationRequest_CommentDetails$Type extends MessageType {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* string comment */ 1:
-                    message.comment = reader.string();
+                case /* string dataSetId */ 1:
+                    message.dataSetId = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -147,9 +178,9 @@ class CreateAnnotationRequest_CommentDetails$Type extends MessageType {
         return message;
     }
     internalBinaryWrite(message, writer, options) {
-        /* string comment = 1; */
-        if (message.comment !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.comment);
+        /* string dataSetId = 1; */
+        if (message.dataSetId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.dataSetId);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -157,9 +188,147 @@ class CreateAnnotationRequest_CommentDetails$Type extends MessageType {
     }
 }
 /**
- * @generated MessageType for protobuf message dp.service.annotation.CreateAnnotationRequest.CommentDetails
+ * @generated MessageType for protobuf message dp.service.annotation.CreateDataSetResponse.CreateDataSetResult
  */
-export const CreateAnnotationRequest_CommentDetails = new CreateAnnotationRequest_CommentDetails$Type();
+export const CreateDataSetResponse_CreateDataSetResult = new CreateDataSetResponse_CreateDataSetResult$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class QueryDataSetsRequest$Type extends MessageType {
+    constructor() {
+        super("dp.service.annotation.QueryDataSetsRequest", [
+            { no: 1, name: "descriptionText", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value) {
+        const message = globalThis.Object.create((this.messagePrototype));
+        message.descriptionText = "";
+        if (value !== undefined)
+            reflectionMergePartial(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string descriptionText */ 1:
+                    message.descriptionText = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* string descriptionText = 1; */
+        if (message.descriptionText !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.descriptionText);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.QueryDataSetsRequest
+ */
+export const QueryDataSetsRequest = new QueryDataSetsRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class QueryDataSetsResponse$Type extends MessageType {
+    constructor() {
+        super("dp.service.annotation.QueryDataSetsResponse", []);
+    }
+    create(value) {
+        const message = globalThis.Object.create((this.messagePrototype));
+        if (value !== undefined)
+            reflectionMergePartial(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        return target ?? this.create();
+    }
+    internalBinaryWrite(message, writer, options) {
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.QueryDataSetsResponse
+ */
+export const QueryDataSetsResponse = new QueryDataSetsResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class CreateAnnotationRequest$Type extends MessageType {
+    constructor() {
+        super("dp.service.annotation.CreateAnnotationRequest", [
+            { no: 1, name: "ownerId", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "dataSetId", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 10, name: "commentAnnotation", kind: "message", oneof: "annotation", T: () => CommentAnnotation }
+        ]);
+    }
+    create(value) {
+        const message = globalThis.Object.create((this.messagePrototype));
+        message.ownerId = "";
+        message.dataSetId = "";
+        message.annotation = { oneofKind: undefined };
+        if (value !== undefined)
+            reflectionMergePartial(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string ownerId */ 1:
+                    message.ownerId = reader.string();
+                    break;
+                case /* string dataSetId */ 2:
+                    message.dataSetId = reader.string();
+                    break;
+                case /* dp.service.annotation.CommentAnnotation commentAnnotation */ 10:
+                    message.annotation = {
+                        oneofKind: "commentAnnotation",
+                        commentAnnotation: CommentAnnotation.internalBinaryRead(reader, reader.uint32(), options, message.annotation.commentAnnotation)
+                    };
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* string ownerId = 1; */
+        if (message.ownerId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.ownerId);
+        /* string dataSetId = 2; */
+        if (message.dataSetId !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.dataSetId);
+        /* dp.service.annotation.CommentAnnotation commentAnnotation = 10; */
+        if (message.annotation.oneofKind === "commentAnnotation")
+            CommentAnnotation.internalBinaryWrite(message.annotation.commentAnnotation, writer.tag(10, WireType.LengthDelimited).fork(), options).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.CreateAnnotationRequest
+ */
+export const CreateAnnotationRequest = new CreateAnnotationRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class CreateAnnotationResponse$Type extends MessageType {
     constructor() {
@@ -275,14 +444,412 @@ class CreateAnnotationResponse_CreateAnnotationResult$Type extends MessageType {
  */
 export const CreateAnnotationResponse_CreateAnnotationResult = new CreateAnnotationResponse_CreateAnnotationResult$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class DataSet$Type extends MessageType {
+class QueryAnnotationsRequest$Type extends MessageType {
     constructor() {
-        super("dp.service.annotation.DataSet", [
-            { no: 1, name: "dataBlocks", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => DataBlock }
+        super("dp.service.annotation.QueryAnnotationsRequest", [
+            { no: 1, name: "criteria", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => QueryAnnotationsRequest_QueryAnnotationsCriterion }
         ]);
     }
     create(value) {
         const message = globalThis.Object.create((this.messagePrototype));
+        message.criteria = [];
+        if (value !== undefined)
+            reflectionMergePartial(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* repeated dp.service.annotation.QueryAnnotationsRequest.QueryAnnotationsCriterion criteria */ 1:
+                    message.criteria.push(QueryAnnotationsRequest_QueryAnnotationsCriterion.internalBinaryRead(reader, reader.uint32(), options));
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* repeated dp.service.annotation.QueryAnnotationsRequest.QueryAnnotationsCriterion criteria = 1; */
+        for (let i = 0; i < message.criteria.length; i++)
+            QueryAnnotationsRequest_QueryAnnotationsCriterion.internalBinaryWrite(message.criteria[i], writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.QueryAnnotationsRequest
+ */
+export const QueryAnnotationsRequest = new QueryAnnotationsRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class QueryAnnotationsRequest_QueryAnnotationsCriterion$Type extends MessageType {
+    constructor() {
+        super("dp.service.annotation.QueryAnnotationsRequest.QueryAnnotationsCriterion", [
+            { no: 10, name: "ownerCriterion", kind: "message", oneof: "criterion", T: () => QueryAnnotationsRequest_QueryAnnotationsCriterion_OwnerCriterion },
+            { no: 11, name: "commentCriterion", kind: "message", oneof: "criterion", T: () => QueryAnnotationsRequest_QueryAnnotationsCriterion_CommentCriterion }
+        ]);
+    }
+    create(value) {
+        const message = globalThis.Object.create((this.messagePrototype));
+        message.criterion = { oneofKind: undefined };
+        if (value !== undefined)
+            reflectionMergePartial(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* dp.service.annotation.QueryAnnotationsRequest.QueryAnnotationsCriterion.OwnerCriterion ownerCriterion */ 10:
+                    message.criterion = {
+                        oneofKind: "ownerCriterion",
+                        ownerCriterion: QueryAnnotationsRequest_QueryAnnotationsCriterion_OwnerCriterion.internalBinaryRead(reader, reader.uint32(), options, message.criterion.ownerCriterion)
+                    };
+                    break;
+                case /* dp.service.annotation.QueryAnnotationsRequest.QueryAnnotationsCriterion.CommentCriterion commentCriterion */ 11:
+                    message.criterion = {
+                        oneofKind: "commentCriterion",
+                        commentCriterion: QueryAnnotationsRequest_QueryAnnotationsCriterion_CommentCriterion.internalBinaryRead(reader, reader.uint32(), options, message.criterion.commentCriterion)
+                    };
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* dp.service.annotation.QueryAnnotationsRequest.QueryAnnotationsCriterion.OwnerCriterion ownerCriterion = 10; */
+        if (message.criterion.oneofKind === "ownerCriterion")
+            QueryAnnotationsRequest_QueryAnnotationsCriterion_OwnerCriterion.internalBinaryWrite(message.criterion.ownerCriterion, writer.tag(10, WireType.LengthDelimited).fork(), options).join();
+        /* dp.service.annotation.QueryAnnotationsRequest.QueryAnnotationsCriterion.CommentCriterion commentCriterion = 11; */
+        if (message.criterion.oneofKind === "commentCriterion")
+            QueryAnnotationsRequest_QueryAnnotationsCriterion_CommentCriterion.internalBinaryWrite(message.criterion.commentCriterion, writer.tag(11, WireType.LengthDelimited).fork(), options).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.QueryAnnotationsRequest.QueryAnnotationsCriterion
+ */
+export const QueryAnnotationsRequest_QueryAnnotationsCriterion = new QueryAnnotationsRequest_QueryAnnotationsCriterion$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class QueryAnnotationsRequest_QueryAnnotationsCriterion_OwnerCriterion$Type extends MessageType {
+    constructor() {
+        super("dp.service.annotation.QueryAnnotationsRequest.QueryAnnotationsCriterion.OwnerCriterion", [
+            { no: 1, name: "ownerId", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value) {
+        const message = globalThis.Object.create((this.messagePrototype));
+        message.ownerId = "";
+        if (value !== undefined)
+            reflectionMergePartial(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string ownerId */ 1:
+                    message.ownerId = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* string ownerId = 1; */
+        if (message.ownerId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.ownerId);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.QueryAnnotationsRequest.QueryAnnotationsCriterion.OwnerCriterion
+ */
+export const QueryAnnotationsRequest_QueryAnnotationsCriterion_OwnerCriterion = new QueryAnnotationsRequest_QueryAnnotationsCriterion_OwnerCriterion$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class QueryAnnotationsRequest_QueryAnnotationsCriterion_CommentCriterion$Type extends MessageType {
+    constructor() {
+        super("dp.service.annotation.QueryAnnotationsRequest.QueryAnnotationsCriterion.CommentCriterion", [
+            { no: 1, name: "commentText", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value) {
+        const message = globalThis.Object.create((this.messagePrototype));
+        message.commentText = "";
+        if (value !== undefined)
+            reflectionMergePartial(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string commentText */ 1:
+                    message.commentText = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* string commentText = 1; */
+        if (message.commentText !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.commentText);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.QueryAnnotationsRequest.QueryAnnotationsCriterion.CommentCriterion
+ */
+export const QueryAnnotationsRequest_QueryAnnotationsCriterion_CommentCriterion = new QueryAnnotationsRequest_QueryAnnotationsCriterion_CommentCriterion$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class QueryAnnotationsResponse$Type extends MessageType {
+    constructor() {
+        super("dp.service.annotation.QueryAnnotationsResponse", [
+            { no: 1, name: "responseTime", kind: "message", T: () => Timestamp },
+            { no: 10, name: "exceptionalResult", kind: "message", oneof: "result", T: () => ExceptionalResult },
+            { no: 11, name: "annotationsResult", kind: "message", oneof: "result", T: () => QueryAnnotationsResponse_AnnotationsResult }
+        ]);
+    }
+    create(value) {
+        const message = globalThis.Object.create((this.messagePrototype));
+        message.result = { oneofKind: undefined };
+        if (value !== undefined)
+            reflectionMergePartial(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* Timestamp responseTime */ 1:
+                    message.responseTime = Timestamp.internalBinaryRead(reader, reader.uint32(), options, message.responseTime);
+                    break;
+                case /* ExceptionalResult exceptionalResult */ 10:
+                    message.result = {
+                        oneofKind: "exceptionalResult",
+                        exceptionalResult: ExceptionalResult.internalBinaryRead(reader, reader.uint32(), options, message.result.exceptionalResult)
+                    };
+                    break;
+                case /* dp.service.annotation.QueryAnnotationsResponse.AnnotationsResult annotationsResult */ 11:
+                    message.result = {
+                        oneofKind: "annotationsResult",
+                        annotationsResult: QueryAnnotationsResponse_AnnotationsResult.internalBinaryRead(reader, reader.uint32(), options, message.result.annotationsResult)
+                    };
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* Timestamp responseTime = 1; */
+        if (message.responseTime)
+            Timestamp.internalBinaryWrite(message.responseTime, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        /* ExceptionalResult exceptionalResult = 10; */
+        if (message.result.oneofKind === "exceptionalResult")
+            ExceptionalResult.internalBinaryWrite(message.result.exceptionalResult, writer.tag(10, WireType.LengthDelimited).fork(), options).join();
+        /* dp.service.annotation.QueryAnnotationsResponse.AnnotationsResult annotationsResult = 11; */
+        if (message.result.oneofKind === "annotationsResult")
+            QueryAnnotationsResponse_AnnotationsResult.internalBinaryWrite(message.result.annotationsResult, writer.tag(11, WireType.LengthDelimited).fork(), options).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.QueryAnnotationsResponse
+ */
+export const QueryAnnotationsResponse = new QueryAnnotationsResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class QueryAnnotationsResponse_AnnotationsResult$Type extends MessageType {
+    constructor() {
+        super("dp.service.annotation.QueryAnnotationsResponse.AnnotationsResult", [
+            { no: 1, name: "annotations", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => QueryAnnotationsResponse_AnnotationsResult_Annotation }
+        ]);
+    }
+    create(value) {
+        const message = globalThis.Object.create((this.messagePrototype));
+        message.annotations = [];
+        if (value !== undefined)
+            reflectionMergePartial(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* repeated dp.service.annotation.QueryAnnotationsResponse.AnnotationsResult.Annotation annotations */ 1:
+                    message.annotations.push(QueryAnnotationsResponse_AnnotationsResult_Annotation.internalBinaryRead(reader, reader.uint32(), options));
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* repeated dp.service.annotation.QueryAnnotationsResponse.AnnotationsResult.Annotation annotations = 1; */
+        for (let i = 0; i < message.annotations.length; i++)
+            QueryAnnotationsResponse_AnnotationsResult_Annotation.internalBinaryWrite(message.annotations[i], writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.QueryAnnotationsResponse.AnnotationsResult
+ */
+export const QueryAnnotationsResponse_AnnotationsResult = new QueryAnnotationsResponse_AnnotationsResult$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class QueryAnnotationsResponse_AnnotationsResult_Annotation$Type extends MessageType {
+    constructor() {
+        super("dp.service.annotation.QueryAnnotationsResponse.AnnotationsResult.Annotation", [
+            { no: 1, name: "annotationId", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "ownerId", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "dataSetId", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "dataSet", kind: "message", T: () => DataSet },
+            { no: 10, name: "commentAnnotation", kind: "message", oneof: "annotation", T: () => CommentAnnotation }
+        ]);
+    }
+    create(value) {
+        const message = globalThis.Object.create((this.messagePrototype));
+        message.annotationId = "";
+        message.ownerId = "";
+        message.dataSetId = "";
+        message.annotation = { oneofKind: undefined };
+        if (value !== undefined)
+            reflectionMergePartial(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string annotationId */ 1:
+                    message.annotationId = reader.string();
+                    break;
+                case /* string ownerId */ 2:
+                    message.ownerId = reader.string();
+                    break;
+                case /* string dataSetId */ 3:
+                    message.dataSetId = reader.string();
+                    break;
+                case /* dp.service.annotation.DataSet dataSet */ 4:
+                    message.dataSet = DataSet.internalBinaryRead(reader, reader.uint32(), options, message.dataSet);
+                    break;
+                case /* dp.service.annotation.CommentAnnotation commentAnnotation */ 10:
+                    message.annotation = {
+                        oneofKind: "commentAnnotation",
+                        commentAnnotation: CommentAnnotation.internalBinaryRead(reader, reader.uint32(), options, message.annotation.commentAnnotation)
+                    };
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* string annotationId = 1; */
+        if (message.annotationId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.annotationId);
+        /* string ownerId = 2; */
+        if (message.ownerId !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.ownerId);
+        /* string dataSetId = 3; */
+        if (message.dataSetId !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.dataSetId);
+        /* dp.service.annotation.DataSet dataSet = 4; */
+        if (message.dataSet)
+            DataSet.internalBinaryWrite(message.dataSet, writer.tag(4, WireType.LengthDelimited).fork(), options).join();
+        /* dp.service.annotation.CommentAnnotation commentAnnotation = 10; */
+        if (message.annotation.oneofKind === "commentAnnotation")
+            CommentAnnotation.internalBinaryWrite(message.annotation.commentAnnotation, writer.tag(10, WireType.LengthDelimited).fork(), options).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.QueryAnnotationsResponse.AnnotationsResult.Annotation
+ */
+export const QueryAnnotationsResponse_AnnotationsResult_Annotation = new QueryAnnotationsResponse_AnnotationsResult_Annotation$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class DataSet$Type extends MessageType {
+    constructor() {
+        super("dp.service.annotation.DataSet", [
+            { no: 1, name: "description", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "dataBlocks", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => DataBlock }
+        ]);
+    }
+    create(value) {
+        const message = globalThis.Object.create((this.messagePrototype));
+        message.description = "";
         message.dataBlocks = [];
         if (value !== undefined)
             reflectionMergePartial(this, message, value);
@@ -293,7 +860,10 @@ class DataSet$Type extends MessageType {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* repeated dp.service.annotation.DataBlock dataBlocks */ 1:
+                case /* string description */ 1:
+                    message.description = reader.string();
+                    break;
+                case /* repeated dp.service.annotation.DataBlock dataBlocks */ 2:
                     message.dataBlocks.push(DataBlock.internalBinaryRead(reader, reader.uint32(), options));
                     break;
                 default:
@@ -308,9 +878,12 @@ class DataSet$Type extends MessageType {
         return message;
     }
     internalBinaryWrite(message, writer, options) {
-        /* repeated dp.service.annotation.DataBlock dataBlocks = 1; */
+        /* string description = 1; */
+        if (message.description !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.description);
+        /* repeated dp.service.annotation.DataBlock dataBlocks = 2; */
         for (let i = 0; i < message.dataBlocks.length; i++)
-            DataBlock.internalBinaryWrite(message.dataBlocks[i], writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+            DataBlock.internalBinaryWrite(message.dataBlocks[i], writer.tag(2, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -382,9 +955,59 @@ class DataBlock$Type extends MessageType {
  * @generated MessageType for protobuf message dp.service.annotation.DataBlock
  */
 export const DataBlock = new DataBlock$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class CommentAnnotation$Type extends MessageType {
+    constructor() {
+        super("dp.service.annotation.CommentAnnotation", [
+            { no: 1, name: "comment", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value) {
+        const message = globalThis.Object.create((this.messagePrototype));
+        message.comment = "";
+        if (value !== undefined)
+            reflectionMergePartial(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string comment */ 1:
+                    message.comment = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* string comment = 1; */
+        if (message.comment !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.comment);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.CommentAnnotation
+ */
+export const CommentAnnotation = new CommentAnnotation$Type();
 /**
  * @generated ServiceType for protobuf service dp.service.annotation.DpAnnotationService
  */
 export const DpAnnotationService = new ServiceType("dp.service.annotation.DpAnnotationService", [
-    { name: "createAnnotation", options: {}, I: CreateAnnotationRequest, O: CreateAnnotationResponse }
+    { name: "createDataSet", options: {}, I: CreateDataSetRequest, O: CreateDataSetResponse },
+    { name: "queryDataSets", options: {}, I: QueryDataSetsRequest, O: QueryDataSetsResponse },
+    { name: "createAnnotation", options: {}, I: CreateAnnotationRequest, O: CreateAnnotationResponse },
+    { name: "queryAnnotations", options: {}, I: QueryAnnotationsRequest, O: QueryAnnotationsResponse }
 ]);

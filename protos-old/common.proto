@@ -92,29 +92,6 @@ message DataTimestamps {
 }
 
 
-//
-// ------------------- Common Result Definitions ---------------------------
-//
-
-/*
- * Exceptional Result Handling Request.
- *
- * Used to describe an exceptional result from the service, such as a rejection or error handling request.
- */
-message ExceptionalResult {
-
-  ExceptionalResultStatus exceptionalResultStatus = 1; // Enum indicating the type of exceptional result.
-  string message = 2; // Message with details about the exceptional result.
-
-  enum ExceptionalResultStatus {
-    RESULT_STATUS_REJECT = 0; // Indicates request was rejected during valiaation.
-    RESULT_STATUS_ERROR = 1; // Indicates an error was encountered in handling the request.
-    RESULT_STATUS_EMPTY = 2; // Indicates the query returned no data.
-    RESULT_STATUS_NOT_READY = 3; // Indicates an invalid bidirectional stream query cursor operation request.
-  }
-}
-
-
 // ------------------- Data Definitions (Ingestion and Query)  ---------------------------
 //
 
@@ -161,7 +138,6 @@ message DataValue {
     Array		arrayValue = 10;			// heterogeneous array (no dimensional restrictions as of yet)
     Structure	structureValue = 11;		// general data structure (no width or depth restrictions yet)
     Image		imageValue = 12;		// general image value
-    Timestamp timestampValue = 13; // timestamp data value
   }
 
   /*
@@ -286,5 +262,28 @@ message Image {
     EPS = 6;
     SVG = 7;
     PDF = 8;
+  }
+}
+
+
+//
+// ------------------- Common Messages ---------------------------
+//
+
+/*
+ * Exceptional Result Handling Request.
+ *
+ * Used to describe an exceptional result from the service, such as a rejection or error handling request.
+ */
+message ExceptionalResult {
+
+  ExceptionalResultStatus exceptionalResultStatus = 1; // Enum indicating the type of exceptional result.
+  string message = 2; // Message with details about the exceptional result.
+
+  enum ExceptionalResultStatus {
+    RESULT_STATUS_REJECT = 0; // Indicates request was rejected during valiaation.
+    RESULT_STATUS_ERROR = 1; // Indicates an error was encountered in handling the request.
+    RESULT_STATUS_EMPTY = 2; // Indicates the query returned no data.
+    RESULT_STATUS_NOT_READY = 3; // Indicates an invalid bidirectional stream query cursor operation request.
   }
 }

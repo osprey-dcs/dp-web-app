@@ -14,11 +14,11 @@ export default defineConfig({
   },
   test: {
     globals: true,
-    environment: 'jsdom',
-    setupFiles: './testSetup.js',
+    environment: "jsdom",
+    setupFiles: "./testSetup.js",
     coverage: {
-      reporter: ['text', 'json', 'html'],
-      exclude: ['src/main.jsx']
+      reporter: ["text", "json", "html"],
+      exclude: ["src/main.jsx", "tailwind.config.js"]
     },
   }
 })

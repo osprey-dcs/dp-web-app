@@ -47,6 +47,21 @@ export class DpQueryServiceClient {
     }
     /**
      *
+     * queryDataTable: Unary (non-streaming) time series data query with tabular result.
+     *
+     * This time series data query returns its result in a tabular format, for use by the Data Platform web application.
+     * The client sends a single QueryDataRequest with the query parameters and receives a single QueryTableResponse.
+     * The response content may indicate rejection, error in handling, no data matching query, or otherwise contains
+     * the tabular data matching the query specification.
+     *
+     * @generated from protobuf rpc: queryDataTable(dp.service.query.QueryDataRequest) returns (dp.service.query.QueryTableResponse);
+     */
+    queryDataTable(input, options) {
+        const method = this.methods[1], opt = this._transport.mergeOptions(options);
+        return stackIntercept("unary", this._transport, method, opt, input);
+    }
+    /**
+     *
      * queryDataStream: Server-side streaming time series data query.
      *
      * Client sends a single QueryDataRequest with the query parameters, and receives a stream of QueryDataResponse
@@ -62,7 +77,7 @@ export class DpQueryServiceClient {
      * @generated from protobuf rpc: queryDataStream(dp.service.query.QueryDataRequest) returns (stream dp.service.query.QueryDataResponse);
      */
     queryDataStream(input, options) {
-        const method = this.methods[1], opt = this._transport.mergeOptions(options);
+        const method = this.methods[2], opt = this._transport.mergeOptions(options);
         return stackIntercept("serverStreaming", this._transport, method, opt, input);
     }
     /**
@@ -85,23 +100,8 @@ export class DpQueryServiceClient {
      * @generated from protobuf rpc: queryDataBidiStream(stream dp.service.query.QueryDataRequest) returns (stream dp.service.query.QueryDataResponse);
      */
     queryDataBidiStream(options) {
-        const method = this.methods[2], opt = this._transport.mergeOptions(options);
-        return stackIntercept("duplex", this._transport, method, opt);
-    }
-    /**
-     *
-     * queryDataTable: Unary (non-streaming) time series data query with tabular result.
-     *
-     * This time series data query returns its result in a tabular format, for use by the Data Platform web application.
-     * The client sends a single QueryDataRequest with the query parameters and receives a single QueryTableResponse.
-     * The response content may indicate rejection, error in handling, no data matching query, or otherwise contains
-     * the tabular data matching the query specification.
-     *
-     * @generated from protobuf rpc: queryTable(dp.service.query.QueryTableRequest) returns (dp.service.query.QueryTableResponse);
-     */
-    queryTable(input, options) {
         const method = this.methods[3], opt = this._transport.mergeOptions(options);
-        return stackIntercept("unary", this._transport, method, opt, input);
+        return stackIntercept("duplex", this._transport, method, opt);
     }
     /**
      *
@@ -116,6 +116,23 @@ export class DpQueryServiceClient {
      */
     queryMetadata(input, options) {
         const method = this.methods[4], opt = this._transport.mergeOptions(options);
+        return stackIntercept("unary", this._transport, method, opt, input);
+    }
+    /**
+     *
+     * queryAnnotations: Unary (non-streaming) annotations query.
+     *
+     * This RPC is used by clients to query over annotations added to ingested data, and is not yet implemented.
+     * Client sends a single QueryAnnotationsRequest with the query parameters, and receives a single
+     * QueryAnnotationsResponse with the query results. The response may indicate rejection, error in handling,
+     * no data matching query, or otherwise contains the data matching the query specification.
+     *
+     * TODO: this RPC is not yet implmented.
+     *
+     * @generated from protobuf rpc: queryAnnotations(dp.service.query.QueryAnnotationsRequest) returns (dp.service.query.QueryAnnotationsResponse);
+     */
+    queryAnnotations(input, options) {
+        const method = this.methods[5], opt = this._transport.mergeOptions(options);
         return stackIntercept("unary", this._transport, method, opt, input);
     }
 }

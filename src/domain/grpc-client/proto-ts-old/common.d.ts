@@ -145,53 +145,6 @@ export interface DataTimestamps {
 }
 /**
  *
- * Exceptional Result Handling Request.
- *
- * Used to describe an exceptional result from the service, such as a rejection or error handling request.
- *
- * @generated from protobuf message ExceptionalResult
- */
-export interface ExceptionalResult {
-    /**
-     * @generated from protobuf field: ExceptionalResult.ExceptionalResultStatus exceptionalResultStatus = 1;
-     */
-    exceptionalResultStatus: ExceptionalResult_ExceptionalResultStatus;
-    /**
-     * @generated from protobuf field: string message = 2;
-     */
-    message: string;
-}
-/**
- * @generated from protobuf enum ExceptionalResult.ExceptionalResultStatus
- */
-export declare enum ExceptionalResult_ExceptionalResultStatus {
-    /**
-     * Indicates request was rejected during valiaation.
-     *
-     * @generated from protobuf enum value: RESULT_STATUS_REJECT = 0;
-     */
-    RESULT_STATUS_REJECT = 0,
-    /**
-     * Indicates an error was encountered in handling the request.
-     *
-     * @generated from protobuf enum value: RESULT_STATUS_ERROR = 1;
-     */
-    RESULT_STATUS_ERROR = 1,
-    /**
-     * Indicates the query returned no data.
-     *
-     * @generated from protobuf enum value: RESULT_STATUS_EMPTY = 2;
-     */
-    RESULT_STATUS_EMPTY = 2,
-    /**
-     * Indicates an invalid bidirectional stream query cursor operation request.
-     *
-     * @generated from protobuf enum value: RESULT_STATUS_NOT_READY = 3;
-     */
-    RESULT_STATUS_NOT_READY = 3
-}
-/**
- *
  * A named vector of heterogeneous data values.
  *
  *
@@ -301,12 +254,6 @@ export interface DataValue {
          * @generated from protobuf field: Image imageValue = 12;
          */
         imageValue: Image;
-    } | {
-        oneofKind: "timestampValue";
-        /**
-         * @generated from protobuf field: Timestamp timestampValue = 13;
-         */
-        timestampValue: Timestamp;
     } | {
         oneofKind: undefined;
     };
@@ -555,6 +502,53 @@ export declare enum Image_FileType {
     PDF = 8
 }
 /**
+ *
+ * Exceptional Result Handling Request.
+ *
+ * Used to describe an exceptional result from the service, such as a rejection or error handling request.
+ *
+ * @generated from protobuf message ExceptionalResult
+ */
+export interface ExceptionalResult {
+    /**
+     * @generated from protobuf field: ExceptionalResult.ExceptionalResultStatus exceptionalResultStatus = 1;
+     */
+    exceptionalResultStatus: ExceptionalResult_ExceptionalResultStatus;
+    /**
+     * @generated from protobuf field: string message = 2;
+     */
+    message: string;
+}
+/**
+ * @generated from protobuf enum ExceptionalResult.ExceptionalResultStatus
+ */
+export declare enum ExceptionalResult_ExceptionalResultStatus {
+    /**
+     * Indicates request was rejected during valiaation.
+     *
+     * @generated from protobuf enum value: RESULT_STATUS_REJECT = 0;
+     */
+    RESULT_STATUS_REJECT = 0,
+    /**
+     * Indicates an error was encountered in handling the request.
+     *
+     * @generated from protobuf enum value: RESULT_STATUS_ERROR = 1;
+     */
+    RESULT_STATUS_ERROR = 1,
+    /**
+     * Indicates the query returned no data.
+     *
+     * @generated from protobuf enum value: RESULT_STATUS_EMPTY = 2;
+     */
+    RESULT_STATUS_EMPTY = 2,
+    /**
+     * Indicates an invalid bidirectional stream query cursor operation request.
+     *
+     * @generated from protobuf enum value: RESULT_STATUS_NOT_READY = 3;
+     */
+    RESULT_STATUS_NOT_READY = 3
+}
+/**
  * @generated from protobuf enum DataValueType
  */
 export declare enum DataValueType {
@@ -691,16 +685,6 @@ declare class DataTimestamps$Type extends MessageType<DataTimestamps> {
  * @generated MessageType for protobuf message DataTimestamps
  */
 export declare const DataTimestamps: DataTimestamps$Type;
-declare class ExceptionalResult$Type extends MessageType<ExceptionalResult> {
-    constructor();
-    create(value?: PartialMessage<ExceptionalResult>): ExceptionalResult;
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ExceptionalResult): ExceptionalResult;
-    internalBinaryWrite(message: ExceptionalResult, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
-}
-/**
- * @generated MessageType for protobuf message ExceptionalResult
- */
-export declare const ExceptionalResult: ExceptionalResult$Type;
 declare class DataColumn$Type extends MessageType<DataColumn> {
     constructor();
     create(value?: PartialMessage<DataColumn>): DataColumn;
@@ -771,4 +755,14 @@ declare class Image$Type extends MessageType<Image> {
  * @generated MessageType for protobuf message Image
  */
 export declare const Image: Image$Type;
+declare class ExceptionalResult$Type extends MessageType<ExceptionalResult> {
+    constructor();
+    create(value?: PartialMessage<ExceptionalResult>): ExceptionalResult;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ExceptionalResult): ExceptionalResult;
+    internalBinaryWrite(message: ExceptionalResult, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message ExceptionalResult
+ */
+export declare const ExceptionalResult: ExceptionalResult$Type;
 export {};

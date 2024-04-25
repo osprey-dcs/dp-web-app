@@ -17,7 +17,7 @@ const QueryActions = memo(function QueryActions(props) {
     const api = useMemo(() => new DataPlatformApi(), []);
     const { toast } = useToast();
 
-    async function queryDataTable() {
+    async function queryDataTable(queryParams) {
         const result = await api.queryDataTable(queryParams);
         props.setResultData(result);
     }
@@ -41,7 +41,7 @@ const QueryActions = memo(function QueryActions(props) {
             return;
         }
 
-        queryDataTable();
+        queryDataTable(queryParams);
     }
 
     return (

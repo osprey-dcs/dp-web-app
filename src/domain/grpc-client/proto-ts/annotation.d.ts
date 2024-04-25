@@ -19,7 +19,90 @@ import type { PartialMessage } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
 import { ExceptionalResult } from "./common";
 import { Timestamp } from "./common";
-import { Attribute } from "./common";
+/**
+ *
+ * Create DataSet Request.
+ *
+ * TODO: API not yet implemented.
+ *
+ * @generated from protobuf message dp.service.annotation.CreateDataSetRequest
+ */
+export interface CreateDataSetRequest {
+    /**
+     * @generated from protobuf field: dp.service.annotation.DataSet dataSet = 1;
+     */
+    dataSet?: DataSet;
+}
+/**
+ *
+ * Create DataSet Request.
+ *
+ * TODO: API not yet implemented.
+ *
+ * @generated from protobuf message dp.service.annotation.CreateDataSetResponse
+ */
+export interface CreateDataSetResponse {
+    /**
+     * @generated from protobuf field: Timestamp responseTime = 1;
+     */
+    responseTime?: Timestamp;
+    /**
+     * @generated from protobuf oneof: result
+     */
+    result: {
+        oneofKind: "exceptionalResult";
+        /**
+         * @generated from protobuf field: ExceptionalResult exceptionalResult = 10;
+         */
+        exceptionalResult: ExceptionalResult;
+    } | {
+        oneofKind: "createDataSetResult";
+        /**
+         * @generated from protobuf field: dp.service.annotation.CreateDataSetResponse.CreateDataSetResult createDataSetResult = 11;
+         */
+        createDataSetResult: CreateDataSetResponse_CreateDataSetResult;
+    } | {
+        oneofKind: undefined;
+    };
+}
+/**
+ *
+ * Successful Result.
+ *
+ * Contains the results of a successful request to create a DataSet.
+ *
+ * @generated from protobuf message dp.service.annotation.CreateDataSetResponse.CreateDataSetResult
+ */
+export interface CreateDataSetResponse_CreateDataSetResult {
+    /**
+     * @generated from protobuf field: string dataSetId = 1;
+     */
+    dataSetId: string;
+}
+/**
+ *
+ * Query DataSet Request.
+ *
+ * TODO: API not yet implemented.
+ *
+ * @generated from protobuf message dp.service.annotation.QueryDataSetsRequest
+ */
+export interface QueryDataSetsRequest {
+    /**
+     * @generated from protobuf field: string descriptionText = 1;
+     */
+    descriptionText: string;
+}
+/**
+ *
+ * Query DataSet Request.
+ *
+ * TODO: API not yet implemented.
+ *
+ * @generated from protobuf message dp.service.annotation.QueryDataSetsResponse
+ */
+export interface QueryDataSetsResponse {
+}
 /**
  *
  * Create Annotation Request.
@@ -31,42 +114,25 @@ import { Attribute } from "./common";
  */
 export interface CreateAnnotationRequest {
     /**
-     * @generated from protobuf field: uint32 authorId = 1;
+     * @generated from protobuf field: string ownerId = 1;
      */
-    authorId: number;
+    ownerId: string;
     /**
-     * @generated from protobuf field: repeated string tags = 2;
+     * @generated from protobuf field: string dataSetId = 2;
      */
-    tags: string[];
+    dataSetId: string;
     /**
-     * @generated from protobuf field: repeated Attribute attributes = 3;
+     * @generated from protobuf oneof: annotation
      */
-    attributes: Attribute[];
-    /**
-     * @generated from protobuf field: dp.service.annotation.DataSet dataSet = 4;
-     */
-    dataSet?: DataSet;
-    /**
-     * @generated from protobuf oneof: annotationTypeDetails
-     */
-    annotationTypeDetails: {
-        oneofKind: "commentDetails";
+    annotation: {
+        oneofKind: "commentAnnotation";
         /**
-         * @generated from protobuf field: dp.service.annotation.CreateAnnotationRequest.CommentDetails commentDetails = 10;
+         * @generated from protobuf field: dp.service.annotation.CommentAnnotation commentAnnotation = 10;
          */
-        commentDetails: CreateAnnotationRequest_CommentDetails;
+        commentAnnotation: CommentAnnotation;
     } | {
         oneofKind: undefined;
     };
-}
-/**
- * @generated from protobuf message dp.service.annotation.CreateAnnotationRequest.CommentDetails
- */
-export interface CreateAnnotationRequest_CommentDetails {
-    /**
-     * @generated from protobuf field: string comment = 1;
-     */
-    comment: string;
 }
 /**
  *
@@ -118,7 +184,145 @@ export interface CreateAnnotationResponse_CreateAnnotationResult {
 }
 /**
  *
- * Standardized Identifier for Block of Archived Data
+ * Annotations Query Request.
+ *
+ *
+ * @generated from protobuf message dp.service.annotation.QueryAnnotationsRequest
+ */
+export interface QueryAnnotationsRequest {
+    /**
+     * @generated from protobuf field: repeated dp.service.annotation.QueryAnnotationsRequest.QueryAnnotationsCriterion criteria = 1;
+     */
+    criteria: QueryAnnotationsRequest_QueryAnnotationsCriterion[];
+}
+/**
+ * @generated from protobuf message dp.service.annotation.QueryAnnotationsRequest.QueryAnnotationsCriterion
+ */
+export interface QueryAnnotationsRequest_QueryAnnotationsCriterion {
+    /**
+     * @generated from protobuf oneof: criterion
+     */
+    criterion: {
+        oneofKind: "ownerCriterion";
+        /**
+         * @generated from protobuf field: dp.service.annotation.QueryAnnotationsRequest.QueryAnnotationsCriterion.OwnerCriterion ownerCriterion = 10;
+         */
+        ownerCriterion: QueryAnnotationsRequest_QueryAnnotationsCriterion_OwnerCriterion;
+    } | {
+        oneofKind: "commentCriterion";
+        /**
+         * @generated from protobuf field: dp.service.annotation.QueryAnnotationsRequest.QueryAnnotationsCriterion.CommentCriterion commentCriterion = 11;
+         */
+        commentCriterion: QueryAnnotationsRequest_QueryAnnotationsCriterion_CommentCriterion;
+    } | {
+        oneofKind: undefined;
+    };
+}
+/**
+ *
+ * Criterion used to search ownerId field of Annotations.  "And" operator is used to combine with other criteria.
+ *
+ * @generated from protobuf message dp.service.annotation.QueryAnnotationsRequest.QueryAnnotationsCriterion.OwnerCriterion
+ */
+export interface QueryAnnotationsRequest_QueryAnnotationsCriterion_OwnerCriterion {
+    /**
+     * @generated from protobuf field: string ownerId = 1;
+     */
+    ownerId: string;
+}
+/**
+ *
+ * Criterion used to search over Comment Annotations.  "Or" operator is used to combine with other criteria.
+ *
+ * @generated from protobuf message dp.service.annotation.QueryAnnotationsRequest.QueryAnnotationsCriterion.CommentCriterion
+ */
+export interface QueryAnnotationsRequest_QueryAnnotationsCriterion_CommentCriterion {
+    /**
+     * @generated from protobuf field: string commentText = 1;
+     */
+    commentText: string;
+}
+/**
+ *
+ * Annotations Query Response.
+ *
+ *
+ * @generated from protobuf message dp.service.annotation.QueryAnnotationsResponse
+ */
+export interface QueryAnnotationsResponse {
+    /**
+     * @generated from protobuf field: Timestamp responseTime = 1;
+     */
+    responseTime?: Timestamp;
+    /**
+     * @generated from protobuf oneof: result
+     */
+    result: {
+        oneofKind: "exceptionalResult";
+        /**
+         * @generated from protobuf field: ExceptionalResult exceptionalResult = 10;
+         */
+        exceptionalResult: ExceptionalResult;
+    } | {
+        oneofKind: "annotationsResult";
+        /**
+         * @generated from protobuf field: dp.service.annotation.QueryAnnotationsResponse.AnnotationsResult annotationsResult = 11;
+         */
+        annotationsResult: QueryAnnotationsResponse_AnnotationsResult;
+    } | {
+        oneofKind: undefined;
+    };
+}
+/**
+ *
+ * Annotations Query Result Content.
+ *
+ *
+ * @generated from protobuf message dp.service.annotation.QueryAnnotationsResponse.AnnotationsResult
+ */
+export interface QueryAnnotationsResponse_AnnotationsResult {
+    /**
+     * @generated from protobuf field: repeated dp.service.annotation.QueryAnnotationsResponse.AnnotationsResult.Annotation annotations = 1;
+     */
+    annotations: QueryAnnotationsResponse_AnnotationsResult_Annotation[];
+}
+/**
+ * @generated from protobuf message dp.service.annotation.QueryAnnotationsResponse.AnnotationsResult.Annotation
+ */
+export interface QueryAnnotationsResponse_AnnotationsResult_Annotation {
+    /**
+     * @generated from protobuf field: string annotationId = 1;
+     */
+    annotationId: string;
+    /**
+     * @generated from protobuf field: string ownerId = 2;
+     */
+    ownerId: string;
+    /**
+     * @generated from protobuf field: string dataSetId = 3;
+     */
+    dataSetId: string;
+    /**
+     * @generated from protobuf field: dp.service.annotation.DataSet dataSet = 4;
+     */
+    dataSet?: DataSet;
+    /**
+     * @generated from protobuf oneof: annotation
+     */
+    annotation: {
+        oneofKind: "commentAnnotation";
+        /**
+         * @generated from protobuf field: dp.service.annotation.CommentAnnotation commentAnnotation = 10;
+         */
+        commentAnnotation: CommentAnnotation;
+    } | {
+        oneofKind: undefined;
+    };
+}
+/**
+ *
+ * Mechanism for identifying a set of data within the archive.  This will be used to support other features
+ * such as adding annotations to data sets or exporting data sets.
  *
  * A DataSet specifies archived data across multiple DataBlocks.  Each DataBlock specifies a time range and list of
  * data sources (columns/PVs).
@@ -128,7 +332,11 @@ export interface CreateAnnotationResponse_CreateAnnotationResult {
  */
 export interface DataSet {
     /**
-     * @generated from protobuf field: repeated dp.service.annotation.DataBlock dataBlocks = 1;
+     * @generated from protobuf field: string description = 1;
+     */
+    description: string;
+    /**
+     * @generated from protobuf field: repeated dp.service.annotation.DataBlock dataBlocks = 2;
      */
     dataBlocks: DataBlock[];
 }
@@ -149,6 +357,65 @@ export interface DataBlock {
      */
     pvNames: string[];
 }
+/**
+ * @generated from protobuf message dp.service.annotation.CommentAnnotation
+ */
+export interface CommentAnnotation {
+    /**
+     * @generated from protobuf field: string comment = 1;
+     */
+    comment: string;
+}
+declare class CreateDataSetRequest$Type extends MessageType<CreateDataSetRequest> {
+    constructor();
+    create(value?: PartialMessage<CreateDataSetRequest>): CreateDataSetRequest;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CreateDataSetRequest): CreateDataSetRequest;
+    internalBinaryWrite(message: CreateDataSetRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.CreateDataSetRequest
+ */
+export declare const CreateDataSetRequest: CreateDataSetRequest$Type;
+declare class CreateDataSetResponse$Type extends MessageType<CreateDataSetResponse> {
+    constructor();
+    create(value?: PartialMessage<CreateDataSetResponse>): CreateDataSetResponse;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CreateDataSetResponse): CreateDataSetResponse;
+    internalBinaryWrite(message: CreateDataSetResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.CreateDataSetResponse
+ */
+export declare const CreateDataSetResponse: CreateDataSetResponse$Type;
+declare class CreateDataSetResponse_CreateDataSetResult$Type extends MessageType<CreateDataSetResponse_CreateDataSetResult> {
+    constructor();
+    create(value?: PartialMessage<CreateDataSetResponse_CreateDataSetResult>): CreateDataSetResponse_CreateDataSetResult;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CreateDataSetResponse_CreateDataSetResult): CreateDataSetResponse_CreateDataSetResult;
+    internalBinaryWrite(message: CreateDataSetResponse_CreateDataSetResult, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.CreateDataSetResponse.CreateDataSetResult
+ */
+export declare const CreateDataSetResponse_CreateDataSetResult: CreateDataSetResponse_CreateDataSetResult$Type;
+declare class QueryDataSetsRequest$Type extends MessageType<QueryDataSetsRequest> {
+    constructor();
+    create(value?: PartialMessage<QueryDataSetsRequest>): QueryDataSetsRequest;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryDataSetsRequest): QueryDataSetsRequest;
+    internalBinaryWrite(message: QueryDataSetsRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.QueryDataSetsRequest
+ */
+export declare const QueryDataSetsRequest: QueryDataSetsRequest$Type;
+declare class QueryDataSetsResponse$Type extends MessageType<QueryDataSetsResponse> {
+    constructor();
+    create(value?: PartialMessage<QueryDataSetsResponse>): QueryDataSetsResponse;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryDataSetsResponse): QueryDataSetsResponse;
+    internalBinaryWrite(message: QueryDataSetsResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.QueryDataSetsResponse
+ */
+export declare const QueryDataSetsResponse: QueryDataSetsResponse$Type;
 declare class CreateAnnotationRequest$Type extends MessageType<CreateAnnotationRequest> {
     constructor();
     create(value?: PartialMessage<CreateAnnotationRequest>): CreateAnnotationRequest;
@@ -159,16 +426,6 @@ declare class CreateAnnotationRequest$Type extends MessageType<CreateAnnotationR
  * @generated MessageType for protobuf message dp.service.annotation.CreateAnnotationRequest
  */
 export declare const CreateAnnotationRequest: CreateAnnotationRequest$Type;
-declare class CreateAnnotationRequest_CommentDetails$Type extends MessageType<CreateAnnotationRequest_CommentDetails> {
-    constructor();
-    create(value?: PartialMessage<CreateAnnotationRequest_CommentDetails>): CreateAnnotationRequest_CommentDetails;
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CreateAnnotationRequest_CommentDetails): CreateAnnotationRequest_CommentDetails;
-    internalBinaryWrite(message: CreateAnnotationRequest_CommentDetails, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
-}
-/**
- * @generated MessageType for protobuf message dp.service.annotation.CreateAnnotationRequest.CommentDetails
- */
-export declare const CreateAnnotationRequest_CommentDetails: CreateAnnotationRequest_CommentDetails$Type;
 declare class CreateAnnotationResponse$Type extends MessageType<CreateAnnotationResponse> {
     constructor();
     create(value?: PartialMessage<CreateAnnotationResponse>): CreateAnnotationResponse;
@@ -189,6 +446,76 @@ declare class CreateAnnotationResponse_CreateAnnotationResult$Type extends Messa
  * @generated MessageType for protobuf message dp.service.annotation.CreateAnnotationResponse.CreateAnnotationResult
  */
 export declare const CreateAnnotationResponse_CreateAnnotationResult: CreateAnnotationResponse_CreateAnnotationResult$Type;
+declare class QueryAnnotationsRequest$Type extends MessageType<QueryAnnotationsRequest> {
+    constructor();
+    create(value?: PartialMessage<QueryAnnotationsRequest>): QueryAnnotationsRequest;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryAnnotationsRequest): QueryAnnotationsRequest;
+    internalBinaryWrite(message: QueryAnnotationsRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.QueryAnnotationsRequest
+ */
+export declare const QueryAnnotationsRequest: QueryAnnotationsRequest$Type;
+declare class QueryAnnotationsRequest_QueryAnnotationsCriterion$Type extends MessageType<QueryAnnotationsRequest_QueryAnnotationsCriterion> {
+    constructor();
+    create(value?: PartialMessage<QueryAnnotationsRequest_QueryAnnotationsCriterion>): QueryAnnotationsRequest_QueryAnnotationsCriterion;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryAnnotationsRequest_QueryAnnotationsCriterion): QueryAnnotationsRequest_QueryAnnotationsCriterion;
+    internalBinaryWrite(message: QueryAnnotationsRequest_QueryAnnotationsCriterion, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.QueryAnnotationsRequest.QueryAnnotationsCriterion
+ */
+export declare const QueryAnnotationsRequest_QueryAnnotationsCriterion: QueryAnnotationsRequest_QueryAnnotationsCriterion$Type;
+declare class QueryAnnotationsRequest_QueryAnnotationsCriterion_OwnerCriterion$Type extends MessageType<QueryAnnotationsRequest_QueryAnnotationsCriterion_OwnerCriterion> {
+    constructor();
+    create(value?: PartialMessage<QueryAnnotationsRequest_QueryAnnotationsCriterion_OwnerCriterion>): QueryAnnotationsRequest_QueryAnnotationsCriterion_OwnerCriterion;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryAnnotationsRequest_QueryAnnotationsCriterion_OwnerCriterion): QueryAnnotationsRequest_QueryAnnotationsCriterion_OwnerCriterion;
+    internalBinaryWrite(message: QueryAnnotationsRequest_QueryAnnotationsCriterion_OwnerCriterion, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.QueryAnnotationsRequest.QueryAnnotationsCriterion.OwnerCriterion
+ */
+export declare const QueryAnnotationsRequest_QueryAnnotationsCriterion_OwnerCriterion: QueryAnnotationsRequest_QueryAnnotationsCriterion_OwnerCriterion$Type;
+declare class QueryAnnotationsRequest_QueryAnnotationsCriterion_CommentCriterion$Type extends MessageType<QueryAnnotationsRequest_QueryAnnotationsCriterion_CommentCriterion> {
+    constructor();
+    create(value?: PartialMessage<QueryAnnotationsRequest_QueryAnnotationsCriterion_CommentCriterion>): QueryAnnotationsRequest_QueryAnnotationsCriterion_CommentCriterion;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryAnnotationsRequest_QueryAnnotationsCriterion_CommentCriterion): QueryAnnotationsRequest_QueryAnnotationsCriterion_CommentCriterion;
+    internalBinaryWrite(message: QueryAnnotationsRequest_QueryAnnotationsCriterion_CommentCriterion, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.QueryAnnotationsRequest.QueryAnnotationsCriterion.CommentCriterion
+ */
+export declare const QueryAnnotationsRequest_QueryAnnotationsCriterion_CommentCriterion: QueryAnnotationsRequest_QueryAnnotationsCriterion_CommentCriterion$Type;
+declare class QueryAnnotationsResponse$Type extends MessageType<QueryAnnotationsResponse> {
+    constructor();
+    create(value?: PartialMessage<QueryAnnotationsResponse>): QueryAnnotationsResponse;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryAnnotationsResponse): QueryAnnotationsResponse;
+    internalBinaryWrite(message: QueryAnnotationsResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.QueryAnnotationsResponse
+ */
+export declare const QueryAnnotationsResponse: QueryAnnotationsResponse$Type;
+declare class QueryAnnotationsResponse_AnnotationsResult$Type extends MessageType<QueryAnnotationsResponse_AnnotationsResult> {
+    constructor();
+    create(value?: PartialMessage<QueryAnnotationsResponse_AnnotationsResult>): QueryAnnotationsResponse_AnnotationsResult;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryAnnotationsResponse_AnnotationsResult): QueryAnnotationsResponse_AnnotationsResult;
+    internalBinaryWrite(message: QueryAnnotationsResponse_AnnotationsResult, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.QueryAnnotationsResponse.AnnotationsResult
+ */
+export declare const QueryAnnotationsResponse_AnnotationsResult: QueryAnnotationsResponse_AnnotationsResult$Type;
+declare class QueryAnnotationsResponse_AnnotationsResult_Annotation$Type extends MessageType<QueryAnnotationsResponse_AnnotationsResult_Annotation> {
+    constructor();
+    create(value?: PartialMessage<QueryAnnotationsResponse_AnnotationsResult_Annotation>): QueryAnnotationsResponse_AnnotationsResult_Annotation;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryAnnotationsResponse_AnnotationsResult_Annotation): QueryAnnotationsResponse_AnnotationsResult_Annotation;
+    internalBinaryWrite(message: QueryAnnotationsResponse_AnnotationsResult_Annotation, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.QueryAnnotationsResponse.AnnotationsResult.Annotation
+ */
+export declare const QueryAnnotationsResponse_AnnotationsResult_Annotation: QueryAnnotationsResponse_AnnotationsResult_Annotation$Type;
 declare class DataSet$Type extends MessageType<DataSet> {
     constructor();
     create(value?: PartialMessage<DataSet>): DataSet;
@@ -209,6 +536,16 @@ declare class DataBlock$Type extends MessageType<DataBlock> {
  * @generated MessageType for protobuf message dp.service.annotation.DataBlock
  */
 export declare const DataBlock: DataBlock$Type;
+declare class CommentAnnotation$Type extends MessageType<CommentAnnotation> {
+    constructor();
+    create(value?: PartialMessage<CommentAnnotation>): CommentAnnotation;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CommentAnnotation): CommentAnnotation;
+    internalBinaryWrite(message: CommentAnnotation, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.CommentAnnotation
+ */
+export declare const CommentAnnotation: CommentAnnotation$Type;
 /**
  * @generated ServiceType for protobuf service dp.service.annotation.DpAnnotationService
  */

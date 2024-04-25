@@ -5,14 +5,23 @@ export function cn(...inputs) {
   return twMerge(clsx(inputs))
 }
 
-
 export function getColDefs(resultData) {
   let colDefs = []
-  console.log(resultData.dataColumns);
-  for (const col of resultData.dataColumns) {
-    colDefs.push({ field: col.name });
-  }
 
-  console.log(colDefs);
+  const rowMapTable = resultData.tableResult.rowMapTable
+  for (let i = 0; i < rowMapTable.columnNames.length; ++i) {
+    if (i === 0) {
+      colDefs.push({
+        field: rowMapTable.columnNames[i],
+        cellRenderer: "timestampCellRenderer",
+      })
+    }
+    else {
+      colDefs.push({
+        field: rowMapTable.columnNames[i],
+        cellRenderer: "dataValueCellRenderer",
+      });
+    }
+  }
   return colDefs;
 }
