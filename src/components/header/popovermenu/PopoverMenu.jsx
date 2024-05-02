@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { FloatingFocusManager, offset, useClick, useDismiss, useFloating, useInteractions, useListNavigation, useRole, useTransitionStyles } from "@floating-ui/react";
 import { Link, useRoute } from "wouter";
+import { cn } from "@/lib/utils"
 
 function PopoverMenu() {
     const [homeActive] = useRoute("/");
@@ -56,7 +57,7 @@ function PopoverMenu() {
                                         {...getItemProps()}
                                         href={item[1]}
                                         onClick={() => setIsOpen(false)}
-                                        className={item[2] ? "text-foreground text-sm" : "text-muted-foreground text-sm"}
+                                        className={cn("text-sm hover:text-foreground", item[2] ? "text-foreground" : "text-muted-foreground")}
                                         data-testid="popover-nav-link"
                                     >
                                         {item[0]}

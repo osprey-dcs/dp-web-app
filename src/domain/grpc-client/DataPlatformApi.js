@@ -25,9 +25,9 @@ export default class DataPlatformApi {
     handleExceptionalResult = (result) => {
         if (result.exceptionalResult) {
             console.error("ERROR: Exceptional Result. " + result.exceptionalResult.message);
-            return false;
+            return { status: false, message: result.exceptionalResult.message };
         }
-        return true;
+        return { status: true };
     }
 
     queryDataTable = async (queryParams) => {
@@ -41,13 +41,6 @@ export default class DataPlatformApi {
                 epochSeconds: queryParams.endEpochs,
                 nanoseconds: queryParams.endNanos
             },
-            // pvNameSpec: {
-            // oneofKind: "pvNameList",
-            // pvNameList: {
-            //     pvNames: queryParams.pvNames
-            // }
-            // }
-
         }
 
         if (queryParams.useRegex) {
@@ -65,7 +58,6 @@ export default class DataPlatformApi {
                 }
             }
         }
-        console.log(query)
 
         const oldQuery = {
             request: {
@@ -88,9 +80,9 @@ export default class DataPlatformApi {
         const result = response.result;
 
         if (!this.handleStatus(status)) return;
-        if (!this.handleExceptionalResult(result)) return;
+        const exceptionalResult = this.handleExceptionalResult(result);
+        if (!exceptionalResult.status) return exceptionalResult.message;
 
-        console.log(result.tableResult);
         return result.tableResult;
     }
 

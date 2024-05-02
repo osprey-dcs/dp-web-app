@@ -1,11 +1,11 @@
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 
 import PropTypes from "prop-types";
 
-import DataSourcesChip from "./datasourceschip/DataSourcesChip";
 import TimeRangeChip from "./timechip/TimeRangeChip";
-import DataPlatformApi from "../../../domain/grpc-client/DataPlatformApi";
+import DataSourcesChip from "./datasourceschip/DataSourcesChip";
+import DataPlatformApi from "@/domain/grpc-client/DataPlatformApi";
 
 const propTypes = {
     setResultData: PropTypes.func,
@@ -17,9 +17,19 @@ const QueryActions = memo(function QueryActions(props) {
     const api = useMemo(() => new DataPlatformApi(), []);
     const { toast } = useToast();
 
-    async function queryDataTable(queryParams) {
+    async function runQuery(queryParams) {
+        props.setResultData(undefined);
         const result = await api.queryDataTable(queryParams);
-        props.setResultData(result);
+        if (typeof result !== 'object') {
+            props.setResultData({});
+            toast({
+                title: "Error: Query Too Large",
+                description: result,
+                variant: "destructive"
+            })
+        } else {
+            props.setResultData(result);
+        }
     }
 
     function handleSubmit() {
@@ -41,7 +51,7 @@ const QueryActions = memo(function QueryActions(props) {
             return;
         }
 
-        queryDataTable(queryParams);
+        runQuery(queryParams)
     }
 
     return (
@@ -49,9 +59,8 @@ const QueryActions = memo(function QueryActions(props) {
             <div className="flex flex-row z-10">
                 <TimeRangeChip setTimeRange={setTimeRange} />
                 <DataSourcesChip dataSources={dataSources} setDataSources={setDataSources} />
-                <div>Attributes</div>
             </div>
-            <button className="btn-std px-5 py-2" onClick={handleSubmit}>Run Query</button>
+            <button className="btn-std px-5" onClick={handleSubmit}>Run Query</button>
         </div>
     )
 });

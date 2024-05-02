@@ -3,6 +3,7 @@ import TimeRangeActions from "./timeactions";
 import { Fragment, memo, useState } from "react";
 import { FloatingFocusManager, offset, useClick, useDismiss, useFloating, useInteractions, useRole, useTransitionStyles } from "@floating-ui/react";
 import { AddFilled, CloseFilled } from "@carbon/icons-react";
+import { cn } from "@/lib/utils"
 
 const propTypes = {
     setTimeRange: PropTypes.func
@@ -13,7 +14,6 @@ const TimeRangeChip = memo(function TimeRangeChip(props) {
     const [endDatetime, setEndDatetime] = useState("");
     const [startNanos, setStartNanos] = useState("");
     const [endNanos, setEndNanos] = useState("");
-    const [timeRangeString, setTimeRangeString] = useState("");
 
     const [isOpen, setIsOpen] = useState();
     const { refs, floatingStyles, context } = useFloating({
@@ -32,13 +32,14 @@ const TimeRangeChip = memo(function TimeRangeChip(props) {
     function handleClear() {
         setStartDatetime("");
         setEndDatetime("");
-        setTimeRangeString("");
+        setStartNanos("");
+        setEndNanos("");
         props.setTimeRange({});
     }
 
     return (
         <Fragment>
-            <div ref={refs.setPositionReference} className={"mr-4 px-2 max-w-sm overflow-hidden sm:max-w-none flex items-center border border-muted-foreground rounded-full hover:cursor-pointer" + (timeRangeString !== "" ? "" : " border-dashed")}>
+            <div ref={refs.setPositionReference} className={cn("mr-4 chip-input", startDatetime !== "" || endDatetime !== "" ? "" : " border-dashed")}>
                 <button className="text-muted-foreground">
                     {
                         isOpen || startDatetime !== "" || endDatetime !== "" ?
@@ -46,7 +47,7 @@ const TimeRangeChip = memo(function TimeRangeChip(props) {
                             <AddFilled onClick={() => setIsOpen(true)} />
                     }
                 </button>
-                <button ref={refs.setReference} {...getReferenceProps()} className="pl-1 text-sm text-muted-foreground font-medium">
+                <button ref={refs.setReference} {...getReferenceProps()} className="pl-1 max-w-xs sm:max-w-none text-sm text-muted-foreground font-medium">
                     {
                         startDatetime !== "" || endDatetime !== "" ?
                             <Fragment>
@@ -67,7 +68,7 @@ const TimeRangeChip = memo(function TimeRangeChip(props) {
                                     endDatetime={endDatetime} setEndDatetime={setEndDatetime}
                                     startNanos={startNanos} setStartNanos={setStartNanos}
                                     endNanos={endNanos} setEndNanos={setEndNanos}
-                                    setTimeRangeString={setTimeRangeString} setIsOpen={setIsOpen} />
+                                    setIsOpen={setIsOpen} />
                             </div>
                         </div>
                     </FloatingFocusManager>

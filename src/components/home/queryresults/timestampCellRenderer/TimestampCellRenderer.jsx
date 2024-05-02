@@ -3,7 +3,7 @@ function TimestampCellRenderer(props) {
     const nanos = props.value.value.timestampValue.nanoseconds.toString();
     return (
         <span>
-            {epochs}.{nanos}
+            {epochs}:{nanos}
         </span>
     )
 }

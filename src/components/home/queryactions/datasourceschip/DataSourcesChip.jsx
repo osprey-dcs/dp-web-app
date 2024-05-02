@@ -13,7 +13,6 @@ const propTypes = {
 const DataSourcesChip = memo(function DataSourcesChip(props) {
     const [dataSourcesString, setDataSourcesString] = useState("");
     const [dataSourcesRegex, setDataSourcesRegex] = useState("");
-    const [dataSourcesPopulated, setDataSourcesPopulated] = useState(Object.keys(props.dataSources).length !== 0);
     const [useRegex, setUseRegex] = useState(false);
 
     const [isOpen, setIsOpen] = useState();
@@ -32,14 +31,13 @@ const DataSourcesChip = memo(function DataSourcesChip(props) {
 
     function handleClear() {
         props.setDataSources({});
-        setDataSourcesPopulated(false);
         setDataSourcesString("");
         setDataSourcesRegex("");
     }
 
     return (
         <Fragment>
-            <div ref={refs.setPositionReference} className={"mr-4 px-2 max-w-sm overflow-hidden sm:max-w-none flex items-center border border-muted-foreground rounded-full hover:cursor-pointer" + (dataSourcesString !== "" || dataSourcesRegex !== "" ? '' : ' border-dashed')}>
+            <div ref={refs.setPositionReference} className={"mr-4 chip-input" + (dataSourcesString !== "" || dataSourcesRegex !== "" ? '' : ' border-dashed')}>
                 <button className="text-muted-foreground">
                     {
                         isOpen || dataSourcesString !== "" || dataSourcesRegex !== "" ?
@@ -47,7 +45,7 @@ const DataSourcesChip = memo(function DataSourcesChip(props) {
                             <AddFilled onClick={() => setIsOpen(true)} />
                     }
                 </button>
-                <button ref={refs.setReference} {...getReferenceProps()} className="pl-1 text-sm text-muted-foreground font-medium">
+                <button ref={refs.setReference} {...getReferenceProps()} className="pl-1 max-w-xs sm:max-w-none text-sm text-muted-foreground font-medium">
                     {
                         dataSourcesString !== "" || dataSourcesRegex !== "" ?
                             <Fragment>
@@ -68,7 +66,7 @@ const DataSourcesChip = memo(function DataSourcesChip(props) {
                         <div ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
                             <div style={transitionStyles} className="p-5 w-64 border rounded bg-background shadow-md">
                                 <DataSourcesActions
-                                    setDataSources={props.setDataSources} setDataSourcesPopulated={setDataSourcesPopulated}
+                                    setDataSources={props.setDataSources}
                                     dataSourcesString={dataSourcesString} setDataSourcesString={setDataSourcesString}
                                     dataSourcesRegex={dataSourcesRegex} setDataSourcesRegex={setDataSourcesRegex}
                                     useRegex={useRegex} setUseRegex={setUseRegex}

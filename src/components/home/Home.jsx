@@ -1,7 +1,7 @@
 import { useState } from "react";
-
-import QueryActions from "@/components/home/queryactions/QueryActions";
-import QueryResults from "@/components/home/queryresults/QueryResults";
+import AddDatasetControl from "./addDatasetControl/AddDatasetControl";
+import QueryActions from "@/components/home/queryActions/QueryActions";
+import QueryResults from "@/components/home/queryResults/QueryResults";
 
 function Home() {
     const [resultData, setResultData] = useState({})
@@ -10,6 +10,7 @@ function Home() {
         <div className="h-full flex flex-col" data-testid="home">
             <QueryActions setResultData={setResultData} />
             <QueryResults resultData={resultData} />
+            <AddDatasetControl resultData={resultData} />
         </div>
     );
 }

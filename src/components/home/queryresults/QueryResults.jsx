@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import DataValueCellRenderer from "./dataValueCellRenderer/DataValueCellRenderer";
 import TimestampCellRenderer from "./timestampCellRenderer/TimestampCellRenderer";
@@ -14,6 +14,7 @@ const propTypes = {
 }
 
 function QueryResults(props) {
+    const gridRef = useRef();
     const [rowData, setRowData] = useState([]);
     const [colDefs, setColDefs] = useState([]);
 
@@ -23,8 +24,11 @@ function QueryResults(props) {
     }), []);
 
     useMemo(() => {
-        console.log("useMemo ran");
-        if (Object.keys(props.resultData).length !== 0) {
+        if (props.resultData === undefined) {
+            gridRef.current?.api.showLoadingOverlay();
+        } else if (Object.keys(props.resultData).length === 0) {
+            gridRef.current?.api.showNoRowsOverlay();
+        } else if (typeof props.resultData === 'object') {
             setColDefs(getColDefs(props.resultData))
             setRowData(props.resultData.tableResult.rowMapTable.rows.map(row => row.columnValues))
         }
@@ -34,6 +38,7 @@ function QueryResults(props) {
     return (
         <div className="ag-theme-quartz h-full pb-4 flex-grow">
             <AgGridReact
+                ref={gridRef}
                 components={components}
                 rowData={rowData}
                 columnDefs={colDefs}

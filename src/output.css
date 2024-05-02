@@ -469,8 +469,11 @@ video {
 
 .ag-theme-quartz {
   --ag-border-color: hsl(214.3, 31.8%, 91.4%);
+  --ag-foreground-color: hsl(222.2, 84%, 4.9%);
   --ag-background-color: hsl(0, 0%, 100%);
-  --ag-header-background-color: hsla(217.2, 32.6%, 17.5%, 0.025);
+  --ag-header-foreground-color: hsl(222.2, 84%, 4.9%);
+  --ag-header-background-color: hsl(210, 40%, 96.1%);
+  --ag-row-hover-color: hsla(210, 40%, 96.1%, 0.5);
 }
 
 * {
@@ -585,10 +588,33 @@ body {
 .btn-std {
   border-radius: 0.25rem;
   background-color: hsl(var(--primary));
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
   font-size: 0.875rem;
   line-height: 1.25rem;
   font-weight: 500;
   color: hsl(var(--primary-foreground));
+}
+
+.btn-std:hover {
+  background-color: hsl(var(--primary) / 0.9);
+}
+
+.btn-alt {
+  border-radius: 0.25rem;
+  border-width: 1px;
+  background-color: hsl(var(--background));
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: hsl(var(--foreground));
+}
+
+.btn-alt:hover {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
 }
 
 .input-std {
@@ -619,6 +645,22 @@ body {
   outline-style: solid;
 }
 
+.chip-input {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 9999px;
+  border-width: 1px;
+  border-color: hsl(var(--muted-foreground));
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.chip-input:hover {
+  cursor: pointer;
+  background-color: hsl(var(--muted));
+}
+
 .pointer-events-none {
   pointer-events: none;
 }
@@ -639,8 +681,16 @@ body {
   position: relative;
 }
 
+.bottom-10 {
+  bottom: 2.5rem;
+}
+
 .right-1 {
   right: 0.25rem;
+}
+
+.right-\[6\.15\%\] {
+  right: 6.15%;
 }
 
 .top-0 {
@@ -663,12 +713,21 @@ body {
   z-index: 100;
 }
 
+.mx-5 {
+  margin-left: 1.25rem;
+  margin-right: 1.25rem;
+}
+
 .mb-2 {
   margin-bottom: 0.5rem;
 }
 
 .mb-4 {
   margin-bottom: 1rem;
+}
+
+.mb-5 {
+  margin-bottom: 1.25rem;
 }
 
 .mr-1 {
@@ -703,12 +762,20 @@ body {
   display: none;
 }
 
+.h-14 {
+  height: 3.5rem;
+}
+
 .h-4 {
   height: 1rem;
 }
 
 .h-5 {
   height: 1.25rem;
+}
+
+.h-6 {
+  height: 1.5rem;
 }
 
 .h-8 {
@@ -723,6 +790,10 @@ body {
   height: 100vh;
 }
 
+.max-h-40 {
+  max-height: 10rem;
+}
+
 .max-h-screen {
   max-height: 100vh;
 }
@@ -735,12 +806,24 @@ body {
   width: 91.666667%;
 }
 
+.w-14 {
+  width: 3.5rem;
+}
+
 .w-4 {
   width: 1rem;
 }
 
+.w-5 {
+  width: 1.25rem;
+}
+
 .w-5\/12 {
   width: 41.666667%;
+}
+
+.w-6 {
+  width: 1.5rem;
 }
 
 .w-64 {
@@ -759,8 +842,8 @@ body {
   width: 100vw;
 }
 
-.max-w-sm {
-  max-width: 24rem;
+.max-w-xs {
+  max-width: 20rem;
 }
 
 .shrink-0 {
@@ -873,11 +956,6 @@ body {
   border-color: hsl(var(--muted-foreground));
 }
 
-.border-red-500 {
-  --tw-border-opacity: 1;
-  border-color: rgb(239 68 68 / var(--tw-border-opacity));
-}
-
 .border-transparent {
   border-color: transparent;
 }
@@ -888,6 +966,10 @@ body {
 
 .bg-destructive {
   background-color: hsl(var(--destructive));
+}
+
+.bg-primary {
+  background-color: hsl(var(--primary));
 }
 
 .bg-transparent {
@@ -910,11 +992,6 @@ body {
   padding: 1.25rem;
 }
 
-.px-2 {
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-}
-
 .px-3 {
   padding-left: 0.75rem;
   padding-right: 0.75rem;
@@ -930,18 +1007,21 @@ body {
   padding-right: 1.25rem;
 }
 
-.py-2 {
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-}
-
 .py-3 {
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
 }
 
+.pb-2 {
+  padding-bottom: 0.5rem;
+}
+
 .pb-4 {
   padding-bottom: 1rem;
+}
+
+.pb-5 {
+  padding-bottom: 1.25rem;
 }
 
 .pl-1 {
@@ -954,6 +1034,10 @@ body {
 
 .pr-6 {
   padding-right: 1.5rem;
+}
+
+.pt-5 {
+  padding-top: 1.25rem;
 }
 
 .text-2xl {
@@ -978,6 +1062,10 @@ body {
   line-height: 1;
 }
 
+.text-destructive {
+  color: hsl(var(--destructive));
+}
+
 .text-destructive-foreground {
   color: hsl(var(--destructive-foreground));
 }
@@ -994,9 +1082,8 @@ body {
   color: hsl(var(--muted-foreground));
 }
 
-.text-red-500 {
-  --tw-text-opacity: 1;
-  color: rgb(239 68 68 / var(--tw-text-opacity));
+.text-primary-foreground {
+  color: hsl(var(--primary-foreground));
 }
 
 .opacity-0 {
@@ -1073,8 +1160,8 @@ body {
   }
 }
 
-.hover\:cursor-pointer:hover {
-  cursor: pointer;
+.hover\:bg-primary\/90:hover {
+  background-color: hsl(var(--primary) / 0.9);
 }
 
 .hover\:bg-secondary:hover {

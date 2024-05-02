@@ -67,8 +67,11 @@
 
   .ag-theme-quartz {
     --ag-border-color: hsl(214.3, 31.8%, 91.4%);
+    --ag-foreground-color: hsl(222.2, 84%, 4.9%);
     --ag-background-color: hsl(0, 0%, 100%);
-    --ag-header-background-color: hsla(217.2, 32.6%, 17.5%, 0.025);
+    --ag-header-foreground-color: hsl(222.2, 84%, 4.9%);
+    --ag-header-background-color: hsl(210, 40%, 96.1%);
+    --ag-row-hover-color: hsla(210, 40%, 96.1%, 0.5);
   }
 }
 
@@ -83,10 +86,18 @@
 
 @layer components {
   .btn-std {
-    @apply rounded text-sm font-medium text-primary-foreground bg-primary;
+    @apply py-2 rounded text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90;
+  }
+
+  .btn-alt {
+    @apply py-2 border rounded text-sm font-medium text-foreground bg-background hover:bg-accent hover:text-accent-foreground;
   }
 
   .input-std {
     @apply px-2 py-1 h-9 text-sm rounded border border-input focus:outline outline-1 outline-ring bg-transparent placeholder:text-muted-foreground;
+  }
+
+  .chip-input {
+    @apply px-2 overflow-hidden flex items-center border border-muted-foreground rounded-full hover:cursor-pointer hover:bg-muted;
   }
 }
