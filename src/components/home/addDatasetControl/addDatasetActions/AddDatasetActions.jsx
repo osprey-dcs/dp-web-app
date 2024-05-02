@@ -1,15 +1,17 @@
 import PropTypes from "prop-types";
-import { Fragment, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { formatDate } from "@/lib/utils"
 import { PlusIcon } from "@radix-ui/react-icons";
 import { cn, validateDate, validateNanos } from "@/lib/utils";
-import { FilterErrorMessage } from "@/components/ui/FilterErrorMessage"
+import { FilterErrorMessage } from "@/components/ui/FilterErrorMessage";
+import DataPlatformApi from "@/domain/grpc-client/DataPlatformApi";
 
 const propTypes = {
     setIsOpen: PropTypes.func,
 }
 
 function AddDatasetActions(props) {
+    const api = useMemo(() => new DataPlatformApi(), []);
     const maxDate = formatDate(new Date());
     const [showAddBlockActions, setShowAddBlockActions] = useState(false);
     const [dataBlocks, setDataBlocks] = useState([]);
@@ -28,7 +30,7 @@ function AddDatasetActions(props) {
     const [endNanosErrClass, setEndNanosErrClass] = useState("");
     const [dataSourcesErrClass, setDataSourcesErrClass] = useState("")
 
-    function handleApply() {
+    function handleAddBlock() {
         const validDate = validateDate(startDatetime, endDatetime, startNanos, endNanos, setStartDateErrClass, setEndDateErrClass, setStartNanosErrClass, setEndNanosErrClass);
         const validNanos = validateNanos(startNanos, endNanos, setStartNanosErrClass, setEndNanosErrClass);
 
@@ -66,6 +68,16 @@ function AddDatasetActions(props) {
         setEndDatetime("");
         setEndNanos("");
         setDataSourcesString("");
+    }
+
+    async function handleAddSet() {
+        const queryParams = {
+            description: description,
+            dataBlocks: dataBlocks
+        }
+        const result = await api.createDataSet(queryParams);
+        console.log(result);
+        props.setIsOpen(false)
     }
 
     return (
@@ -116,7 +128,7 @@ function AddDatasetActions(props) {
                         ></input>
                         <FilterErrorMessage>{errText}</FilterErrorMessage>
                         <button
-                            onClick={handleApply}
+                            onClick={handleAddBlock}
                             className="btn-std w-full mb-2"
                         >
                             Add Block
@@ -132,10 +144,10 @@ function AddDatasetActions(props) {
                     <div className="mx-5 mb-5 flex flex-col">
                         <textarea className="input-std w-full max-h-40 mb-2" placeholder="Description" value={description} onChange={e => setDescription(e.target.value)} />
                         {
-                            dataBlocks.map(block => (
-                                <div className="mb-2 flex flex-row text-sm font-medium">
-                                    {block.pvNames.map(pv => (
-                                        <div>{pv}</div>
+                            dataBlocks.map((block, i) => (
+                                <div key={i} className="mb-2 flex flex-row text-sm font-medium">
+                                    {block.pvNames.map((pv, j) => (
+                                        <div key={j}>{pv}</div>
                                     ))}
                                 </div>
                             ))
@@ -147,7 +159,7 @@ function AddDatasetActions(props) {
                             <PlusIcon />&nbsp;
                             Add Data Block
                         </button>
-                        <button onClick={() => props.setIsOpen(false)} className="btn-std w-full">
+                        <button onClick={handleAddSet} className="btn-std w-full">
                             Create Set
                         </button>
                     </div>

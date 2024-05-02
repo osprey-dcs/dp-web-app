@@ -1,5 +1,6 @@
 import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport'
 import { DpQueryServiceClient } from "./proto-ts/query.client";
+import { DpAnnotationServiceClient } from './proto-ts/annotation.client';
 
 const hostname = import.meta.env.VITE_QUERY_HOSTNAME;
 const transport = new GrpcWebFetchTransport({
@@ -10,7 +11,8 @@ export default class DataPlatformApi {
 
     constructor() {
         console.log("DataPlatform(): hostname: " + hostname);
-        this.client = new DpQueryServiceClient(transport);
+        this.queryClient = new DpQueryServiceClient(transport);
+        this.annotationClient = new DpAnnotationServiceClient(transport);
     }
 
     handleStatus = (statusObj) => {
@@ -59,24 +61,7 @@ export default class DataPlatformApi {
             }
         }
 
-        const oldQuery = {
-            request: {
-                oneofKind: "querySpec",
-                querySpec: {
-                    beginTime: {
-                        epochSeconds: queryParams.startEpochs,
-                        nanoseconds: queryParams.startNanos
-                    },
-                    endTime: {
-                        epochSeconds: queryParams.endEpochs,
-                        nanoseconds: queryParams.endNanos
-                    },
-                    pvNames: queryParams.pvNames
-                }
-            }
-        }
-
-        const { status, response } = await this.client.queryTable(query);
+        const { status, response } = await this.queryClient.queryTable(query);
         const result = response.result;
 
         if (!this.handleStatus(status)) return;
@@ -109,12 +94,47 @@ export default class DataPlatformApi {
             }
         }
 
-        const { status, response } = await this.client.queryMetadata(pvPatternQuery);
+        const { status, response } = await this.queryClient.queryMetadata(pvPatternQuery);
         const result = response.result;
 
         if (!this.handleStatus(status)) return;
         if (!this.handleExceptionalResult(result)) return;
 
         console.log(result.metadataResult);
+    }
+
+    createDataSet = async (queryParams) => {
+        const query = {
+            dataSet: {
+                description: queryParams.description,
+                dataBlocks: []
+            }
+        }
+
+        for (let i = 0; i < queryParams.dataBlocks.length; ++i) {
+            const inputBlock = queryParams.dataBlocks[i]
+            const queryBlock = {
+                beginTime: {
+                    epochSeconds: inputBlock.startEpochs,
+                    nanoseconds: inputBlock.startNanos
+                },
+                endTime: {
+                    epochSeconds: inputBlock.endEpochs,
+                    nanoseconds: inputBlock.endNanos
+                },
+                pvNames: inputBlock.pvNames
+            }
+            query.dataSet.dataBlocks.push(queryBlock);
+        }
+        console.log("QUERY");
+        console.log(query);
+        const { status, response } = await this.annotationClient.createDataSet(query);
+        const result = response.result;
+
+        if (!this.handleStatus(status)) return;
+        const exceptionalResult = this.handleExceptionalResult(result);
+        if (!exceptionalResult.status) return exceptionalResult.message;
+
+        return result;
     }
 }
