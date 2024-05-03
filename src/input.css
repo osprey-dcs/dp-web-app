@@ -98,6 +98,6 @@
   }
 
   .chip-input {
-    @apply px-2 overflow-hidden flex items-center border border-muted-foreground rounded-full hover:cursor-pointer hover:bg-muted;
+    @apply px-2 overflow-hidden flex items-center bg-background border border-muted-foreground rounded-full hover:cursor-pointer hover:bg-muted;
   }
 }

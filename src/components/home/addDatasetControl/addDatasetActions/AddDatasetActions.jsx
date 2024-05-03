@@ -3,7 +3,10 @@ import { Fragment, useMemo, useState } from "react";
 import { formatDate } from "@/lib/utils"
 import { PlusIcon } from "@radix-ui/react-icons";
 import { cn, validateDate, validateNanos } from "@/lib/utils";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { FilterErrorMessage } from "@/components/ui/FilterErrorMessage";
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast"
 import DataPlatformApi from "@/domain/grpc-client/DataPlatformApi";
 
 const propTypes = {
@@ -12,6 +15,7 @@ const propTypes = {
 
 function AddDatasetActions(props) {
     const api = useMemo(() => new DataPlatformApi(), []);
+    const { toast } = useToast();
     const maxDate = formatDate(new Date());
     const [showAddBlockActions, setShowAddBlockActions] = useState(false);
     const [dataBlocks, setDataBlocks] = useState([]);
@@ -76,14 +80,21 @@ function AddDatasetActions(props) {
             dataBlocks: dataBlocks
         }
         const result = await api.createDataSet(queryParams);
-        console.log(result);
-        props.setIsOpen(false)
+
+        if (result.oneofKind === "createDataSetResult") {
+            props.setIsOpen(false)
+            toast({
+                title: "Data Set Successfully Created",
+                description: "Add an annotation?",
+                action: <ToastAction onClick={() => console.log("annotated")} altText="Annotate">Annotate</ToastAction>,
+            })
+        }
     }
 
     return (
         <Fragment>
             <div className=" w-full mb-4 px-5 pt-5 pb-2 border-b">
-                <h1 className="font-semibold">Create Basis Set</h1>
+                <h1 className="font-semibold">Create Data Set</h1>
             </div>
             {
                 showAddBlockActions ? (
@@ -142,16 +153,21 @@ function AddDatasetActions(props) {
                     </div>
                 ) : (
                     <div className="mx-5 mb-5 flex flex-col">
-                        <textarea className="input-std w-full max-h-40 mb-2" placeholder="Description" value={description} onChange={e => setDescription(e.target.value)} />
-                        {
-                            dataBlocks.map((block, i) => (
-                                <div key={i} className="mb-2 flex flex-row text-sm font-medium">
-                                    {block.pvNames.map((pv, j) => (
-                                        <div key={j}>{pv}</div>
-                                    ))}
-                                </div>
-                            ))
-                        }
+                        <textarea className={cn("input-std w-full max-h-40", !(dataBlocks.length > 0) && "mb-2")} placeholder="Description" value={description} onChange={e => setDescription(e.target.value)} />
+                        <Accordion type="single" collapsible className={dataBlocks.length > 0 && "mb-2"}>
+                            {
+                                dataBlocks.map((block, i) => (
+                                    <AccordionItem value={`item-${i + 1}`}>
+                                        <AccordionTrigger>Block {i + 1}</AccordionTrigger>
+                                        <AccordionContent>
+                                            {block.pvNames.map((pv, j) => (
+                                                <div key={j}>{pv}</div>
+                                            ))}
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                ))
+                            }
+                        </Accordion>
                         <button
                             onClick={() => setShowAddBlockActions(true)}
                             className="mb-4 flex flew row items-center rounded text-sm text-muted-foreground hover:text-foreground"

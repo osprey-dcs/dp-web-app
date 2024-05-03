@@ -36,7 +36,7 @@ function QueryResults(props) {
 
 
     return (
-        <div className="ag-theme-quartz h-full pb-4 flex-grow">
+        <div className="ag-theme-quartz h-full mb-4 flex-grow shadow-sm rounded-lg">
             <AgGridReact
                 ref={gridRef}
                 components={components}
