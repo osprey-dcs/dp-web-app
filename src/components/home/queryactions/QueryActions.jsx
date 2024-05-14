@@ -20,8 +20,6 @@ const QueryActions = memo(function QueryActions({
     const api = useMemo(() => new DataPlatformApi(), []);
     const { toast } = useToast();
 
-    console.log(dataSources);
-
     async function runQuery(queryParams) {
         setResultData(undefined);
         const result = useTimeRange

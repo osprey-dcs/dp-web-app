@@ -124,8 +124,7 @@ export default class DataPlatformApi {
             }
             query.dataSet.dataBlocks.push(queryBlock);
         }
-        console.log("QUERY");
-        console.log(query);
+
         const { status, response } = await this.annotationClient.createDataSet(query);
         const result = response.result;
 
