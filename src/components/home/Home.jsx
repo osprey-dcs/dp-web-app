@@ -1,14 +1,14 @@
-import { useState } from "react";
-import AddDatasetControl from "./addDatasetControl/AddDatasetControl";
 import QueryActions from "@/components/home/queryActions/QueryActions";
 import QueryResults from "@/components/home/queryResults/QueryResults";
+import { useState } from "react";
+import AddDatasetControl from "./addDatasetControl/AddDatasetControl";
 
 function Home() {
-    const [resultData, setResultData] = useState({})
+    const [resultData, setResultData] = useState({});
 
     return (
         <div className="h-full flex flex-col" data-testid="home">
-            <QueryActions setResultData={setResultData} />
+            <QueryActions setResultData={setResultData} useTimeRange={true} />
             <QueryResults resultData={resultData} />
             <AddDatasetControl resultData={resultData} />
         </div>

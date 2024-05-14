@@ -1,6 +1,6 @@
-import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport'
-import { DpQueryServiceClient } from "./proto-ts/query.client";
+import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport';
 import { DpAnnotationServiceClient } from './proto-ts/annotation.client';
+import { DpQueryServiceClient } from "./proto-ts/query.client";
 
 const hostname = import.meta.env.VITE_QUERY_HOSTNAME;
 const transport = new GrpcWebFetchTransport({
@@ -72,35 +72,33 @@ export default class DataPlatformApi {
     }
 
     queryMetadata = async (queryParams) => {
-        const pvNamesQuery = {
-            querySpec: {
-                pvNameSpec: {
-                    oneofKind: "pvNameList",
-                    pvNameList: {
-                        pvNames: ["dpTest_601", "dpTest_602"]
-                    }
+        const query = {}
+        if (queryParams.useRegex) {
+            query.pvNameSpec = {
+                oneofKind: "pvNamePattern",
+                pvNamePattern: {
+                    pattern: queryParams.regexPattern
+                }
+            }
+        } else {
+            query.pvNameSpec = {
+                oneofKind: "pvNameList",
+                pvNameList: {
+                    pvNames: queryParams.pvNames
                 }
             }
         }
 
-        const pvPatternQuery = {
-            querySpec: {
-                pvNameSpec: {
-                    oneofKind: "pvNamePattern",
-                    pvNamePattern: {
-                        pattern: "^dpTest_"
-                    }
-                }
-            }
-        }
-
-        const { status, response } = await this.queryClient.queryMetadata(pvPatternQuery);
+        const { status, response } = await this.queryClient.queryMetadata(query);
         const result = response.result;
 
         if (!this.handleStatus(status)) return;
-        if (!this.handleExceptionalResult(result)) return;
+        const exceptionalResult = this.handleExceptionalResult(result);
+        if (!exceptionalResult.status) return exceptionalResult.message;
 
         console.log(result.metadataResult);
+
+        return result.metadataResult;
     }
 
     createDataSet = async (queryParams) => {

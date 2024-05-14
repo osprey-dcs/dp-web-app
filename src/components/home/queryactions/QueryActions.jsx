@@ -1,34 +1,41 @@
-import { memo, useMemo, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import { memo, useMemo, useState } from "react";
 
 import PropTypes from "prop-types";
 
-import TimeRangeChip from "./timechip/TimeRangeChip";
-import DataSourcesChip from "./datasourceschip/DataSourcesChip";
 import DataPlatformApi from "@/domain/grpc-client/DataPlatformApi";
+import DataSourcesChip from "./datasourceschip/DataSourcesChip";
+import TimeRangeChip from "./timechip/TimeRangeChip";
 
 const propTypes = {
     setResultData: PropTypes.func,
-}
+};
 
-const QueryActions = memo(function QueryActions(props) {
+const QueryActions = memo(function QueryActions({
+    setResultData,
+    useTimeRange,
+}) {
     const [timeRange, setTimeRange] = useState({});
     const [dataSources, setDataSources] = useState({});
     const api = useMemo(() => new DataPlatformApi(), []);
     const { toast } = useToast();
 
+    console.log(dataSources);
+
     async function runQuery(queryParams) {
-        props.setResultData(undefined);
-        const result = await api.queryDataTable(queryParams);
-        if (typeof result !== 'object') {
-            props.setResultData({});
+        setResultData(undefined);
+        const result = useTimeRange
+            ? await api.queryDataTable(queryParams)
+            : await api.queryMetadata(queryParams);
+        if (typeof result !== "object") {
+            setResultData({});
             toast({
                 title: "Error: Query Too Large",
                 description: result,
-                variant: "destructive"
-            })
+                variant: "destructive",
+            });
         } else {
-            props.setResultData(result);
+            setResultData(result);
         }
     }
 
@@ -40,29 +47,39 @@ const QueryActions = memo(function QueryActions(props) {
             endNanos: timeRange.endNanos,
             pvNames: dataSources.pvNames,
             useRegex: dataSources.useRegex,
-            regexPattern: dataSources.regexPattern
-        }
-        if (!queryParams.startEpochs || !queryParams.endEpochs || !(queryParams.pvNames || queryParams.regexPattern)) {
+            regexPattern: dataSources.regexPattern,
+        };
+        if (
+            ((!queryParams.startEpochs || !queryParams.endEpochs) &&
+                useTimeRange) ||
+            !(queryParams.pvNames || queryParams.regexPattern)
+        ) {
             toast({
                 title: "Error: Invalid Query",
-                description: "Specify a time range and data sources to run a query",
-                variant: "destructive"
-            })
+                description:
+                    "Specify a time range and data sources to run a query",
+                variant: "destructive",
+            });
             return;
         }
 
-        runQuery(queryParams)
+        runQuery(queryParams);
     }
 
     return (
         <div className="py-3 flex items-center justify-between">
             <div className="flex flex-row z-10">
-                <TimeRangeChip setTimeRange={setTimeRange} />
-                <DataSourcesChip dataSources={dataSources} setDataSources={setDataSources} />
+                {useTimeRange && <TimeRangeChip setTimeRange={setTimeRange} />}
+                <DataSourcesChip
+                    dataSources={dataSources}
+                    setDataSources={setDataSources}
+                />
             </div>
-            <button className="btn-std px-5" onClick={handleSubmit}>Run Query</button>
+            <button className="btn-std px-5" onClick={handleSubmit}>
+                Run Query
+            </button>
         </div>
-    )
+    );
 });
 
 QueryActions.propTypes = propTypes;
