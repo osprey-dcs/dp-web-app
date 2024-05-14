@@ -1,9 +1,7 @@
+import { getDataColDefs } from "@/lib/utils";
 import PropTypes from "prop-types";
 import { useMemo, useRef, useState } from "react";
-
 import DataValueCellRenderer from "./dataValueCellRenderer/DataValueCellRenderer";
-import TimestampCellRenderer from "./timestampCellRenderer/TimestampCellRenderer";
-import { getColDefs } from "/src/lib/utils";
 
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
@@ -19,10 +17,7 @@ function QueryResults(props) {
     const [colDefs, setColDefs] = useState([]);
 
     const components = useMemo(
-        () => ({
-            dataValueCellRenderer: DataValueCellRenderer,
-            timestampCellRenderer: TimestampCellRenderer,
-        }),
+        () => ({ dataValueCellRenderer: DataValueCellRenderer }),
         []
     );
 
@@ -32,7 +27,7 @@ function QueryResults(props) {
         } else if (Object.keys(props.resultData).length === 0) {
             gridRef.current?.api.showNoRowsOverlay();
         } else if (typeof props.resultData === "object") {
-            setColDefs(getColDefs(props.resultData));
+            setColDefs(getDataColDefs(props.resultData));
             setRowData(
                 props.resultData.tableResult.rowMapTable.rows.map(
                     (row) => row.columnValues

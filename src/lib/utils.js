@@ -1,5 +1,5 @@
-import { clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs) {
     return twMerge(clsx(inputs))
@@ -90,7 +90,7 @@ export function validateNanos(startNanos, endNanos, setStartNanosErrClass, setEn
     return startNanosValid && endNanosValid;
 }
 
-export function getColDefs(resultData) {
+export function getDataColDefs(resultData) {
     let colDefs = []
 
     const rowMapTable = resultData.tableResult.rowMapTable
@@ -100,7 +100,8 @@ export function getColDefs(resultData) {
                 field: rowMapTable.columnNames[i],
                 pinned: "left",
                 sortable: false,
-                cellRenderer: "timestampCellRenderer",
+                valueFormatter: p => p.value.value.timestampValue.epochSeconds.toString() + ":" + p.value.value.timestampValue.nanoseconds.toString()
+                // cellRenderer: "timestampCellRenderer",
             })
         }
         else {
@@ -109,6 +110,52 @@ export function getColDefs(resultData) {
                 sortable: false,
                 cellRenderer: "dataValueCellRenderer",
             });
+        }
+    }
+    return colDefs;
+}
+
+export function getMetadataColDefs(pv) {
+    let colDefs = []
+    for (let attribute in pv) {
+        switch (attribute) {
+            case "firstTimestamp":
+                colDefs.push({
+                    field: "firstTimestamp",
+                    headerName: "First Timestamp",
+                    sortable: false,
+                    flex: 1,
+                    valueFormatter: p => p.value.epochSeconds + ":" + p.value.nanoseconds
+                })
+                break;
+            case "lastTimestamp":
+                colDefs.push({
+                    field: "lastTimestamp",
+                    headerName: "Last Timestamp",
+                    sortable: false,
+                    flex: 1,
+                    valueFormatter: p => p.value.epochSeconds + ":" + p.value.nanoseconds
+                })
+                break;
+            case "lastSamplingClock":
+                colDefs.push({
+                    field: "lastSamplingClock",
+                    headerName: "Last Sampling Clock",
+                    sortable: false,
+                    flex: 1,
+                    valueFormatter: p => p.value.count
+                })
+                break;
+            default:
+                // Convert camel case to regular string
+                let headerWords = attribute.split(/(?=[A-Z])/);
+                let headerName = headerWords.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+
+                colDefs.push({
+                    field: attribute,
+                    headerName: headerName,
+                    flex: 1
+                })
         }
     }
     return colDefs;
