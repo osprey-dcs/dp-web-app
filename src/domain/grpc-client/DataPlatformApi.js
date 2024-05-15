@@ -101,16 +101,20 @@ export default class DataPlatformApi {
         return result.metadataResult;
     }
 
-    createDataSet = async (queryParams) => {
+    queryMetadata = async (queryParams) => {
+
+    }
+
+    createDataSet = async (setParams) => {
         const query = {
             dataSet: {
-                description: queryParams.description,
+                description: setParams.description,
                 dataBlocks: []
             }
         }
 
-        for (let i = 0; i < queryParams.dataBlocks.length; ++i) {
-            const inputBlock = queryParams.dataBlocks[i]
+        for (let i = 0; i < setParams.dataBlocks.length; ++i) {
+            const inputBlock = setParams.dataBlocks[i]
             const queryBlock = {
                 beginTime: {
                     epochSeconds: inputBlock.startEpochs,

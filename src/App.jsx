@@ -1,3 +1,4 @@
+import BrowseAnnotations from "@/components/browseAnnotations/BrowseAnnotations";
 import BrowseMetadata from "@/components/browseMetadata/BrowseMetadata";
 import { Toaster } from "@/components/ui/toaster";
 import { Route, Switch } from "wouter";
@@ -15,6 +16,7 @@ function App() {
             <div className="w-11/12 h-full">
                 <Switch>
                     <Route path="/metadata" component={BrowseMetadata} />
+                    <Route path="/annotations" component={BrowseAnnotations} />
                     <Route path="/saved-sets">sets</Route>
                     <Route path="/account">account</Route>
                     <Route path="/" component={Home} />
