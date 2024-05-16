@@ -156,7 +156,44 @@ export function getMetadataColDefs(pv) {
                     headerName: headerName,
                     flex: 1
                 })
+                break;
         }
     }
     return colDefs;
+}
+
+export function getAnnotationColDefs(annotation) {
+    let colDefs = []
+    for (let attribute in annotation) {
+        switch (attribute) {
+            case "annotation":
+                console.log(annotation[attribute].oneofKind)
+                switch (annotation[attribute].oneofKind) {
+                    case "commentAnnotation":
+                        colDefs.push({
+                            field: "annotation",
+                            headerName: "Annotation",
+                            sortable: false,
+                            valueFormatter: p => p.value.commentAnnotation.comment
+                        })
+                        break;
+                    default:
+                        break;
+                }
+            case "dataSet":
+                break;
+            default:
+                let headerWords = attribute.split(/(?=[A-Z])/);
+                let headerName = headerWords.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+
+                colDefs.push({
+                    field: attribute,
+                    headerName: headerName,
+                    flex: 1
+                })
+                break;
+        }
+    }
+
+    return colDefs
 }

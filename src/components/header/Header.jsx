@@ -17,6 +17,7 @@ function Header() {
                 <nav className="w-5/12 lg:w-4/12 xl:w-3/12 hidden sm:flex justify-between items-end">
                     <NavLink href="metadata">Browse Metadata</NavLink>
                     <NavLink href="/">Browse Data</NavLink>
+                    <NavLink href="annotations">Browse Annotations</NavLink>
                     <NavLink href="saved-sets">Saved Sets</NavLink>
                     <NavLink href="account">Account</NavLink>
                 </nav>

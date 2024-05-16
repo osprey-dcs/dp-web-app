@@ -10,19 +10,11 @@ import {
     useRole,
     useTransitionStyles,
 } from "@floating-ui/react";
-import PropTypes from "prop-types";
 import { Fragment, memo, useState } from "react";
-import DataSourcesActions from "./datasourcesactions/DataSourcesActions";
+import IdActions from "./idActions/IdActions";
 
-const propTypes = {
-    dataSources: PropTypes.object,
-    setDataSources: PropTypes.func,
-};
-
-const DataSourcesChip = memo(function DataSourcesChip(props) {
-    const [dataSourcesString, setDataSourcesString] = useState("");
-    const [dataSourcesRegex, setDataSourcesRegex] = useState("");
-    const [useRegex, setUseRegex] = useState(false);
+const IdChip = memo(function IdChip({ queryParams, setQueryParams }) {
+    const [ownerId, setOwnerId] = useState("");
 
     const [isOpen, setIsOpen] = useState();
     const { refs, floatingStyles, context } = useFloating({
@@ -44,9 +36,11 @@ const DataSourcesChip = memo(function DataSourcesChip(props) {
     ]);
 
     function handleClear() {
-        props.setDataSources({});
-        setDataSourcesString("");
-        setDataSourcesRegex("");
+        setQueryParams({
+            ...queryParams,
+            ownerId: "",
+        });
+        setOwnerId("");
     }
 
     return (
@@ -55,15 +49,11 @@ const DataSourcesChip = memo(function DataSourcesChip(props) {
                 ref={refs.setPositionReference}
                 className={cn(
                     "mr-4 chip-input",
-                    dataSourcesString === "" &&
-                        dataSourcesRegex === "" &&
-                        "border-dashed"
+                    ownerId === "" && "border-dashed"
                 )}
             >
                 <button className="text-muted-foreground hover:text-muted-foreground/80">
-                    {isOpen ||
-                    dataSourcesString !== "" ||
-                    dataSourcesRegex !== "" ? (
+                    {isOpen || ownerId !== "" ? (
                         <CloseFilled onClick={handleClear} />
                     ) : (
                         <AddFilled onClick={() => setIsOpen(true)} />
@@ -74,26 +64,17 @@ const DataSourcesChip = memo(function DataSourcesChip(props) {
                     {...getReferenceProps()}
                     className="pl-1 max-w-xs sm:max-w-none text-sm text-muted-foreground font-medium"
                 >
-                    {dataSourcesString !== "" || dataSourcesRegex !== "" ? (
+                    {ownerId === "" ? (
+                        "Owner ID"
+                    ) : (
                         <Fragment>
                             <span className=" mr-1 pr-1 border-r border-muted-foreground text-nowrap">
-                                Data Sources
+                                Owner ID
                             </span>
-                            {useRegex ? (
-                                <span className="text-foreground text-nowrap">
-                                    Pattern: {dataSourcesRegex}
-                                </span>
-                            ) : (
-                                <span className="text-foreground text-nowrap">
-                                    {props.dataSources.pvNames?.length >= 4
-                                        ? props.dataSources.pvNames.length +
-                                          " Items"
-                                        : dataSourcesString}
-                                </span>
-                            )}
+                            <span className="text-foreground text-nowrap">
+                                {ownerId}
+                            </span>
                         </Fragment>
-                    ) : (
-                        "Data Sources"
                     )}
                 </button>
             </div>
@@ -108,15 +89,12 @@ const DataSourcesChip = memo(function DataSourcesChip(props) {
                             style={transitionStyles}
                             className="p-5 w-64 border rounded bg-background shadow-md"
                         >
-                            <DataSourcesActions
-                                setDataSources={props.setDataSources}
-                                dataSourcesString={dataSourcesString}
-                                setDataSourcesString={setDataSourcesString}
-                                dataSourcesRegex={dataSourcesRegex}
-                                setDataSourcesRegex={setDataSourcesRegex}
-                                useRegex={useRegex}
-                                setUseRegex={setUseRegex}
+                            <IdActions
+                                ownerId={ownerId}
+                                setOwnerId={setOwnerId}
                                 setIsOpen={setIsOpen}
+                                queryParams={queryParams}
+                                setQueryParams={setQueryParams}
                             />
                         </div>
                     </div>
@@ -126,5 +104,4 @@ const DataSourcesChip = memo(function DataSourcesChip(props) {
     );
 });
 
-DataSourcesChip.propTypes = propTypes;
-export default DataSourcesChip;
+export default IdChip;

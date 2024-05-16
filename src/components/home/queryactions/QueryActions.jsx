@@ -1,9 +1,7 @@
 import { useToast } from "@/components/ui/use-toast";
-import { memo, useMemo, useState } from "react";
-
-import PropTypes from "prop-types";
-
 import DataPlatformApi from "@/domain/grpc-client/DataPlatformApi";
+import PropTypes from "prop-types";
+import { memo, useMemo, useState } from "react";
 import DataSourcesChip from "./datasourceschip/DataSourcesChip";
 import TimeRangeChip from "./timechip/TimeRangeChip";
 

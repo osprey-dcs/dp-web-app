@@ -96,13 +96,53 @@ export default class DataPlatformApi {
         const exceptionalResult = this.handleExceptionalResult(result);
         if (!exceptionalResult.status) return exceptionalResult.message;
 
-        console.log(result.metadataResult);
-
         return result.metadataResult;
     }
 
-    queryMetadata = async (queryParams) => {
+    queryAnnotations = async (queryParams) => {
+        const query = {
+            criteria: [
+                {
+                    criterion: {
+                        oneofKind: "ownerCriterion",
+                        ownerCriterion: {
+                            ownerId: queryParams.ownerId
+                        }
+                    }
+                }
+            ]
+        }
 
+        const { status, response } = await this.annotationClient.queryAnnotations(query);
+        const result = response.result;
+
+        if (!this.handleStatus(status)) return;
+        const exceptionalResult = this.handleExceptionalResult(result);
+        if (!exceptionalResult.status) return exceptionalResult.message;
+
+        return result;
+    }
+
+    createAnnotation = async () => {
+        const query = {
+            ownerId: "mitchf",
+            dataSetId: "66453cef07eb3219140228cf",
+            annotation: {
+                oneofKind: "commentAnnotation",
+                commentAnnotation: {
+                    comment: "This is a comment annotation"
+                }
+            }
+        }
+
+        const { status, response } = await this.annotationClient.createAnnotation(query)
+        const result = response.result
+
+        if (!this.handleStatus(status)) return;
+        const exceptionalResult = this.handleExceptionalResult(result);
+        if (!exceptionalResult.status) return exceptionalResult.message;
+
+        return result;
     }
 
     createDataSet = async (setParams) => {

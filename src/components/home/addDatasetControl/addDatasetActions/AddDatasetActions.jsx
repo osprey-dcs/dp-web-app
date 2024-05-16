@@ -122,19 +122,24 @@ function AddDatasetActions(props) {
         let toastDescription = "";
         let toastVariant = "default";
         let toastAction = null;
+        console.log(result);
 
         switch (typeof result) {
             case "object":
                 if (result.oneofKind === "createDataSetResult") {
                     props.setIsOpen(false);
                     toastTitle = "Data Set Successfully Created";
-                    toastDescription = "Add an annotation?";
+                    toastDescription = `Copy ${result.createDataSetResult?.dataSetId} to clipboard for annotation creation?`;
                     toastAction = (
                         <ToastAction
-                            onClick={() => console.log("annotated")}
-                            altText="Annotate"
+                            onClick={() =>
+                                navigator.clipboard.writeText(
+                                    result.createDataSetResult?.dataSetId
+                                )
+                            }
+                            altText="Copy"
                         >
-                            Annotate
+                            Copy
                         </ToastAction>
                     );
                 }
