@@ -101,16 +101,33 @@ export default class DataPlatformApi {
 
     queryAnnotations = async (queryParams) => {
         const query = {
-            criteria: [
-                {
-                    criterion: {
-                        oneofKind: "ownerCriterion",
-                        ownerCriterion: {
-                            ownerId: queryParams.ownerId
+            criteria: []
+        }
+
+        for (let key in queryParams) {
+            switch (key) {
+                case "ownerId":
+                    if (queryParams.ownerId === "") break;
+                    query.criteria.push({
+                        criterion: {
+                            oneofKind: "ownerCriterion",
+                            ownerCriterion: {
+                                ownerId: queryParams.ownerId
+                            }
                         }
-                    }
-                }
-            ]
+                    })
+                    break;
+                case "comment":
+                    if (queryParams.comment === "") break;
+                    query.criteria.push({
+                        criterion: {
+                            oneofKind: "commentCriterion",
+                            commentCriterion: {
+                                commentText: queryParams.comment
+                            }
+                        }
+                    })
+            }
         }
 
         const { status, response } = await this.annotationClient.queryAnnotations(query);
@@ -123,20 +140,22 @@ export default class DataPlatformApi {
         return result;
     }
 
-    createAnnotation = async () => {
+    createAnnotation = async (queryParams) => {
         const query = {
-            ownerId: "mitchf",
-            dataSetId: "66453cef07eb3219140228cf",
+            ownerId: queryParams.ownerId,
+            dataSetId: queryParams.dataSetId,
             annotation: {
                 oneofKind: "commentAnnotation",
                 commentAnnotation: {
-                    comment: "This is a comment annotation"
+                    comment: queryParams.comment
                 }
             }
         }
 
         const { status, response } = await this.annotationClient.createAnnotation(query)
         const result = response.result
+
+        console.log(result);
 
         if (!this.handleStatus(status)) return;
         const exceptionalResult = this.handleExceptionalResult(result);

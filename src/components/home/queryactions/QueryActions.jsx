@@ -26,7 +26,7 @@ const QueryActions = memo(function QueryActions({
         if (typeof result !== "object") {
             setResultData({});
             toast({
-                title: "Error: Query Too Large",
+                title: "Error: Exceptional Result",
                 description: result,
                 variant: "destructive",
             });

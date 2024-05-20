@@ -1,9 +1,11 @@
+import { cn } from "@/lib/utils";
 import {
     FloatingFocusManager,
     autoUpdate,
     flip,
     offset,
     shift,
+    size,
     useClick,
     useDismiss,
     useFloating,
@@ -11,7 +13,7 @@ import {
     useRole,
     useTransitionStyles,
 } from "@floating-ui/react";
-import { Cross1Icon, PlusIcon } from "@radix-ui/react-icons";
+import { PlusIcon } from "@radix-ui/react-icons";
 import PropTypes from "prop-types";
 import { Fragment, useState } from "react";
 import AddDatasetActions from "./addDatasetActions/AddDatasetActions";
@@ -26,7 +28,7 @@ function AddDatasetControl(props) {
         open: isOpen,
         onOpenChange: setIsOpen,
         placement: "left-end",
-        middleware: [offset(6), flip(), shift()],
+        middleware: [offset(6), flip(), shift(), size()],
         whileElementsMounted: autoUpdate,
     });
     const { isMounted, styles: transitionStyles } =
@@ -52,11 +54,12 @@ function AddDatasetControl(props) {
                     {...getReferenceProps()}
                     className="fixed bottom-10 right-[6.15%] w-14 h-14 flex justify-center items-center rounded-full z-20 bg-primary hover:bg-primary/90 shadow-md"
                 >
-                    {isOpen ? (
-                        <Cross1Icon className="w-5 h-5 text-primary-foreground" />
-                    ) : (
-                        <PlusIcon className="w-6 h-6 text-primary-foreground" />
-                    )}
+                    <PlusIcon
+                        className={cn(
+                            "w-7 h-7 text-primary-foreground transition-transform duration-200",
+                            isOpen && "rotate-45"
+                        )}
+                    />
                 </button>
                 {isMounted && (
                     <FloatingFocusManager context={context} modal={true}>

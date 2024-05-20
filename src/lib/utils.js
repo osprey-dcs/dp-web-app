@@ -167,7 +167,6 @@ export function getAnnotationColDefs(annotation) {
     for (let attribute in annotation) {
         switch (attribute) {
             case "annotation":
-                console.log(annotation[attribute].oneofKind)
                 switch (annotation[attribute].oneofKind) {
                     case "commentAnnotation":
                         colDefs.push({
@@ -195,5 +194,5 @@ export function getAnnotationColDefs(annotation) {
         }
     }
 
-    return colDefs
+    return colDefs;
 }

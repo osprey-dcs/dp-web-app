@@ -122,7 +122,6 @@ function AddDatasetActions(props) {
         let toastDescription = "";
         let toastVariant = "default";
         let toastAction = null;
-        console.log(result);
 
         switch (typeof result) {
             case "object":

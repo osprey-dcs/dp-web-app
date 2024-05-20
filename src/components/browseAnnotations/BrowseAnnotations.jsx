@@ -1,4 +1,5 @@
 import { useState } from "react";
+import AddAnnotationControl from "./addAnnotationControl/AddAnnotationControl";
 import AnnotationActions from "./annotationActions/AnnotationActions";
 import AnnotationResults from "./annotationResults/AnnotationResults";
 
@@ -9,6 +10,7 @@ function BrowseAnnotations() {
         <div className="h-full flex flex-col" data-testid="home">
             <AnnotationActions setResultData={setResultData} />
             <AnnotationResults resultData={resultData} />
+            <AddAnnotationControl />
         </div>
     );
 }
