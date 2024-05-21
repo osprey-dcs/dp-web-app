@@ -110,7 +110,7 @@ export function getDataColDefs(resultData) {
                 sortable: false,
                 cellRenderer: "dataValueCellRenderer",
                 cellClassRules: {
-                    "bg-blue-200": p => p.value.value.selected
+                    "bg-blue-100": p => p.value.value.selected
                 }
             });
         }
