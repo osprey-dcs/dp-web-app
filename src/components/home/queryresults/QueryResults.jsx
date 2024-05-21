@@ -23,33 +23,27 @@ function QueryResults(props) {
         []
     );
 
-    function selectCell(event) {
-        const rowNode = gridRef.current?.api.getRowNode(event.rowIndex);
-        console.log(rowNode);
-        const columnId = event.column.colId;
-        console.log(event);
-        const newRow = {
-            ...rowNode.data,
-            [columnId]: {
+    function selectRow(rowNode, columnIds) {
+        let newRow = { ...rowNode.data };
+        for (let index in columnIds) {
+            const colId = columnIds[index];
+            newRow[colId] = {
                 value: {
                     oneofKind: "doubleValue",
-                    doubleValue: rowNode.data[columnId].value.doubleValue,
+                    doubleValue: rowNode.data[colId].value.doubleValue,
                     selected:
-                        rowNode.data[columnId].value.selected === undefined
+                        rowNode.data[colId].value.selected === undefined
                             ? true
-                            : !rowNode.data[columnId].value.selected,
+                            : !rowNode.data[colId].value.selected,
                 },
-            },
-        };
+            };
+        }
         rowNode.updateData(newRow);
     }
 
     function getColNames(columns, firstCol, lastCol) {
         const firstIndex = columns.indexOf(firstCol);
         const lastIndex = columns.indexOf(lastCol);
-
-        console.log(firstIndex);
-        console.log(lastIndex);
 
         if (firstIndex > lastIndex) {
             console.error("Start index cannot be greater than end index.");
@@ -78,11 +72,6 @@ function QueryResults(props) {
                 },
             });
         }
-        // const rowNode = gridRef.current?.api.getRowNode(event.rowIndex);
-        // const cols = [Object.keys(rowNode.data)];
-        // let cols = getColNames(Object.keys(rowNode.data))
-        // console.log(cols);
-        // selectCell(event);
     }
 
     useEffect(() => {
@@ -93,7 +82,10 @@ function QueryResults(props) {
                 firstCell.column.name,
                 lastCell.column.name
             );
-            console.log(cols);
+            for (let i = firstCell.row.index; i <= lastCell.row.index; ++i) {
+                const rowNode = gridRef.current?.api.getRowNode(i);
+                selectRow(rowNode, cols);
+            }
         }
     }, [lastCell]);
 
