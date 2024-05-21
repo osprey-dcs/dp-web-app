@@ -109,6 +109,9 @@ export function getDataColDefs(resultData) {
                 field: rowMapTable.columnNames[i],
                 sortable: false,
                 cellRenderer: "dataValueCellRenderer",
+                cellClassRules: {
+                    "bg-blue-200": p => p.value.value.selected
+                }
             });
         }
     }

@@ -1,9 +1,5 @@
 function DataValueCellRenderer(props) {
-    return (
-        <span>
-            {props.value.value.doubleValue}
-        </span>
-    )
+    return <span>{props.value.value.doubleValue}</span>;
 }
 
 export default DataValueCellRenderer;
