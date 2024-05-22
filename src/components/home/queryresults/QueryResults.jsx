@@ -54,6 +54,9 @@ function QueryResults(props) {
     }
 
     function onCellClicked(event) {
+        if (event.colDef.field === "timestamp") {
+            return;
+        }
         if (!firstCell || lastCell) {
             setFirstCell({
                 row: { index: event.rowIndex },
