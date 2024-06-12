@@ -104,8 +104,8 @@ export declare enum QueryDataRequest_CursorOperation_CursorOperationType {
  * Time Series Data Query Response.
  *
  * Contains results from a time series data query.  Used as single response to unary RPC methods, or as a stream in the
- * streaming RPC methods. Contains either ExceptionalResult indicating a problem handling the request, or the
- * data returned by the query.
+ * streaming RPC methods. Contains either ExceptionalResult indicating a problem handling the request, or QueryData
+ * containing the data returned by the query.
  *
  * @generated from protobuf message dp.service.query.QueryDataResponse
  */
@@ -172,7 +172,10 @@ export interface QueryDataResponse_QueryData_DataBucket {
  *
  * Time Series Data Query With Tabular Result Format.
  *
- * Describes the parameters for a time series data query that returns data in a tabular format.
+ * Describes the parameters for a time series data query that returns data in a tabular format.  The request format
+ * is used to specify either row-oriented or column-oriented tabular result format.  Time range must be specified
+ * using begin/endTime fields.  PV names are specified using either an explicit pvNameList or a pvNamePattern
+ * matched by regex.
  *
  * @generated from protobuf message dp.service.query.QueryTableRequest
  */
@@ -228,7 +231,9 @@ export declare enum QueryTableRequest_TableResultFormat {
  * Tabular Time Series Data Query Response.
  *
  * Contains results from a time series data query in a tabular format for use by the DP web application (and other similar
- * uses. Types of response and corresponding message payloads include:
+ * uses. Response message payload is either an ExceptionalResult message indicating a rejection, error,
+ * or empty query result, or a TableResult message containing the query result.  The TableResult is a ColumnTable
+ * if request format is specified to be TABLE_FORMAT_COLUMN, or RowMapTable if format is TABLE_FORMAT_ROW_MAP.
  *
  * @generated from protobuf message dp.service.query.QueryTableResponse
  */
@@ -363,7 +368,8 @@ export interface QueryMetadataRequest {
  *
  * Metadata Query Response.
  *
- * Contains results from a metadata query. Types of response and corresponding message payloads include:
+ * Contains results from a metadata query. Response payload is ExceptionalResult if a rejection, error, or empty query
+ * result is encountered, otherwise is MetadataResult containing results of query.
  *
  * @generated from protobuf message dp.service.query.QueryMetadataResponse
  */

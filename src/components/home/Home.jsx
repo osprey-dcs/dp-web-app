@@ -5,12 +5,19 @@ import AddDatasetControl from "./addDatasetControl/AddDatasetControl";
 
 function Home() {
     const [resultData, setResultData] = useState({});
+    const [customSelection, setCustomSelection] = useState({});
 
     return (
         <div className="h-full flex flex-col" data-testid="home">
             <QueryActions setResultData={setResultData} useTimeRange={true} />
-            <QueryResults resultData={resultData} />
-            <AddDatasetControl resultData={resultData} />
+            <QueryResults
+                resultData={resultData}
+                setCustomSelection={setCustomSelection}
+            />
+            <AddDatasetControl
+                resultData={resultData}
+                customSelection={customSelection}
+            />
         </div>
     );
 }

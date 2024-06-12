@@ -73,10 +73,6 @@
         --ag-header-background-color: hsl(210, 40%, 96.1%);
         --ag-row-hover-color: hsla(210, 40%, 96.1%, 0.5);
     }
-
-    .ag-cell-focus {
-        @apply outline-1 outline-red-500 !important;
-    }
 }
 
 @layer base {

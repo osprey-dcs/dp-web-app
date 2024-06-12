@@ -22,7 +22,7 @@ const propTypes = {
     resultData: PropTypes.object,
 };
 
-function AddDatasetControl(props) {
+function AddDatasetControl({ resultData, customSelection }) {
     const [isOpen, setIsOpen] = useState(false);
     const { refs, floatingStyles, context } = useFloating({
         open: isOpen,
@@ -46,8 +46,8 @@ function AddDatasetControl(props) {
     ]);
 
     return (
-        props.resultData !== undefined &&
-        Object.keys(props.resultData).length !== 0 && (
+        resultData !== undefined &&
+        Object.keys(resultData).length !== 0 && (
             <Fragment>
                 <button
                     ref={refs.setReference}
@@ -72,7 +72,10 @@ function AddDatasetControl(props) {
                                 style={transitionStyles}
                                 className="w-64 border rounded bg-background shadow-md"
                             >
-                                <AddDatasetActions setIsOpen={setIsOpen} />
+                                <AddDatasetActions
+                                    setIsOpen={setIsOpen}
+                                    customSelection={customSelection}
+                                />
                             </div>
                         </div>
                     </FloatingFocusManager>

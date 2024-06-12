@@ -90,12 +90,12 @@ export class DpQueryServiceClient {
     }
     /**
      *
-     * queryDataTable: Unary (non-streaming) time series data query with tabular result.
+     * queryTable: Unary (non-streaming) time series data query with tabular result.
      *
      * This time series data query returns its result in a tabular format, for use by the Data Platform web application.
-     * The client sends a single QueryDataRequest with the query parameters and receives a single QueryTableResponse.
-     * The response content may indicate rejection, error in handling, no data matching query, or otherwise contains
-     * the tabular data matching the query specification.
+     * The client sends a single QueryTableRequest with the query parameters and receives a single QueryTableResponse.
+     * The response content may indicate an exception in handling such as rejection, database error, no data matching
+     * query, or otherwise contains the tabular data matching the query specification.
      *
      * @generated from protobuf rpc: queryTable(dp.service.query.QueryTableRequest) returns (dp.service.query.QueryTableResponse);
      */

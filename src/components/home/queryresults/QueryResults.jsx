@@ -1,22 +1,23 @@
 import { getDataColDefs } from "@/lib/utils";
-import PropTypes from "prop-types";
-import { useEffect, useMemo, useRef, useState } from "react";
-import DataValueCellRenderer from "./dataValueCellRenderer/DataValueCellRenderer";
-
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { AgGridReact } from "ag-grid-react";
+import PropTypes from "prop-types";
+import { useEffect, useMemo, useRef, useState } from "react";
+import DataValueCellRenderer from "./dataValueCellRenderer/DataValueCellRenderer";
 
 const propTypes = {
     resultData: PropTypes.object,
 };
 
-function QueryResults(props) {
+function QueryResults({ resultData, setCustomSelection }) {
     const gridRef = useRef();
     const [rowData, setRowData] = useState([]);
     const [colDefs, setColDefs] = useState([]);
     const [firstCell, setFirstCell] = useState(null);
     const [lastCell, setLastCell] = useState(null);
+    const [timeRange, setTimeRange] = useState({});
+    const [dataSources, setDataSources] = useState([]);
 
     const components = useMemo(
         () => ({ dataValueCellRenderer: DataValueCellRenderer }),
@@ -85,28 +86,49 @@ function QueryResults(props) {
                 firstCell.column.name,
                 lastCell.column.name
             );
+            setDataSources(cols);
+            let newTimeRange = {
+                startTime: {},
+                endTime: {},
+            };
             for (let i = firstCell.row.index; i <= lastCell.row.index; ++i) {
                 const rowNode = gridRef.current?.api.getRowNode(i);
+                if (i === firstCell.row.index) {
+                    newTimeRange.startTime.epochSeconds =
+                        rowNode.data.timestamp.value.timestampValue.epochSeconds;
+                    newTimeRange.startTime.nanoseconds =
+                        rowNode.data.timestamp.value.timestampValue.nanoseconds.toString();
+                } else if (i === lastCell.row.index) {
+                    newTimeRange.endTime.epochSeconds =
+                        rowNode.data.timestamp.value.timestampValue.epochSeconds;
+                    newTimeRange.endTime.nanoseconds =
+                        rowNode.data.timestamp.value.timestampValue.nanoseconds.toString();
+                }
                 selectRow(rowNode, cols);
             }
+            setTimeRange(timeRange);
+            setCustomSelection({
+                dataSources: cols,
+                timeRange: newTimeRange,
+            });
         }
     }, [lastCell]);
 
     useMemo(() => {
-        if (props.resultData === undefined) {
+        if (resultData === undefined) {
             gridRef.current?.api.showLoadingOverlay();
-        } else if (Object.keys(props.resultData).length === 0) {
+        } else if (Object.keys(resultData).length === 0) {
             gridRef.current?.api.showNoRowsOverlay();
-        } else if (typeof props.resultData === "object") {
-            setColDefs(getDataColDefs(props.resultData));
+        } else if (typeof resultData === "object") {
+            setColDefs(getDataColDefs(resultData));
             console.log("set row data");
             setRowData(
-                props.resultData.tableResult.rowMapTable.rows.map(
+                resultData.tableResult.rowMapTable.rows.map(
                     (row) => row.columnValues
                 )
             );
         }
-    }, [props.resultData]);
+    }, [resultData]);
 
     return (
         <div className="ag-theme-quartz h-full mb-4 flex-grow shadow-sm rounded-lg">
@@ -115,7 +137,8 @@ function QueryResults(props) {
                 components={components}
                 rowData={rowData}
                 columnDefs={colDefs}
-                onCellClicked={(e) => onCellClicked(e)}
+                // onCellCliked={(e) => onCellClicked(e)}
+                // onCellMouseOver={(e) => console.log(e)}
             />
         </div>
     );

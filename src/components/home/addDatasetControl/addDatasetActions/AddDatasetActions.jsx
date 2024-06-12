@@ -17,7 +17,7 @@ const propTypes = {
     setIsOpen: PropTypes.func,
 };
 
-function AddDatasetActions(props) {
+function AddDatasetActions({ setIsOpen, customSelection }) {
     const api = useMemo(() => new DataPlatformApi(), []);
     const { toast } = useToast();
     const maxDate = formatDate(new Date());
@@ -74,7 +74,6 @@ function AddDatasetActions(props) {
             Math.floor(new Date(startDatetime).getTime() / 1000) - ptToGMT;
         const endEpochs =
             Math.floor(new Date(endDatetime).getTime() / 1000) - ptToGMT;
-
         setDataBlocks([
             ...dataBlocks,
             {
@@ -126,7 +125,7 @@ function AddDatasetActions(props) {
         switch (typeof result) {
             case "object":
                 if (result.oneofKind === "createDataSetResult") {
-                    props.setIsOpen(false);
+                    setIsOpen(false);
                     toastTitle = "Data Set Successfully Created";
                     toastDescription = `Copy ${result.createDataSetResult?.dataSetId} to clipboard for annotation creation?`;
                     toastAction = (
@@ -163,6 +162,34 @@ function AddDatasetActions(props) {
             action: toastAction,
         });
     }
+
+    // useEffect(() => {
+    //     // TODO: Maybe PT to GMT?
+    //     const startEpochsNum = parseInt(
+    //         customSelection.timeRange.startTime.epochSeconds,
+    //         10
+    //     );
+    //     const endEpochsNum = parseInt(
+    //         customSelection.timeRange.endTime.epochSeconds,
+    //         10
+    //     );
+    //     const startDatetime = new Date(startEpochsNum * 1000);
+    //     const endDatetime = new Date(endEpochsNum * 1000);
+    //     console.log(typeof customSelection.timeRange.startTime.nanoseconds);
+    //     console.log(customSelection.timeRange.startTime.nanoseconds);
+    //     setDataBlocks([
+    //         ...dataBlocks,
+    //         {
+    //             startEpochs: customSelection.timeRange.startTime.epochSeconds,
+    //             startDatetime: formatDate(startDatetime),
+    //             endEpochs: customSelection.timeRange.endTime.epochSeconds,
+    //             endDatetime: formatDate(endDatetime),
+    //             startNanos: customSelection.timeRange.startTime.nanoseconds,
+    //             endNanos: customSelection.timeRange.endTime.nanoseconds,
+    //             pvNames: customSelection.dataSources,
+    //         },
+    //     ]);
+    // }, [customSelection]);
 
     return (
         <Fragment>

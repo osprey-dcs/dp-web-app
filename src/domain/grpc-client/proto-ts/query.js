@@ -1085,7 +1085,6 @@ class PvNameList$Type extends MessageType {
     }
     internalBinaryWrite(message, writer, options) {
         /* repeated string pvNames = 1; */
-        console.log(message)
         for (let i = 0; i < message.pvNames.length; i++)
             writer.tag(1, WireType.LengthDelimited).string(message.pvNames[i]);
         let u = options.writeUnknownFields;
