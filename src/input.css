@@ -72,6 +72,12 @@
         --ag-header-foreground-color: hsl(222.2, 84%, 4.9%);
         --ag-header-background-color: hsl(210, 40%, 96.1%);
         --ag-row-hover-color: hsla(210, 40%, 96.1%, 0.5);
+        --ag-header-cell-hover-background-color: hsla(
+            222.2,
+            47.4%,
+            11.2%,
+            0.03
+        );
     }
 }
 
@@ -91,7 +97,7 @@
 
 @layer components {
     .btn-std {
-        @apply py-2 rounded text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90;
+        @apply py-2 rounded text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 shadow-sm;
     }
 
     .btn-alt {

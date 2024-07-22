@@ -50,10 +50,10 @@ const QueryActions = memo(function QueryActions({
                 useTimeRange) ||
             !(queryParams.pvNames || queryParams.regexPattern)
         ) {
+            const specTimeRange = useTimeRange ? "a time range and " : "";
             toast({
                 title: "Error: Invalid Query",
-                description:
-                    "Specify a time range and data sources to run a query",
+                description: `Specify ${specTimeRange}data sources to run a query`,
                 variant: "destructive",
             });
             return;

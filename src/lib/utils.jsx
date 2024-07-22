@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs) {
-    return twMerge(clsx(inputs))
+    return twMerge(clsx(inputs));
 }
 
 export function formatDate(date) {
@@ -17,15 +17,37 @@ export function formatDate(date) {
     var seconds = ("0" + date.getSeconds()).slice(-2);
 
     // Construct the formatted date string
-    return year + "-" + month + "-" + day + "T" + hours + ":" + minutes + ":" + seconds;
+    return (
+        year +
+        "-" +
+        month +
+        "-" +
+        day +
+        "T" +
+        hours +
+        ":" +
+        minutes +
+        ":" +
+        seconds
+    );
 }
 
-export function validateDate(startDateString, endDateString, startNanos, endNanos, setStartDateErrClass, setEndDateErrClass, setStartNanosErrClass, setEndNanosErrClass) {
+export function validateDate(
+    startDateString,
+    endDateString,
+    startNanos,
+    endNanos,
+    setStartDateErrClass,
+    setEndDateErrClass,
+    setStartNanosErrClass,
+    setEndNanosErrClass
+) {
     const startDate = new Date(startDateString);
     const endDate = new Date(endDateString);
 
     if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-        isNaN(startDate.getTime()) && setStartDateErrClass("border-destructive");
+        isNaN(startDate.getTime()) &&
+            setStartDateErrClass("border-destructive");
         isNaN(endDate.getTime()) && setEndDateErrClass("border-destructive");
         return false;
     }
@@ -33,16 +55,19 @@ export function validateDate(startDateString, endDateString, startNanos, endNano
     if (startDate > endDate) {
         setStartDateErrClass("border-destructive");
         setEndDateErrClass("border-destructive");
-        return false
+        return false;
     }
 
-    if (startDate.getTime() === endDate.getTime() && Number(startNanos) > Number(endNanos)) {
+    if (
+        startDate.getTime() === endDate.getTime() &&
+        Number(startNanos) > Number(endNanos)
+    ) {
         setStartNanosErrClass("border-destructive");
         setEndNanosErrClass("border-destructive");
         return false;
     }
 
-    const now = new Date()
+    const now = new Date();
     let startValid = true;
     let endValid = true;
     if (startDate > now) {
@@ -58,7 +83,12 @@ export function validateDate(startDateString, endDateString, startNanos, endNano
     return startValid && endValid;
 }
 
-export function validateNanos(startNanos, endNanos, setStartNanosErrClass, setEndNanosErrClass) {
+export function validateNanos(
+    startNanos,
+    endNanos,
+    setStartNanosErrClass,
+    setEndNanosErrClass
+) {
     let startNanosValid = true;
     let endNanosValid = true;
     const startNumber = Number(startNanos);
@@ -74,13 +104,12 @@ export function validateNanos(startNanos, endNanos, setStartNanosErrClass, setEn
         endNanosValid = false;
     }
 
-    const rejex = /^[0-9]*$/
+    const rejex = /^[0-9]*$/;
 
     if (!rejex.test(startNanos)) {
         setStartNanosErrClass("border-destructive");
         startNanosValid = false;
     }
-
 
     if (!rejex.test(endNanos)) {
         setEndNanosErrClass("border-destructive");
@@ -91,27 +120,29 @@ export function validateNanos(startNanos, endNanos, setStartNanosErrClass, setEn
 }
 
 export function getDataColDefs(resultData) {
-    let colDefs = []
+    let colDefs = [];
 
-    const rowMapTable = resultData.tableResult.rowMapTable
+    const rowMapTable = resultData.tableResult.rowMapTable;
     for (let i = 0; i < rowMapTable.columnNames.length; ++i) {
         if (i === 0) {
             colDefs.push({
                 field: rowMapTable.columnNames[i],
                 pinned: "left",
                 sortable: false,
-                valueFormatter: p => p.value.value.timestampValue.epochSeconds.toString() + ":" + p.value.value.timestampValue.nanoseconds.toString()
+                valueFormatter: (p) =>
+                    p.value.value.timestampValue.epochSeconds.toString() +
+                    ":" +
+                    p.value.value.timestampValue.nanoseconds.toString(),
                 // cellRenderer: "timestampCellRenderer",
-            })
-        }
-        else {
+            });
+        } else {
             colDefs.push({
                 field: rowMapTable.columnNames[i],
                 sortable: false,
                 cellRenderer: "dataValueCellRenderer",
                 cellClassRules: {
-                    "bg-blue-200/40": p => p.value.value.selected
-                }
+                    "bg-blue-200/40": (p) => p.value.value.selected,
+                },
             });
         }
     }
@@ -119,17 +150,25 @@ export function getDataColDefs(resultData) {
 }
 
 export function getMetadataColDefs(pv) {
-    let colDefs = []
+    let colDefs = [];
     for (let attribute in pv) {
         switch (attribute) {
+            case "pvName":
+                colDefs.push({
+                    field: "pvName",
+                    headerName: "PV Name",
+                    flex: 1,
+                    cellClass: "hover:cursor-pointer hover:bg-primary/5",
+                });
             case "firstTimestamp":
                 colDefs.push({
                     field: "firstTimestamp",
                     headerName: "First Timestamp",
                     sortable: false,
                     flex: 1,
-                    valueFormatter: p => p.value.epochSeconds + ":" + p.value.nanoseconds
-                })
+                    valueFormatter: (p) =>
+                        p.value.epochSeconds + ":" + p.value.nanoseconds,
+                });
                 break;
             case "lastTimestamp":
                 colDefs.push({
@@ -137,8 +176,9 @@ export function getMetadataColDefs(pv) {
                     headerName: "Last Timestamp",
                     sortable: false,
                     flex: 1,
-                    valueFormatter: p => p.value.epochSeconds + ":" + p.value.nanoseconds
-                })
+                    valueFormatter: (p) =>
+                        p.value.epochSeconds + ":" + p.value.nanoseconds,
+                });
                 break;
             case "lastSamplingClock":
                 colDefs.push({
@@ -146,19 +186,22 @@ export function getMetadataColDefs(pv) {
                     headerName: "Last Sampling Clock",
                     sortable: false,
                     flex: 1,
-                    valueFormatter: p => p.value.count
-                })
+                    valueFormatter: (p) => p.value.count,
+                });
                 break;
             default:
                 // Convert camel case to regular string
                 let headerWords = attribute.split(/(?=[A-Z])/);
-                let headerName = headerWords.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                let headerName = headerWords
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(" ");
 
                 colDefs.push({
                     field: attribute,
                     headerName: headerName,
-                    flex: 1
-                })
+                    sortable: false,
+                    flex: 1,
+                });
                 break;
         }
     }
@@ -166,7 +209,7 @@ export function getMetadataColDefs(pv) {
 }
 
 export function getAnnotationColDefs(annotation) {
-    let colDefs = []
+    let colDefs = [];
     for (let attribute in annotation) {
         switch (attribute) {
             case "annotation":
@@ -176,8 +219,9 @@ export function getAnnotationColDefs(annotation) {
                             field: "annotation",
                             headerName: "Annotation",
                             sortable: false,
-                            valueFormatter: p => p.value.commentAnnotation.comment
-                        })
+                            valueFormatter: (p) =>
+                                p.value.commentAnnotation.comment,
+                        });
                         break;
                     default:
                         break;
@@ -186,16 +230,53 @@ export function getAnnotationColDefs(annotation) {
                 break;
             default:
                 let headerWords = attribute.split(/(?=[A-Z])/);
-                let headerName = headerWords.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                let headerName = headerWords
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(" ");
 
                 colDefs.push({
                     field: attribute,
                     headerName: headerName,
-                    flex: 1
-                })
+                    flex: 1,
+                });
                 break;
         }
     }
 
     return colDefs;
+}
+
+export function onPVSelected(pvName, pvs, dispatch, ToastAction, toast) {
+    let toastDescription = "";
+    let toastActionText = "";
+
+    if (!pvs.has(pvName)) {
+        dispatch({
+            type: "added",
+            pvName: pvName,
+        });
+        toastDescription = `${pvName} added to PV list`;
+        toastActionText = "Undo";
+    } else {
+        toastDescription = `${pvName} already exists in PV list`;
+        toastActionText = "Remove";
+    }
+
+    const toastAction = (
+        <ToastAction
+            onClick={() =>
+                dispatch({
+                    type: "removed",
+                    pvName: pvName,
+                })
+            }
+            altText={toastActionText}
+        >
+            {toastActionText}
+        </ToastAction>
+    );
+    toast({
+        description: toastDescription,
+        action: toastAction,
+    });
 }

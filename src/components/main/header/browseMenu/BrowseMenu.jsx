@@ -1,4 +1,4 @@
-import NavLink from "@/components/header/navlink/NavLink";
+import NavLink from "@/components/main/header/navlink/NavLink";
 import { cn } from "@/lib/utils";
 import {
     FloatingFocusManager,

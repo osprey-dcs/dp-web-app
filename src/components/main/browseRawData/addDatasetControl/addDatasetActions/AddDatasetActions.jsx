@@ -9,9 +9,10 @@ import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 import DataPlatformApi from "@/domain/grpc-client/DataPlatformApi";
 import { cn, formatDate, validateDate, validateNanos } from "@/lib/utils";
-import { PlusIcon } from "@radix-ui/react-icons";
+import { MinusCircledIcon, PlusIcon } from "@radix-ui/react-icons";
 import PropTypes from "prop-types";
 import { Fragment, useMemo, useState } from "react";
+import DatasetPicker from "./datasetPicker/DatasetPicker";
 
 const propTypes = {
     setIsOpen: PropTypes.func,
@@ -39,6 +40,7 @@ function AddDatasetActions({ setIsOpen, customSelection }) {
     const [endDateErrClass, setEndDateErrClass] = useState("");
     const [endNanosErrClass, setEndNanosErrClass] = useState("");
     const [dataSourcesErrClass, setDataSourcesErrClass] = useState("");
+    const [dataSources, setDataSources] = useState(new Set());
 
     function handleAddBlock() {
         const validDate = validateDate(
@@ -58,9 +60,11 @@ function AddDatasetActions({ setIsOpen, customSelection }) {
             setEndNanosErrClass
         );
 
-        if (!(validDate && validNanos) || dataSourcesString === "") {
+        if (!(validDate && validNanos) || dataSources.size === 0) {
             console.log("err");
-            dataSourcesString === "" &&
+            // dataSourcesString === "" &&
+            console.log(dataSources.size);
+            dataSources.size === 0 &&
                 setDataSourcesErrClass("border-destructive");
             setErrText("Error in Highlighted Fields");
             return;
@@ -83,7 +87,8 @@ function AddDatasetActions({ setIsOpen, customSelection }) {
                 endDatetime: endDatetime,
                 startNanos: Number(startNanos),
                 endNanos: Number(endNanos),
-                pvNames: dataSourcesString.split(", "),
+                pvNames: [...dataSources],
+                // pvNames: dataSourcesString.split(", "),
             },
         ]);
         handleCancel();
@@ -95,6 +100,7 @@ function AddDatasetActions({ setIsOpen, customSelection }) {
         setStartNanos("");
         setEndDatetime("");
         setEndNanos("");
+        setDataSources(new Set());
         setDataSourcesString("");
     }
 
@@ -207,7 +213,10 @@ function AddDatasetActions({ setIsOpen, customSelection }) {
                         step="1"
                         onChange={(e) => setStartDatetime(e.target.value)}
                         onFocus={() => setStartDateErrClass("")}
-                        className={cn("input-std mb-2", startDateErrClass)}
+                        className={cn(
+                            "input-std w-full mb-2",
+                            startDateErrClass
+                        )}
                     />
                     <input
                         type="number"
@@ -231,7 +240,7 @@ function AddDatasetActions({ setIsOpen, customSelection }) {
                         step="1"
                         onChange={(e) => setEndDatetime(e.target.value)}
                         onFocus={() => setEndDateErrClass("")}
-                        className={cn("input-std mb-2", endDateErrClass)}
+                        className={cn("input-std w-full mb-2", endDateErrClass)}
                     />
                     <input
                         type="number"
@@ -245,15 +254,40 @@ function AddDatasetActions({ setIsOpen, customSelection }) {
                             endNanosErrClass
                         )}
                     />
-                    <span className="mb-2 font-medium">--</span>
-                    <input
+                    <div className="w-full mt-2 mb-4 border-b"></div>
+                    {/* <span className="mb-2 font-medium">--</span> */}
+                    {/* <input
                         placeholder="Data Sources"
                         name="pv-name"
                         value={dataSourcesString}
                         onChange={(e) => setDataSourcesString(e.target.value)}
                         onFocus={() => setDataSourcesErrClass("")}
                         className={cn("input-std w-full", dataSourcesErrClass)}
-                    ></input>
+                    /> */}
+                    {/* <div className="flex flex-col w-full items-start border border-red-100"> */}
+                    <div className="w-full mb-2 flex flex-col items-start justify-center max-h-24 overflow-scroll">
+                        {[...dataSources].map((dataSource) => (
+                            <div
+                                key={dataSource}
+                                className="w-full px-2 flex flex-row items-center justify-between text-foreground"
+                            >
+                                <text className="text-sm">{dataSource}</text>
+                                <MinusCircledIcon
+                                    className="hover:text-foreground/70 hover:cursor-pointer"
+                                    onClick={() => {
+                                        let newDataset = new Set(dataSources);
+                                        newDataset.delete(dataSource);
+                                        setDataSources(newDataset);
+                                    }}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                    <DatasetPicker
+                        dataSources={dataSources}
+                        setDataSources={setDataSources}
+                    />
+                    {/* </div> */}
                     <FilterErrorMessage>{errText}</FilterErrorMessage>
                     <button
                         onClick={handleAddBlock}

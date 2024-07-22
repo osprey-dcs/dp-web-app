@@ -7,7 +7,7 @@ function BrowseAnnotations() {
     const [resultData, setResultData] = useState();
 
     return (
-        <div className="h-full flex flex-col" data-testid="home">
+        <div className="h-full flex flex-col">
             <AnnotationActions setResultData={setResultData} />
             <AnnotationResults resultData={resultData} />
             <AddAnnotationControl />
