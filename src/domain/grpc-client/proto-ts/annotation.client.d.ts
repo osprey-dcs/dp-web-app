@@ -7,10 +7,6 @@
 //
 // Contains RPC messages and interface specific to the Annotation Service.
 //
-// since: February, 2024
-// version: 1.3.0
-//
-//
 import type { RpcTransport } from "@protobuf-ts/runtime-rpc";
 import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import type { QueryAnnotationsResponse } from "./annotation";
@@ -27,8 +23,7 @@ import type { RpcOptions } from "@protobuf-ts/runtime-rpc";
  *
  * Annotation Service Interface
  *
- * Interface for annotating archived data.  Registered annotation authors can create and modify data
- * annotations.
+ * Interface for annotating archived data.
  *
  * @generated from protobuf service dp.service.annotation.DpAnnotationService
  */
@@ -40,7 +35,6 @@ export interface IDpAnnotationServiceClient {
      * This RPC sends a request to the annotation service to create a DataSet with the specified parameters.
      * The annotation service performs validation, and for a valid request, attempts to create the DataSet.
      * The response may indicate rejection, an error in handling the request, or successful handling of the request.
-     * See CreateDataSetResponse for more details.
      *
      * @generated from protobuf rpc: createDataSet(dp.service.annotation.CreateDataSetRequest) returns (dp.service.annotation.CreateDataSetResponse);
      */
@@ -49,7 +43,9 @@ export interface IDpAnnotationServiceClient {
      *
      * queryDataSets: Unary (non-streaming) data sets query.
      *
-     * TODO: this API is not yet implemented
+     * This RPC returns information about DataSets matching the specified query parameters. Client sends a single
+     * QueryDataSetsRequest and receives a single QueryDataSetsResponse. The response may indicate rejection,
+     * error in handling, no data matching query, or otherwise contains the data matching the query specification.
      *
      * @generated from protobuf rpc: queryDataSets(dp.service.annotation.QueryDataSetsRequest) returns (dp.service.annotation.QueryDataSetsResponse);
      */
@@ -61,7 +57,6 @@ export interface IDpAnnotationServiceClient {
      * This RPC sends a request to the annotation service to create an annotation with the specified parameters.
      * The annotation service performs validation, and for a valid request, attempts to create the annotation.
      * The response may indicate rejection, an error in handling the request, or successful handling of the request.
-     * See CreateAnnotationResponse for more details.
      *
      * @generated from protobuf rpc: createAnnotation(dp.service.annotation.CreateAnnotationRequest) returns (dp.service.annotation.CreateAnnotationResponse);
      */
@@ -70,7 +65,7 @@ export interface IDpAnnotationServiceClient {
      *
      * queryAnnotations: Unary (non-streaming) annotations query.
      *
-     * This RPC is used by clients to query over annotations added to ingested data, and is not yet implemented.
+     * This RPC is used by clients to query over annotations added to ingested data.
      * Client sends a single QueryAnnotationsRequest with the query parameters, and receives a single
      * QueryAnnotationsResponse with the query results. The response may indicate rejection, error in handling,
      * no data matching query, or otherwise contains the data matching the query specification.
@@ -83,8 +78,7 @@ export interface IDpAnnotationServiceClient {
  *
  * Annotation Service Interface
  *
- * Interface for annotating archived data.  Registered annotation authors can create and modify data
- * annotations.
+ * Interface for annotating archived data.
  *
  * @generated from protobuf service dp.service.annotation.DpAnnotationService
  */
@@ -101,7 +95,6 @@ export declare class DpAnnotationServiceClient implements IDpAnnotationServiceCl
      * This RPC sends a request to the annotation service to create a DataSet with the specified parameters.
      * The annotation service performs validation, and for a valid request, attempts to create the DataSet.
      * The response may indicate rejection, an error in handling the request, or successful handling of the request.
-     * See CreateDataSetResponse for more details.
      *
      * @generated from protobuf rpc: createDataSet(dp.service.annotation.CreateDataSetRequest) returns (dp.service.annotation.CreateDataSetResponse);
      */
@@ -110,7 +103,9 @@ export declare class DpAnnotationServiceClient implements IDpAnnotationServiceCl
      *
      * queryDataSets: Unary (non-streaming) data sets query.
      *
-     * TODO: this API is not yet implemented
+     * This RPC returns information about DataSets matching the specified query parameters. Client sends a single
+     * QueryDataSetsRequest and receives a single QueryDataSetsResponse. The response may indicate rejection,
+     * error in handling, no data matching query, or otherwise contains the data matching the query specification.
      *
      * @generated from protobuf rpc: queryDataSets(dp.service.annotation.QueryDataSetsRequest) returns (dp.service.annotation.QueryDataSetsResponse);
      */
@@ -122,7 +117,6 @@ export declare class DpAnnotationServiceClient implements IDpAnnotationServiceCl
      * This RPC sends a request to the annotation service to create an annotation with the specified parameters.
      * The annotation service performs validation, and for a valid request, attempts to create the annotation.
      * The response may indicate rejection, an error in handling the request, or successful handling of the request.
-     * See CreateAnnotationResponse for more details.
      *
      * @generated from protobuf rpc: createAnnotation(dp.service.annotation.CreateAnnotationRequest) returns (dp.service.annotation.CreateAnnotationResponse);
      */
@@ -131,7 +125,7 @@ export declare class DpAnnotationServiceClient implements IDpAnnotationServiceCl
      *
      * queryAnnotations: Unary (non-streaming) annotations query.
      *
-     * This RPC is used by clients to query over annotations added to ingested data, and is not yet implemented.
+     * This RPC is used by clients to query over annotations added to ingested data.
      * Client sends a single QueryAnnotationsRequest with the query parameters, and receives a single
      * QueryAnnotationsResponse with the query results. The response may indicate rejection, error in handling,
      * no data matching query, or otherwise contains the data matching the query specification.

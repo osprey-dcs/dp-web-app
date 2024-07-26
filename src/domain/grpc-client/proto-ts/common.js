@@ -7,9 +7,6 @@
 //
 // Contains RPC messages common to all services.
 //
-// since: July, 2023
-// version: 1.2.0
-//
 import { WireType } from "@protobuf-ts/runtime";
 import { UnknownFieldHandler } from "@protobuf-ts/runtime";
 import { reflectionMergePartial } from "@protobuf-ts/runtime";
@@ -20,7 +17,7 @@ import { MessageType } from "@protobuf-ts/runtime";
 export var ExceptionalResult_ExceptionalResultStatus;
 (function (ExceptionalResult_ExceptionalResultStatus) {
     /**
-     * Indicates request was rejected during valiaation.
+     * Indicates request was rejected during validation.
      *
      * @generated from protobuf enum value: RESULT_STATUS_REJECT = 0;
      */
@@ -187,84 +184,6 @@ export var Image_FileType;
      */
     Image_FileType[Image_FileType["PDF"] = 8] = "PDF";
 })(Image_FileType || (Image_FileType = {}));
-/**
- * @generated from protobuf enum DataValueType
- */
-export var DataValueType;
-(function (DataValueType) {
-    /**
-     * character string
-     *
-     * @generated from protobuf enum value: DATA_TYPE_STRING = 0;
-     */
-    DataValueType[DataValueType["DATA_TYPE_STRING"] = 0] = "DATA_TYPE_STRING";
-    /**
-     * logical Boolean
-     *
-     * @generated from protobuf enum value: DATA_TYPE_BOOLEAN = 1;
-     */
-    DataValueType[DataValueType["DATA_TYPE_BOOLEAN"] = 1] = "DATA_TYPE_BOOLEAN";
-    /**
-     * unsigned integer value
-     *
-     * @generated from protobuf enum value: DATA_TYPE_UINT = 2;
-     */
-    DataValueType[DataValueType["DATA_TYPE_UINT"] = 2] = "DATA_TYPE_UINT";
-    /**
-     * unsigned long integer
-     *
-     * @generated from protobuf enum value: DATA_TYPE_ULONG = 3;
-     */
-    DataValueType[DataValueType["DATA_TYPE_ULONG"] = 3] = "DATA_TYPE_ULONG";
-    /**
-     * signed integer value
-     *
-     * @generated from protobuf enum value: DATA_TYPE_INT = 4;
-     */
-    DataValueType[DataValueType["DATA_TYPE_INT"] = 4] = "DATA_TYPE_INT";
-    /**
-     * signed long integer
-     *
-     * @generated from protobuf enum value: DATA_TYPE_LONG = 5;
-     */
-    DataValueType[DataValueType["DATA_TYPE_LONG"] = 5] = "DATA_TYPE_LONG";
-    /**
-     * 32 byte float value
-     *
-     * @generated from protobuf enum value: DATA_TYPE_FLOAT = 6;
-     */
-    DataValueType[DataValueType["DATA_TYPE_FLOAT"] = 6] = "DATA_TYPE_FLOAT";
-    /**
-     * 64 byte float value (double)
-     *
-     * @generated from protobuf enum value: DATA_TYPE_DOUBLE = 7;
-     */
-    DataValueType[DataValueType["DATA_TYPE_DOUBLE"] = 7] = "DATA_TYPE_DOUBLE";
-    /**
-     * raw data as byte string
-     *
-     * @generated from protobuf enum value: DATA_TYPE_BYTES = 8;
-     */
-    DataValueType[DataValueType["DATA_TYPE_BYTES"] = 8] = "DATA_TYPE_BYTES";
-    /**
-     * heterogeneous array (no dimensional restrictions as of yet)
-     *
-     * @generated from protobuf enum value: DATA_TYPE_ARRAY = 9;
-     */
-    DataValueType[DataValueType["DATA_TYPE_ARRAY"] = 9] = "DATA_TYPE_ARRAY";
-    /**
-     * general data structure (no width or depth restrictions yet)
-     *
-     * @generated from protobuf enum value: DATA_TYPE_STRUCT = 10;
-     */
-    DataValueType[DataValueType["DATA_TYPE_STRUCT"] = 10] = "DATA_TYPE_STRUCT";
-    /**
-     * general image value
-     *
-     * @generated from protobuf enum value: DATA_TYPE_IMAGE = 11;
-     */
-    DataValueType[DataValueType["DATA_TYPE_IMAGE"] = 11] = "DATA_TYPE_IMAGE";
-})(DataValueType || (DataValueType = {}));
 // @generated message type with reflection information, may provide speed optimized methods
 class Attribute$Type extends MessageType {
     constructor() {

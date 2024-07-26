@@ -33,6 +33,7 @@ function MetadataResults({ resultData }) {
             gridRef.current?.api.showNoRowsOverlay();
         } else if (typeof resultData === "object") {
             setColDefs(getMetadataColDefs(resultData.pvInfos[0]));
+            console.log(resultData.pvInfos[0]);
             setRowData(resultData.pvInfos);
         }
     }, [resultData]);

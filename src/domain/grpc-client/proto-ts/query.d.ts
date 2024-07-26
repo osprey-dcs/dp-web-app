@@ -7,17 +7,12 @@
 //
 // Contains RPC messages and interface specific to the Query Service.
 //
-// since: February, 2024
-// version: 1.2.0
-//
-//
 import type { BinaryWriteOptions } from "@protobuf-ts/runtime";
 import type { IBinaryWriter } from "@protobuf-ts/runtime";
 import type { BinaryReadOptions } from "@protobuf-ts/runtime";
 import type { IBinaryReader } from "@protobuf-ts/runtime";
 import type { PartialMessage } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
-import { SamplingClock } from "./common";
 import { DataValue } from "./common";
 import { DataColumn } from "./common";
 import { EventMetadata } from "./common";
@@ -29,7 +24,16 @@ import { Timestamp } from "./common";
  *
  * Time Series Data Query Request.
  *
- * Describes the parameters for a time series data query.
+ * Describes the parameters for a time series data query. A QueryDataRequest contains either a QuerySpec or
+ * a CursorOperation.
+ *
+ * The QuerySpec is used as the initial request message payload for all time-series data queries.  It includes a
+ * time range and a list of PV names.
+ *
+ * The only rpc method that supports use of a CursorOperation payload is queryDataBidiStream().  This method allows
+ * the client to control the flow of the query response stream.  After receiving the initial query response message,
+ * the client sends a CURSOR_OP_NEXT CursorOperation to retrieve each subsequent query response message until the
+ * the query result response stream is exhausted.
  *
  * @generated from protobuf message dp.service.query.QueryDataRequest
  */
@@ -103,9 +107,13 @@ export declare enum QueryDataRequest_CursorOperation_CursorOperationType {
  *
  * Time Series Data Query Response.
  *
- * Contains results from a time series data query.  Used as single response to unary RPC methods, or as a stream in the
- * streaming RPC methods. Contains either ExceptionalResult indicating a problem handling the request, or QueryData
- * containing the data returned by the query.
+ * Contains results from a time series data query.  Sent as single response to unary method queryData(),
+ * or in the response streams from queryDataStream() and queryDataBidiStream().
+ *
+ * Contains either ExceptionalResult indicating a problem handling the request, or QueryData
+ * containing the data returned by the query.  An ExceptionalResult is sent if the query is determined to be invalid
+ * or there is an error executing the query. Otherwise a QueryData payload is sent containing the data returned
+ * by the query.
  *
  * @generated from protobuf message dp.service.query.QueryDataResponse
  */
@@ -137,7 +145,11 @@ export interface QueryDataResponse {
  *
  * Time Series Query Result Data.
  *
- * Contains the data for a time series data query result, as a list of DataBucket objects.
+ * Contains the data for a time series data query result, as a list of DataBucket objects. Each DataBucket minimally
+ * includes a vector of PV data values (in a DataColumn) and a DataTimestamps object specifying the timestamps
+ * for the data vector values using either a SamplingClock (with start time, sample period, and number of samples or
+ * an explicit list of timestamps) or a TimestampsList (with an explicit list of timestamps). The DataBucket also
+ * includes key/value Attributes and/or EventMetadata if defined for the data in ingestion.
  *
  * @generated from protobuf message dp.service.query.QueryDataResponse.QueryData
  */
@@ -172,8 +184,8 @@ export interface QueryDataResponse_QueryData_DataBucket {
  *
  * Time Series Data Query With Tabular Result Format.
  *
- * Describes the parameters for a time series data query that returns data in a tabular format.  The request format
- * is used to specify either row-oriented or column-oriented tabular result format.  Time range must be specified
+ * Describes the parameters for a time series data query that returns data in a tabular format.  The TableResultFormat
+ * enum is used to specify either row-oriented or column-oriented tabular result format.  Time range must be specified
  * using begin/endTime fields.  PV names are specified using either an explicit pvNameList or a pvNamePattern
  * matched by regex.
  *
@@ -216,12 +228,14 @@ export interface QueryTableRequest {
  */
 export declare enum QueryTableRequest_TableResultFormat {
     /**
-     * default value if not explicitly set
+     * return row oriented data using map structure (default value if not explicitly set)
      *
      * @generated from protobuf enum value: TABLE_FORMAT_ROW_MAP = 0;
      */
     TABLE_FORMAT_ROW_MAP = 0,
     /**
+     * return column oriented data using DataColumns
+     *
      * @generated from protobuf enum value: TABLE_FORMAT_COLUMN = 1;
      */
     TABLE_FORMAT_COLUMN = 1
@@ -230,10 +244,15 @@ export declare enum QueryTableRequest_TableResultFormat {
  *
  * Tabular Time Series Data Query Response.
  *
- * Contains results from a time series data query in a tabular format for use by the DP web application (and other similar
- * uses. Response message payload is either an ExceptionalResult message indicating a rejection, error,
- * or empty query result, or a TableResult message containing the query result.  The TableResult is a ColumnTable
- * if request format is specified to be TABLE_FORMAT_COLUMN, or RowMapTable if format is TABLE_FORMAT_ROW_MAP.
+ * Contains results from a time series data query in a tabular format for use by the DP web application
+ * (and other similar uses.
+ *
+ * Response message payload is either an ExceptionalResult or TableResult. An ExceptionalResult message is sent if
+ * the request is rejected because it is deemed to be invalid, there is an error processing the query,
+ * or the query returned no data. Otherwise, a TableResult message is sent contiaing the query results.
+ *
+ * The TableResult contains a ColumnTable if the request format is specified to be TABLE_FORMAT_COLUMN,
+ * or a RowMapTable if format is TABLE_FORMAT_ROW_MAP.
  *
  * @generated from protobuf message dp.service.query.QueryTableResponse
  */
@@ -337,10 +356,10 @@ export interface QueryTableResponse_RowMapTable_DataRow {
  *
  * Metadata Query Request.
  *
- * Describes the parameters for a metadata query over available data sources in the archive.
+ * Describes the parameters for querying metadata for PVs managed in the archive.
  *
  * A request may contain one of two payloads, either a PvNameList with an explicit list of
- * column/PV names, or a regular expression pattern used to match against column/PV names.
+ * column/PV names, or a PvNamePattern with a regular expression pattern used to match against column/PV names.
  *
  * @generated from protobuf message dp.service.query.QueryMetadataRequest
  */
@@ -368,8 +387,8 @@ export interface QueryMetadataRequest {
  *
  * Metadata Query Response.
  *
- * Contains results from a metadata query. Response payload is ExceptionalResult if a rejection, error, or empty query
- * result is encountered, otherwise is MetadataResult containing results of query.
+ * Contains results from a metadata query. Payload is an ExceptionalResult if a rejection, error, or empty query
+ * result is encountered, otherwise is a MetadataResult containing results of query.
  *
  * @generated from protobuf message dp.service.query.QueryMetadataResponse
  */
@@ -420,21 +439,41 @@ export interface QueryMetadataResponse_MetadataResult_PvInfo {
      */
     pvName: string;
     /**
-     * @generated from protobuf field: string lastBucketDataType = 2;
+     * @generated from protobuf field: string lastBucketId = 2;
+     */
+    lastBucketId: string;
+    /**
+     * @generated from protobuf field: int32 lastBucketDataTypeCase = 3;
+     */
+    lastBucketDataTypeCase: number;
+    /**
+     * @generated from protobuf field: string lastBucketDataType = 4;
      */
     lastBucketDataType: string;
     /**
-     * @generated from protobuf field: SamplingClock lastSamplingClock = 3;
+     * @generated from protobuf field: int32 lastBucketDataTimestampsCase = 5;
      */
-    lastSamplingClock?: SamplingClock;
+    lastBucketDataTimestampsCase: number;
     /**
-     * @generated from protobuf field: Timestamp firstTimestamp = 4;
+     * @generated from protobuf field: string lastBucketDataTimestampsType = 6;
      */
-    firstTimestamp?: Timestamp;
+    lastBucketDataTimestampsType: string;
     /**
-     * @generated from protobuf field: Timestamp lastTimestamp = 5;
+     * @generated from protobuf field: uint32 lastBucketSampleCount = 8;
      */
-    lastTimestamp?: Timestamp;
+    lastBucketSampleCount: number;
+    /**
+     * @generated from protobuf field: uint64 lastBucketSamplePeriod = 9;
+     */
+    lastBucketSamplePeriod: bigint;
+    /**
+     * @generated from protobuf field: Timestamp firstDataTimestamp = 10;
+     */
+    firstDataTimestamp?: Timestamp;
+    /**
+     * @generated from protobuf field: Timestamp lastDataTimestamp = 11;
+     */
+    lastDataTimestamp?: Timestamp;
 }
 /**
  * @generated from protobuf message dp.service.query.PvNameList

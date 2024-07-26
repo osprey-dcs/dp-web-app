@@ -160,9 +160,10 @@ export function getMetadataColDefs(pv) {
                     flex: 1,
                     cellClass: "hover:cursor-pointer hover:bg-primary/5",
                 });
-            case "firstTimestamp":
+                break;
+            case "firstDataTimestamp":
                 colDefs.push({
-                    field: "firstTimestamp",
+                    field: "firstDataTimestamp",
                     headerName: "First Timestamp",
                     sortable: false,
                     flex: 1,
@@ -170,9 +171,9 @@ export function getMetadataColDefs(pv) {
                         p.value.epochSeconds + ":" + p.value.nanoseconds,
                 });
                 break;
-            case "lastTimestamp":
+            case "lastDataTimestamp":
                 colDefs.push({
-                    field: "lastTimestamp",
+                    field: "lastDataTimestamp",
                     headerName: "Last Timestamp",
                     sortable: false,
                     flex: 1,
@@ -180,15 +181,15 @@ export function getMetadataColDefs(pv) {
                         p.value.epochSeconds + ":" + p.value.nanoseconds,
                 });
                 break;
-            case "lastSamplingClock":
-                colDefs.push({
-                    field: "lastSamplingClock",
-                    headerName: "Last Sampling Clock",
-                    sortable: false,
-                    flex: 1,
-                    valueFormatter: (p) => p.value.count,
-                });
-                break;
+            // case "lastSamplingClock":
+            //     colDefs.push({
+            //         field: "lastSamplingClock",
+            //         headerName: "Last Sampling Clock",
+            //         sortable: false,
+            //         flex: 1,
+            //         valueFormatter: (p) => p.value.count,
+            //     });
+            //     break;
             default:
                 // Convert camel case to regular string
                 let headerWords = attribute.split(/(?=[A-Z])/);

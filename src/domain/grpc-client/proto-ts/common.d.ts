@@ -7,9 +7,6 @@
 //
 // Contains RPC messages common to all services.
 //
-// since: July, 2023
-// version: 1.2.0
-//
 import type { BinaryWriteOptions } from "@protobuf-ts/runtime";
 import type { IBinaryWriter } from "@protobuf-ts/runtime";
 import type { BinaryReadOptions } from "@protobuf-ts/runtime";
@@ -34,7 +31,7 @@ export interface Attribute {
 }
 /**
  *
- * Metadata associated with an ingestion event or snapshot.
+ * Metadata associated with ingested data.
  *
  * @generated from protobuf message EventMetadata
  */
@@ -54,7 +51,7 @@ export interface EventMetadata {
 }
 /**
  *
- * Time instant described by epoch.
+ * Time instant containing fields for seconds since epoch and nanoseconds offset.
  *
  * @generated from protobuf message Timestamp
  */
@@ -118,8 +115,8 @@ export interface SamplingClock {
 }
 /**
  *
- * Specifies the set of timestamps for a dataset collection, either as an explicit list of timestamps, or using a
- * Sampling Clock to specify interval start time, sampling period, and sample count.
+ * Specifies the set of timestamps for ingested data, either using an explicit list of timestamps, or a
+ * Sampling Clock specifying interval start time, sampling period, and sample count.
  *
  * @generated from protobuf message DataTimestamps
  */
@@ -145,9 +142,10 @@ export interface DataTimestamps {
 }
 /**
  *
- * Exceptional Result Handling Request.
+ * Exceptional Method Result.
  *
- * Used to describe an exceptional result from the service, such as a rejection or error handling request.
+ * Used to describe an exceptional result from a service method, such as a rejection or error handling request.
+ * This message is used by all service RPC methods to indicate a problem executing the method.
  *
  * @generated from protobuf message ExceptionalResult
  */
@@ -166,7 +164,7 @@ export interface ExceptionalResult {
  */
 export declare enum ExceptionalResult_ExceptionalResultStatus {
     /**
-     * Indicates request was rejected during valiaation.
+     * Indicates request was rejected during validation.
      *
      * @generated from protobuf enum value: RESULT_STATUS_REJECT = 0;
      */
@@ -192,7 +190,9 @@ export declare enum ExceptionalResult_ExceptionalResultStatus {
 }
 /**
  *
- * A named vector of heterogeneous data values.
+ * Data Column
+ *
+ * Contains a named vector of heterogeneous data values sampled for a particular PV.
  *
  *
  * @generated from protobuf message DataColumn
@@ -211,17 +211,17 @@ export interface DataColumn {
  *
  * Unit of Heterogeneous Data
  *
- * The message includes both a data field 'value' and a status field 'status'.
- * The 'value' field is the actual data value while the 'status' field represents the
+ * The message includes both a data field 'value' and a status field 'valueStatus'.
+ * The 'value' field is the actual data value while the 'valueStatus' field represents the
  * condition of the value (i.e., typically at acquisition time).  Future versions may include
  * the status of the value within the archive (e.g., corrupt, truncated, etc.).
  *
  * The field 'value' is a union of all possible data types currently supported.  It represents one
  * unit of heterogeneous data.  Only one data type may be included in the message.
  *
- * The 'status' field is structure defined as an enclosed RPC message.  It contains information about
+ * The 'valueStatus' field is structure defined as an enclosed RPC message.  It contains information about the
  * value during acquisition, such as value alarm conditions, acquisition conditions, and any associated
- * message.  This field is subject to future modification for expanded use case.
+ * message.  This field is subject to future modification for expanded use cases.
  *
  * @generated from protobuf message DataValue
  */
@@ -444,9 +444,10 @@ export declare enum DataValue_ValueStatus_Severity {
  *
  * Structure Data Value.
  *
+ * Represents a unit of data whose value is a structure.
+ *
  * Each level of a data structure may have an indefinite number of fields consisting
- * of (name, value) pairs.  There may be practical restrictions on the number of fields within
- * service implementations (as of yet unreported).
+ * of (name, value) pairs.
  *
  * Note that the Structure message supports nested structure, and thus, complex data structures
  * can be represented.  The 'value' field within a (name, value) pair may contain another Structure
@@ -478,7 +479,9 @@ export interface Structure_Field {
  *
  * Array Data Value.
  *
- * Used for columns whose values are arrays instead of individual scalar values.  Data values are any of the defined
+ * Represents a unit of data whose value is an array.
+ *
+ * Used for vectors whose values are arrays instead of individual scalar values.  Data values are any of the defined
  * DataValue types including simple scalars as well as more complex types like structures, images, and other nested
  * arrays.  The depth of array nesting is currently indefinite but may have practical restrictions within service
  * implementation (yet unreported).
@@ -494,6 +497,8 @@ export interface Array$ {
 /**
  *
  * Image Data Value.
+ *
+ * Represents a unit of data whose value is an image file.
  *
  * Images are stored as raw data as a byte vector.  Interpretation is determined by standard
  * image file formats enumerated by FileType.
@@ -553,83 +558,6 @@ export declare enum Image_FileType {
      * @generated from protobuf enum value: PDF = 8;
      */
     PDF = 8
-}
-/**
- * @generated from protobuf enum DataValueType
- */
-export declare enum DataValueType {
-    /**
-     * character string
-     *
-     * @generated from protobuf enum value: DATA_TYPE_STRING = 0;
-     */
-    DATA_TYPE_STRING = 0,
-    /**
-     * logical Boolean
-     *
-     * @generated from protobuf enum value: DATA_TYPE_BOOLEAN = 1;
-     */
-    DATA_TYPE_BOOLEAN = 1,
-    /**
-     * unsigned integer value
-     *
-     * @generated from protobuf enum value: DATA_TYPE_UINT = 2;
-     */
-    DATA_TYPE_UINT = 2,
-    /**
-     * unsigned long integer
-     *
-     * @generated from protobuf enum value: DATA_TYPE_ULONG = 3;
-     */
-    DATA_TYPE_ULONG = 3,
-    /**
-     * signed integer value
-     *
-     * @generated from protobuf enum value: DATA_TYPE_INT = 4;
-     */
-    DATA_TYPE_INT = 4,
-    /**
-     * signed long integer
-     *
-     * @generated from protobuf enum value: DATA_TYPE_LONG = 5;
-     */
-    DATA_TYPE_LONG = 5,
-    /**
-     * 32 byte float value
-     *
-     * @generated from protobuf enum value: DATA_TYPE_FLOAT = 6;
-     */
-    DATA_TYPE_FLOAT = 6,
-    /**
-     * 64 byte float value (double)
-     *
-     * @generated from protobuf enum value: DATA_TYPE_DOUBLE = 7;
-     */
-    DATA_TYPE_DOUBLE = 7,
-    /**
-     * raw data as byte string
-     *
-     * @generated from protobuf enum value: DATA_TYPE_BYTES = 8;
-     */
-    DATA_TYPE_BYTES = 8,
-    /**
-     * heterogeneous array (no dimensional restrictions as of yet)
-     *
-     * @generated from protobuf enum value: DATA_TYPE_ARRAY = 9;
-     */
-    DATA_TYPE_ARRAY = 9,
-    /**
-     * general data structure (no width or depth restrictions yet)
-     *
-     * @generated from protobuf enum value: DATA_TYPE_STRUCT = 10;
-     */
-    DATA_TYPE_STRUCT = 10,
-    /**
-     * general image value
-     *
-     * @generated from protobuf enum value: DATA_TYPE_IMAGE = 11;
-     */
-    DATA_TYPE_IMAGE = 11
 }
 declare class Attribute$Type extends MessageType<Attribute> {
     constructor();

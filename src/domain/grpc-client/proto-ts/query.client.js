@@ -7,10 +7,6 @@
 //
 // Contains RPC messages and interface specific to the Query Service.
 //
-// since: February, 2024
-// version: 1.2.0
-//
-//
 import { DpQueryService } from "./query";
 import { stackIntercept } from "@protobuf-ts/runtime-rpc";
 // 
@@ -20,7 +16,7 @@ import { stackIntercept } from "@protobuf-ts/runtime-rpc";
  *
  * The Query Service Interface
  *
- * Defines RPC operations for data, metadata, and annotation queries.
+ * Defines RPC operations for data and metadata queries.
  *
  * @generated from protobuf service dp.service.query.DpQueryService
  */

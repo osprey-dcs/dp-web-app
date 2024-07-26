@@ -7,10 +7,6 @@
 //
 // Contains RPC messages and interface specific to the Annotation Service.
 //
-// since: February, 2024
-// version: 1.3.0
-//
-//
 import type { BinaryWriteOptions } from "@protobuf-ts/runtime";
 import type { IBinaryWriter } from "@protobuf-ts/runtime";
 import type { BinaryReadOptions } from "@protobuf-ts/runtime";
@@ -35,7 +31,7 @@ export interface CreateDataSetRequest {
 }
 /**
  *
- * Create DataSet Request.
+ * Create DataSet Response.
  *
  * Contains response to createDataSet() API request.  Message payload is exceptionalResult if request is rejected or an
  * error is encountered by the handler, otherwise contains a CreateDataSetResult.
@@ -70,7 +66,7 @@ export interface CreateDataSetResponse {
  *
  * Successful Result.
  *
- * Contains the results of a successful request to create a DataSet.
+ * Contains the results of a successful request to create a DataSet, with the id of the newly created DataSet.
  *
  * @generated from protobuf message dp.service.annotation.CreateDataSetResponse.CreateDataSetResult
  */
@@ -84,7 +80,11 @@ export interface CreateDataSetResponse_CreateDataSetResult {
  *
  * Query DataSet Request.
  *
- * TODO: document behavior
+ * Contains parameters for a query over existing DataSets.  A query includes a list of
+ * (one or more) QueryDataSetsCriterion. OwnerCriterion, NameCriterion, and DescriptionCriterion are used to perform
+ * queries over DataSet owner, name, and description, respectively.  The criterion can be used individually or combined
+ * for compound queries.  E.g., a query request might use an OwnerCriterion and NameCriterion to find DataSets
+ * for the specified owner matching the name filter.
  *
  * @generated from protobuf message dp.service.annotation.QueryDataSetsRequest
  */
@@ -108,9 +108,15 @@ export interface QueryDataSetsRequest_QueryDataSetsCriterion {
          */
         ownerCriterion: QueryDataSetsRequest_QueryDataSetsCriterion_OwnerCriterion;
     } | {
+        oneofKind: "nameCriterion";
+        /**
+         * @generated from protobuf field: dp.service.annotation.QueryDataSetsRequest.QueryDataSetsCriterion.NameCriterion nameCriterion = 11;
+         */
+        nameCriterion: QueryDataSetsRequest_QueryDataSetsCriterion_NameCriterion;
+    } | {
         oneofKind: "descriptionCriterion";
         /**
-         * @generated from protobuf field: dp.service.annotation.QueryDataSetsRequest.QueryDataSetsCriterion.DescriptionCriterion descriptionCriterion = 11;
+         * @generated from protobuf field: dp.service.annotation.QueryDataSetsRequest.QueryDataSetsCriterion.DescriptionCriterion descriptionCriterion = 12;
          */
         descriptionCriterion: QueryDataSetsRequest_QueryDataSetsCriterion_DescriptionCriterion;
     } | {
@@ -133,6 +139,18 @@ export interface QueryDataSetsRequest_QueryDataSetsCriterion_OwnerCriterion {
  *
  * Criterion used to search dataset description field.  "Or" operator is used to combine with other criteria.
  *
+ * @generated from protobuf message dp.service.annotation.QueryDataSetsRequest.QueryDataSetsCriterion.NameCriterion
+ */
+export interface QueryDataSetsRequest_QueryDataSetsCriterion_NameCriterion {
+    /**
+     * @generated from protobuf field: string namePattern = 1;
+     */
+    namePattern: string;
+}
+/**
+ *
+ * Criterion used to search dataset description field.  "Or" operator is used to combine with other criteria.
+ *
  * @generated from protobuf message dp.service.annotation.QueryDataSetsRequest.QueryDataSetsCriterion.DescriptionCriterion
  */
 export interface QueryDataSetsRequest_QueryDataSetsCriterion_DescriptionCriterion {
@@ -143,9 +161,11 @@ export interface QueryDataSetsRequest_QueryDataSetsCriterion_DescriptionCriterio
 }
 /**
  *
- * Query DataSet Request.
+ * Query DataSet Response.
  *
- * TODO: document behavior
+ * Contains the results of a DataSets query.  Payload is an ExceptionalResult if the request is invalid, an error is
+ * encountered processing the query, or the query result is empty.  Otherwise payload is a DataSetsResult with a list
+ * of DataSets matching the query parameters.
  *
  * @generated from protobuf message dp.service.annotation.QueryDataSetsResponse
  */
@@ -256,7 +276,8 @@ export interface CreateAnnotationResponse {
  *
  * Successful Annotation Result.
  *
- * Contains the results of a successful request to add an annotation to a DataSet.
+ * Contains the results of a successful request to add an annotation to a DataSet, including the id for the newly
+ * created annotation.
  *
  * @generated from protobuf message dp.service.annotation.CreateAnnotationResponse.CreateAnnotationResult
  */
@@ -270,7 +291,10 @@ export interface CreateAnnotationResponse_CreateAnnotationResult {
  *
  * Annotations Query Request.
  *
- * Contains a list of criteria for querying annotations.  Each criterion option is described in more detail below.
+ * Contains a list of QueryAnnotationsCriterion for querying annotations. OwnerCriterion and CommentCriterion are used
+ * to search by owner and comment text, respectively. List can include a single criterion, or multiple criterion for a
+ * compound query. E.g., a query request might use an OwnerCriterion and CommentCriterion to find annotations
+ * for the specified owner matching the comment filter.
  *
  * @generated from protobuf message dp.service.annotation.QueryAnnotationsRequest
  */
@@ -425,15 +449,19 @@ export interface DataSet {
      */
     dataSetId: string;
     /**
-     * @generated from protobuf field: string ownerId = 2;
+     * @generated from protobuf field: string name = 2;
+     */
+    name: string;
+    /**
+     * @generated from protobuf field: string ownerId = 3;
      */
     ownerId: string;
     /**
-     * @generated from protobuf field: string description = 3;
+     * @generated from protobuf field: string description = 4;
      */
     description: string;
     /**
-     * @generated from protobuf field: repeated dp.service.annotation.DataBlock dataBlocks = 4;
+     * @generated from protobuf field: repeated dp.service.annotation.DataBlock dataBlocks = 5;
      */
     dataBlocks: DataBlock[];
 }
@@ -523,6 +551,16 @@ declare class QueryDataSetsRequest_QueryDataSetsCriterion_OwnerCriterion$Type ex
  * @generated MessageType for protobuf message dp.service.annotation.QueryDataSetsRequest.QueryDataSetsCriterion.OwnerCriterion
  */
 export declare const QueryDataSetsRequest_QueryDataSetsCriterion_OwnerCriterion: QueryDataSetsRequest_QueryDataSetsCriterion_OwnerCriterion$Type;
+declare class QueryDataSetsRequest_QueryDataSetsCriterion_NameCriterion$Type extends MessageType<QueryDataSetsRequest_QueryDataSetsCriterion_NameCriterion> {
+    constructor();
+    create(value?: PartialMessage<QueryDataSetsRequest_QueryDataSetsCriterion_NameCriterion>): QueryDataSetsRequest_QueryDataSetsCriterion_NameCriterion;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryDataSetsRequest_QueryDataSetsCriterion_NameCriterion): QueryDataSetsRequest_QueryDataSetsCriterion_NameCriterion;
+    internalBinaryWrite(message: QueryDataSetsRequest_QueryDataSetsCriterion_NameCriterion, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.annotation.QueryDataSetsRequest.QueryDataSetsCriterion.NameCriterion
+ */
+export declare const QueryDataSetsRequest_QueryDataSetsCriterion_NameCriterion: QueryDataSetsRequest_QueryDataSetsCriterion_NameCriterion$Type;
 declare class QueryDataSetsRequest_QueryDataSetsCriterion_DescriptionCriterion$Type extends MessageType<QueryDataSetsRequest_QueryDataSetsCriterion_DescriptionCriterion> {
     constructor();
     create(value?: PartialMessage<QueryDataSetsRequest_QueryDataSetsCriterion_DescriptionCriterion>): QueryDataSetsRequest_QueryDataSetsCriterion_DescriptionCriterion;
