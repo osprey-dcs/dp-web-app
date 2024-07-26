@@ -25,7 +25,7 @@
     "@radix-ui/react-popover": "^1.1.1",
     "@radix-ui/react-switch": "^1.0.3",
     "@radix-ui/react-toast": "^1.1.5",
-    "ag-grid-react": "^31.2.1",
+    "ag-grid-react": "^32.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "cmdk": "^1.0.0",
