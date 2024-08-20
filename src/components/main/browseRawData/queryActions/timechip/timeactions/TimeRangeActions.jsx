@@ -140,11 +140,14 @@ function TimeRangeActions(props) {
             const endEpochs =
                 startEpochs +
                 props.timeUnits * epochsOffset[props.timeUnitsType];
-            const startNanos = props.startNanos;
+            const startNanos = Number(props.startNanos);
             let endNanos = 0;
             if (props.timeUnitsType === "nanoseconds") {
-                endNanos = props.timeUnits;
+                endNanos = startNanos + Number(props.timeUnits);
             }
+
+            console.log(startEpochs + ", " + startNanos);
+            console.log(endEpochs + ", " + endNanos);
 
             props.setTimeRange({
                 startEpochs: startEpochs,

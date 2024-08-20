@@ -128,7 +128,6 @@ function QueryResults({ resultData, setCustomSelection }) {
             gridRef.current?.api.showNoRowsOverlay();
         } else if (typeof resultData === "object") {
             setColDefs(getDataColDefs(resultData));
-            console.log("set row data");
             setRowData(
                 resultData.tableResult.rowMapTable.rows.map(
                     (row) => row.columnValues
