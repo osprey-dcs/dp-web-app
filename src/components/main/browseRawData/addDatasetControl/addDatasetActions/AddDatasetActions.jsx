@@ -8,7 +8,12 @@ import {
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 import DataPlatformApi from "@/domain/grpc-client/DataPlatformApi";
-import { cn, formatDate, validateDate, validateNanos } from "@/lib/utils";
+import {
+    cn,
+    formatDate,
+    validateDateRange,
+    validateNanosRange,
+} from "@/lib/utils";
 import { MinusCircledIcon, PlusIcon } from "@radix-ui/react-icons";
 import PropTypes from "prop-types";
 import { Fragment, useMemo, useState } from "react";
@@ -43,7 +48,7 @@ function AddDatasetActions({ setIsOpen, customSelection }) {
     const [dataSources, setDataSources] = useState(new Set());
 
     function handleAddBlock() {
-        const validDate = validateDate(
+        const validDate = validateDateRange(
             startDatetime,
             endDatetime,
             startNanos,
@@ -53,7 +58,7 @@ function AddDatasetActions({ setIsOpen, customSelection }) {
             setStartNanosErrClass,
             setEndNanosErrClass
         );
-        const validNanos = validateNanos(
+        const validNanos = validateNanosRange(
             startNanos,
             endNanos,
             setStartNanosErrClass,

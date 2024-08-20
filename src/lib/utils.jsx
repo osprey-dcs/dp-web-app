@@ -32,7 +32,7 @@ export function formatDate(date) {
     );
 }
 
-export function validateDate(
+export function validateDateRange(
     startDateString,
     endDateString,
     startNanos,
@@ -83,7 +83,7 @@ export function validateDate(
     return startValid && endValid;
 }
 
-export function validateNanos(
+export function validateNanosRange(
     startNanos,
     endNanos,
     setStartNanosErrClass,
@@ -117,6 +117,29 @@ export function validateNanos(
     }
 
     return startNanosValid && endNanosValid;
+}
+
+export function validateDate(
+    dateString,
+    nanosString,
+    setDateErrClass,
+    setNanosErrClass
+) {
+    let dateValid = true;
+    let nanosValid = true;
+    const date = new Date(dateString);
+    const nanos = Number(nanosString);
+
+    if (isNaN(date.getTime())) {
+        setDateErrClass("border-destructive");
+        dateValid = false;
+    }
+    if (nanos < 0) {
+        setNanosErrClass("border-destructive");
+        nanosValid = false;
+    }
+
+    return dateValid && nanosValid;
 }
 
 export function getDataColDefs(resultData) {

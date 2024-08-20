@@ -19,10 +19,15 @@ const propTypes = {
 };
 
 const TimeRangeChip = memo(function TimeRangeChip(props) {
+    const [rangeType, setRangeType] = useState("");
+
     const [startDatetime, setStartDatetime] = useState("");
     const [endDatetime, setEndDatetime] = useState("");
     const [startNanos, setStartNanos] = useState("");
     const [endNanos, setEndNanos] = useState("");
+
+    const [timeUnits, setTimeUnits] = useState("");
+    const [timeUnitsType, setTimeUnitsType] = useState("");
 
     const [isOpen, setIsOpen] = useState();
     const { refs, floatingStyles, context } = useFloating({
@@ -100,6 +105,8 @@ const TimeRangeChip = memo(function TimeRangeChip(props) {
                             className="p-5 border rounded bg-background shadow-md"
                         >
                             <TimeRangeActions
+                                rangeType={rangeType}
+                                setRangeType={setRangeType}
                                 setTimeRange={props.setTimeRange}
                                 startDatetime={startDatetime}
                                 setStartDatetime={setStartDatetime}
@@ -109,6 +116,10 @@ const TimeRangeChip = memo(function TimeRangeChip(props) {
                                 setStartNanos={setStartNanos}
                                 endNanos={endNanos}
                                 setEndNanos={setEndNanos}
+                                timeUnits={timeUnits}
+                                setTimeUnits={setTimeUnits}
+                                timeUnitsType={timeUnitsType}
+                                setTimeUnitsType={setTimeUnitsType}
                                 setIsOpen={setIsOpen}
                             />
                         </div>
