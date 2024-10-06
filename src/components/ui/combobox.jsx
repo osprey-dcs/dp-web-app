@@ -28,7 +28,7 @@ const Combobox = React.forwardRef(
             search = true,
             valueState,
             setValueState,
-            width,
+            buttonClassName,
             ...props
         },
         ref
@@ -53,7 +53,7 @@ const Combobox = React.forwardRef(
                             variant="outline"
                             role="combobox"
                             aria-expanded={open}
-                            className={cn("justify-between", width)}
+                            className={cn("justify-between", buttonClassName)}
                         >
                             {valueState
                                 ? options.find(

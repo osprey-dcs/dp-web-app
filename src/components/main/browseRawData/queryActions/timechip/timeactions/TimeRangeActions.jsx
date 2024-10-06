@@ -75,6 +75,8 @@ function TimeRangeActions(props) {
     const [endDateErrClass, setEndDateErrClass] = useState("");
     const [startNanosErrClass, setStartNanosErrClass] = useState("");
     const [endNanosErrClass, setEndNanosErrClass] = useState("");
+    const [timeUnitsErrClass, setTimeUnitsErrClass] = useState("");
+    const [timeUnitsTypeErrClass, setTimeUnitsTypeErrClass] = useState("");
 
     const [errText, setErrText] = useState("");
     const maxDate = formatDate(new Date());
@@ -121,6 +123,10 @@ function TimeRangeActions(props) {
             });
         }
 
+        let validDate = true;
+        let validUnits = true;
+        let validUnitsType = true;
+
         if (props.rangeType === "relativeStart") {
             if (
                 !validateDate(
@@ -131,8 +137,29 @@ function TimeRangeActions(props) {
                 )
             ) {
                 setErrText("Error in Highlighted Fields");
+                validDate = false;
+            }
+            if (props.timeUnits === "") {
+                setTimeUnitsErrClass("border-red-500");
+                setErrText("Error in Highlighted Fields");
+                validUnits = false;
+            }
+            if (props.timeUnitsType === "") {
+                setTimeUnitsTypeErrClass("border-red-500");
+                setErrText("Error in Highlighted Fields");
+                validUnitsType = false;
+            }
+
+            if (!(validDate && validUnits && validUnitsType)) {
                 return;
             }
+
+            setStartDateErrClass("");
+            setStartNanosErrClass("");
+            setTimeUnitsErrClass("");
+            setTimeUnitsTypeErrClass("");
+            setErrText("");
+
             const ptToGMT = 25200;
             const startEpochs =
                 Math.floor(new Date(props.startDatetime).getTime() / 1000) -
@@ -146,8 +173,58 @@ function TimeRangeActions(props) {
                 endNanos = startNanos + Number(props.timeUnits);
             }
 
-            console.log(startEpochs + ", " + startNanos);
-            console.log(endEpochs + ", " + endNanos);
+            props.setTimeRange({
+                startEpochs: startEpochs,
+                endEpochs: endEpochs,
+                startNanos: startNanos,
+                endNanos: endNanos,
+            });
+        }
+
+        if (props.rangeType === "relativeEnd") {
+            if (
+                !validateDate(
+                    props.endDatetime,
+                    props.endNanos,
+                    setEndDateErrClass,
+                    setEndNanosErrClass
+                )
+            ) {
+                setErrText("Error in Highlighted Fields");
+                validDate = false;
+            }
+            if (props.timeUnits === "") {
+                setTimeUnitsErrClass("border-red-500");
+                setErrText("Error in Highlighted Fields");
+                validUnits = false;
+            }
+            if (props.timeUnitsType === "") {
+                setTimeUnitsTypeErrClass("border-red-500");
+                setErrText("Error in Highlighted Fields");
+                validUnitsType = false;
+            }
+
+            setEndDateErrClass("");
+            setEndNanosErrClass("");
+            setTimeUnitsErrClass("");
+            setTimeUnitsTypeErrClass("");
+            setErrText("");
+
+            const ptToGMT = 25200;
+            const endEpochs =
+                Math.floor(new Date(props.endDatetime).getTime() / 1000) -
+                ptToGMT;
+            let startEpochs =
+                endEpochs - props.timeUnits * epochsOffset[props.timeUnitsType];
+            const endNanos = Number(props.endNanos);
+            let startNanos = 0;
+            if (props.timeUnitsType === "nanoseconds") {
+                startNanos = endNanos - Number(props.timeUnits);
+                if (startNanos < 0) {
+                    startNanos = startNanos + 999000000;
+                    startEpochs = startEpochs - 1;
+                }
+            }
 
             props.setTimeRange({
                 startEpochs: startEpochs,
@@ -168,7 +245,7 @@ function TimeRangeActions(props) {
                 search={false}
                 valueState={props.rangeType}
                 setValueState={props.setRangeType}
-                width="w-full"
+                buttonClassName="w-full"
                 className="mb-2 w-60"
             />
             <div className="flex flex-row items-start gap-4">
@@ -293,11 +370,15 @@ function TimeRangeActions(props) {
                                     type="number"
                                     step="1"
                                     placeholder="123..."
-                                    className="input-std w-32"
+                                    className={cn(
+                                        "input-std w-32",
+                                        timeUnitsErrClass
+                                    )}
                                     value={props.timeUnits}
                                     onChange={(e) =>
                                         props.setTimeUnits(e.target.value)
                                     }
+                                    onFocus={() => setTimeUnitsErrClass("")}
                                 />
                                 <Combobox
                                     options={timeUnitsTypeOptions}
@@ -305,7 +386,11 @@ function TimeRangeActions(props) {
                                     search={false}
                                     valueState={props.timeUnitsType}
                                     setValueState={props.setTimeUnitsType}
-                                    width="w-40"
+                                    buttonClassName={cn(
+                                        "w-40",
+                                        timeUnitsTypeErrClass
+                                    )}
+                                    onFocus={() => setTimeUnitsTypeErrClass("")}
                                 />
                             </div>
                         </div>
@@ -315,6 +400,51 @@ function TimeRangeActions(props) {
                     <Fragment>
                         <div className="flex flex-col">
                             <span className="text-sm font-medium">From</span>
+                            <span className="mt-2 h-9 flex items-center text-sm text-muted-foreground">
+                                {props.endDatetime !== "" ? (
+                                    <Fragment>
+                                        {props.endDatetime}
+                                        {props.endNanos !== "" && (
+                                            <Fragment>
+                                                , {props.endNanos}ns
+                                            </Fragment>
+                                        )}
+                                    </Fragment>
+                                ) : (
+                                    "End Time"
+                                )}
+                            </span>
+                            <div className="w-full mt-2 flex flex-row items-center gap-2">
+                                <span className="text-sm font-medium">
+                                    Minus
+                                </span>
+                                <input
+                                    type="number"
+                                    step="1"
+                                    placeholder="123..."
+                                    className={cn(
+                                        "input-std w-32",
+                                        timeUnitsErrClass
+                                    )}
+                                    value={props.timeUnits}
+                                    onChange={(e) =>
+                                        props.setTimeUnits(e.target.value)
+                                    }
+                                    onFocus={() => setTimeUnitsErrClass("")}
+                                />
+                                <Combobox
+                                    options={timeUnitsTypeOptions}
+                                    optionsName="Select Units"
+                                    search={false}
+                                    valueState={props.timeUnitsType}
+                                    setValueState={props.setTimeUnitsType}
+                                    buttonClassName={cn(
+                                        "w-40",
+                                        timeUnitsTypeErrClass
+                                    )}
+                                    onFocus={() => setTimeUnitsTypeErrClass("")}
+                                />
+                            </div>
                         </div>
                         <div className="flex flex-col">
                             <span className="text-sm font-medium">To</span>
