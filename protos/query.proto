@@ -2,10 +2,6 @@
 // query.proto
 //
 // Contains RPC messages and interface specific to the Query Service.
-//
-// since: February, 2024
-// version: 1.2.0
-//
 
 syntax = "proto3";
 
@@ -24,7 +20,7 @@ import "common.proto";
 /*
  * The Query Service Interface
  *
- * Defines RPC operations for data, metadata, and annotation queries.
+ * Defines RPC operations for data and metadata queries.
  */
 service DpQueryService {
 
@@ -36,16 +32,6 @@ service DpQueryService {
    * contains the data matching the query specification.
    */
   rpc queryData(QueryDataRequest) returns (QueryDataResponse);
-
-  /*
-   * queryDataTable: Unary (non-streaming) time series data query with tabular result.
-   *
-   * This time series data query returns its result in a tabular format, for use by the Data Platform web application.
-   * The client sends a single QueryDataRequest with the query parameters and receives a single QueryTableResponse.
-   * The response content may indicate rejection, error in handling, no data matching query, or otherwise contains
-   * the tabular data matching the query specification.
-   */
-  rpc queryDataTable(QueryDataRequest) returns (QueryTableResponse);
 
   /*
    * queryDataStream: Server-side streaming time series data query.
@@ -81,6 +67,16 @@ service DpQueryService {
   rpc queryDataBidiStream(stream QueryDataRequest) returns (stream QueryDataResponse);
 
   /*
+   * queryTable: Unary (non-streaming) time series data query with tabular result.
+   *
+   * This time series data query returns its result in a tabular format, for use by the Data Platform web application.
+   * The client sends a single QueryTableRequest with the query parameters and receives a single QueryTableResponse.
+   * The response content may indicate an exception in handling such as rejection, database error, no data matching
+   * query, or otherwise contains the tabular data matching the query specification.
+   */
+  rpc queryTable(QueryTableRequest) returns (QueryTableResponse);
+
+  /*
    * queryMetadata: Unary (non-streaming) metadata query.
    *
    * This RPC is used by clients to learn about data sources (PVs/columns) available in the archive.  Client sends
@@ -90,17 +86,6 @@ service DpQueryService {
    */
   rpc queryMetadata(QueryMetadataRequest) returns (QueryMetadataResponse);
 
-  /*
-   * queryAnnotations: Unary (non-streaming) annotations query.
-   *
-   * This RPC is used by clients to query over annotations added to ingested data, and is not yet implemented.
-   * Client sends a single QueryAnnotationsRequest with the query parameters, and receives a single
-   * QueryAnnotationsResponse with the query results. The response may indicate rejection, error in handling,
-   * no data matching query, or otherwise contains the data matching the query specification.
-   *
-   * TODO: this RPC is not yet implmented.
-   */
-  rpc queryAnnotations(QueryAnnotationsRequest) returns (QueryAnnotationsResponse);
 }
 
 
@@ -111,7 +96,16 @@ service DpQueryService {
 /*
  * Time Series Data Query Request.
  *
- * Describes the parameters for a time series data query.
+ * Describes the parameters for a time series data query. A QueryDataRequest contains either a QuerySpec or
+ * a CursorOperation.
+ *
+ * The QuerySpec is used as the initial request message payload for all time-series data queries.  It includes a
+ * time range and a list of PV names.
+ *
+ * The only rpc method that supports use of a CursorOperation payload is queryDataBidiStream().  This method allows
+ * the client to control the flow of the query response stream.  After receiving the initial query response message,
+ * the client sends a CURSOR_OP_NEXT CursorOperation to retrieve each subsequent query response message until the
+ * the query result response stream is exhausted.
  */
 message QueryDataRequest {
 
@@ -130,7 +124,7 @@ message QueryDataRequest {
   message QuerySpec {
     Timestamp beginTime = 1; // Required, specifies query start time.
     Timestamp endTime = 2; // Required, specifies query end time.
-    repeated string pvNames = 3; // Required, contains list of data source names to query for specified time range.
+    repeated string pvNames = 3; // Required, contains list of PV names to query for specified time range.
   }
 
   /*
@@ -149,9 +143,13 @@ message QueryDataRequest {
 /*
  * Time Series Data Query Response.
  *
- * Contains results from a time series data query.  Used as single response to unary RPC methods, or as a stream in the
- * streaming RPC methods. Contains either ExceptionalResult indicating a problem handling the request, or the
- * data returned by the query.
+ * Contains results from a time series data query.  Sent as single response to unary method queryData(),
+ * or in the response streams from queryDataStream() and queryDataBidiStream().
+
+ * Contains either ExceptionalResult indicating a problem handling the request, or QueryData
+ * containing the data returned by the query.  An ExceptionalResult is sent if the query is determined to be invalid
+ * or there is an error executing the query. Otherwise a QueryData payload is sent containing the data returned
+ * by the query.
  */
 message QueryDataResponse {
 
@@ -167,26 +165,64 @@ message QueryDataResponse {
   /*
    * Time Series Query Result Data.
    *
-   * Contains the data for a time series data query result, as a list of DataBucket objects.
+   * Contains the data for a time series data query result, as a list of DataBucket objects. Each DataBucket minimally
+   * includes a vector of PV data values (in a DataColumn) and a DataTimestamps object specifying the timestamps
+   * for the data vector values using either a SamplingClock (with start time, sample period, and number of samples or
+   * an explicit list of timestamps) or a TimestampsList (with an explicit list of timestamps). The DataBucket also
+   * includes key/value Attributes and/or EventMetadata if defined for the data in ingestion.
    */
   message QueryData {
 
     repeated DataBucket dataBuckets = 1;
 
     message DataBucket {
-      DataTimestamps dataTimestamps = 1; // Specifies timestamps for bucket, using SamplingClock or explicit Timestamp list
+      DataTimestamps dataTimestamps = 1; // Specifies timestamps for bucket, using SamplingClock or explicit Timestamp list.
       repeated Attribute attributes = 2; // Specifies list of key/value attributes for bucket, if any.
-      EventMetadata eventMetadata = 3; // Specifies event/snapshot metadata for bucket, if any.
-      DataColumn dataColumn = 4; // Vector of column data for bucket.
+      EventMetadata eventMetadata = 3; // Specifies event metadata for bucket, if any.
+      DataColumn dataColumn = 4; // Vector of data values corresponding to data timestamps.
     }
+  }
+}
+
+/*
+ * Time Series Data Query With Tabular Result Format.
+ *
+ * Describes the parameters for a time series data query that returns data in a tabular format.  The TableResultFormat
+ * enum is used to specify either row-oriented or column-oriented tabular result format.  Time range must be specified
+ * using begin/endTime fields.  PV names are specified using either an explicit pvNameList or a pvNamePattern
+ * matched by regex.
+ */
+message QueryTableRequest {
+
+  TableResultFormat format = 1; // Required, specifies table result format.
+  Timestamp beginTime = 2; // Required, specifies query start time.
+  Timestamp endTime = 3; // Required, specifies query end time.
+
+  // pvNameSpec: Required, contains either a list of column/PV names (PvNameList),
+  // or a single regex pattern string (PvNamePattern).
+  oneof pvNameSpec {
+    PvNameList pvNameList = 11;
+    PvNamePattern pvNamePattern = 12;
+  }
+
+  enum TableResultFormat {
+    TABLE_FORMAT_ROW_MAP = 0; // return row oriented data using map structure (default value if not explicitly set)
+    TABLE_FORMAT_COLUMN = 1; // return column oriented data using DataColumns
   }
 }
 
 /*
  * Tabular Time Series Data Query Response.
  *
- * Contains results from a time series data query in a tabular format for use by the DP web application (and other similar
- * uses. Types of response and corresponding message payloads include:
+ * Contains results from a time series data query in a tabular format for use by the DP web application
+ * (and other similar uses.
+ *
+ * Response message payload is either an ExceptionalResult or TableResult. An ExceptionalResult message is sent if
+ * the request is rejected because it is deemed to be invalid, there is an error processing the query,
+ * or the query returned no data. Otherwise, a TableResult message is sent contiaing the query results.
+ *
+ * The TableResult contains a ColumnTable if the request format is specified to be TABLE_FORMAT_COLUMN,
+ * or a RowMapTable if format is TABLE_FORMAT_ROW_MAP.
  */
 message QueryTableResponse {
 
@@ -205,8 +241,30 @@ message QueryTableResponse {
    * Contains the data for a time series data query result, in a tabular format.
    */
   message TableResult {
+    oneof tableResult {
+      ColumnTable columnTable = 1;
+      RowMapTable rowMapTable = 2;
+    }
+  }
+
+  /*
+   * Column-oriented table result with list of columns.
+   */
+  message ColumnTable {
     DataTimestamps dataTimestamps = 1; // Specifies the timestamps for the table, using an explicit list of times.
     repeated DataColumn dataColumns = 2; // Contains a list of columns, each with a name and vector of values one for each timestamp.
+  }
+
+  /*
+   * Row-oriented table result where each row is a map whose keys are the column names and values are the column values
+   * for that row.
+   */
+  message RowMapTable {
+    repeated string columnNames = 1;
+    repeated DataRow rows = 2;
+    message DataRow {
+      map<string, DataValue> columnValues = 1;
+    }
   }
 }
 
@@ -218,37 +276,26 @@ message QueryTableResponse {
 /*
  * Metadata Query Request.
  *
- * Describes the parameters for a metadata query over available data sources in the archive.
+ * Describes the parameters for querying metadata for PVs managed in the archive.
  *
- * A request may contain one of two payloads in the QuerySpec, either a PvNameList with an explicit list of
- * column/PV names, or a regular expression pattern used to match against column/PV names.
+ * A request may contain one of two payloads, either a PvNameList with an explicit list of
+ * column/PV names, or a PvNamePattern with a regular expression pattern used to match against column/PV names.
  */
 message QueryMetadataRequest {
 
-  QuerySpec querySpec = 1; // Contains the query specification payload.
-
-  message QuerySpec {
-
-    // pvNameSpec: Contains either a list of column/PV names, or a single regex pattern string.
-    oneof pvNameSpec {
-      PvNameList pvNameList = 1;
-      PvNamePattern pvNamePattern = 2;
-    }
-
-    message PvNameList {
-      repeated string pvNames = 1; // Specifies list of column/PV names to match and return metadata for.
-    }
-
-    message PvNamePattern {
-      string pattern = 1; // Specifies regex pattern to use for matching column/PV names to return metadata for.
-    }
+  // pvNameSpec: Contains either a list of column/PV names, or a single regex pattern string.
+  oneof pvNameSpec {
+    PvNameList pvNameList = 1;
+    PvNamePattern pvNamePattern = 2;
   }
+
 }
 
 /*
  * Metadata Query Response.
  *
- * Contains results from a metadata query. Types of response and corresponding message payloads include:
+ * Contains results from a metadata query. Payload is an ExceptionalResult if a rejection, error, or empty query
+ * result is encountered, otherwise is a MetadataResult containing results of query.
  */
 message QueryMetadataResponse {
 
@@ -272,54 +319,23 @@ message QueryMetadataResponse {
 
     message PvInfo {
       string pvName = 1; // Name of PV.
-      string lastBucketDataType = 2; // Data type of last bucket for PV.
-      SamplingClock lastSamplingClock = 3; // SamplingClock for last bucket for PV (only contains start time if bucket uses a list of timestamps).
-      Timestamp firstTimestamp = 5; // Timestamp of first data value for PV.
-      Timestamp lastTimestamp = 6; // Timestamp of last data value for PV.
+      string lastBucketId = 2; // Database identifier for PV's most recent bucket.
+      int32 lastBucketDataTypeCase = 3; // Data type case (DataValue.ValueCase) for PV's most recent bucket.
+      string lastBucketDataType = 4; // Data type name of PV's most recent bucket.
+      int32 lastBucketDataTimestampsCase = 5; // DataTimestamps case for PV's most recent bucket.
+      string lastBucketDataTimestampsType = 6; // DataTimestamps name for PV's most recent bucket.
+      uint32 lastBucketSampleCount = 8; // Number of samples in PV's most recent bucket.
+      uint64 lastBucketSamplePeriod = 9; // Sample period in nanos for PV's most recent bucket (zero if DataTimestamps is TimestampList).
+      Timestamp firstDataTimestamp = 10; // Timestamp of first data value for PV.
+      Timestamp lastDataTimestamp = 11; // Timestamp of most recent data value for PV.
     }
   }
 }
 
-
-//
-// ------------------- Annotations Query ---------------------------
-//
-
-/*
- * Annotations Query Request.
- *
- * This is a placeholder, annotation query is not yet implemented.
- */
-message QueryAnnotationsRequest {
-  QuerySpec querySpec = 1;
-
-  message QuerySpec {
-  }
+message PvNameList {
+  repeated string pvNames = 1; // Specifies list of column/PV names to match and return metadata for.
 }
 
-/*
- * Annotations Query Response.
- *
- * This is a placeholder, annotation query is not yet implemented.
- *
- * Contains results from an annotations query. Types of response and corresponding message payloads include:
- */
-message QueryAnnotationsResponse {
-
-  Timestamp responseTime = 2; // Indicates time response was generated.
-
-  // result: Response contains either an ExceptionalResult indicating a problem handling the request,
-  // or AnnotationsResult with query result.
-  oneof result {
-    ExceptionalResult exceptionalResult = 10;
-    AnnotationsResult annotationsResult = 11;
-  }
-
-  /*
-   * Annotations Query Result Content.
-   *
-   * This is a placeholder, annotation query is not yet implemented.
-   */
-  message AnnotationsResult {
-  }
+message PvNamePattern {
+  string pattern = 1; // Specifies regex pattern to use for matching column/PV names to return metadata for.
 }
