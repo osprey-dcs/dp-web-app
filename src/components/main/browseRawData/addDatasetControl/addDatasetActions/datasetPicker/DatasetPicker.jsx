@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 
-function DatasetPicker({ dataSources, setDataSources }) {
+function DatasetPicker({ dataSources, setDataSources, className }) {
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState("");
     const [search, setSearch] = useState("");
@@ -36,7 +36,8 @@ function DatasetPicker({ dataSources, setDataSources }) {
             <PopoverTrigger asChild>
                 <button
                     className={cn(
-                        "w-full flex flew row items-center rounded text-sm text-muted-foreground hover:text-foreground"
+                        "w-full flex flew row items-center rounded text-sm text-muted-foreground hover:text-foreground",
+                        className
                     )}
                 >
                     <PlusIcon />

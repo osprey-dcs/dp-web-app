@@ -301,6 +301,6 @@ export function onPVSelected(pvName, pvs, dispatch, ToastAction, toast) {
     );
     toast({
         description: toastDescription,
-        action: toastAction,
+        actions: [toastAction],
     });
 }

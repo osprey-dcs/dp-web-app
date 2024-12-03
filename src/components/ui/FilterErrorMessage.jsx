@@ -7,7 +7,7 @@ function FilterErrorMessage({ children, className, ...props }) {
     return (
         <div
             className={
-                children !== "" ? cn(errMsgVariants(), className) : "mb-4"
+                children !== "" ? cn(errMsgVariants(), className) : undefined
             }
             {...props}
         >

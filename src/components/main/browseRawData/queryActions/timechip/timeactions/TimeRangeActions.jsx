@@ -8,7 +8,10 @@ import {
     validateNanosRange,
 } from "@/lib/utils";
 import PropTypes from "prop-types";
-import { Fragment, useState } from "react";
+import { useState } from "react";
+import AbsoluteRange from "./absoluteRange/AbsoluteRange";
+import EndAnchorRange from "./endAnchorRange/EndAnchorRange";
+import StartAnchorRange from "./startAnchorRange/StartAnchorRange";
 
 const propTypes = {
     rangeType: PropTypes.string,
@@ -58,6 +61,14 @@ const timeUnitsTypeOptions = [
         label: "Seconds",
     },
     {
+        value: "milliseconds",
+        label: "Milliseconds",
+    },
+    {
+        value: "microseconds",
+        label: "Microseconds",
+    },
+    {
         value: "nanoseconds",
         label: "Nanoseconds",
     },
@@ -67,6 +78,8 @@ const epochsOffset = {
     hours: 3600,
     minutes: 60,
     seconds: 1,
+    milliseconds: 0,
+    microseconds: 0,
     nanoseconds: 0,
 };
 
@@ -171,6 +184,10 @@ function TimeRangeActions(props) {
             let endNanos = 0;
             if (props.timeUnitsType === "nanoseconds") {
                 endNanos = startNanos + Number(props.timeUnits);
+            } else if (props.timeUnitsType === "microseconds") {
+                endNanos = startNanos + Number(props.timeUnits) * 1000;
+            } else if (props.timeUnitsType === "milliseconds") {
+                endNanos = startNanos + Number(props.timeUnits) * 1000000;
             }
 
             props.setTimeRange({
@@ -220,10 +237,15 @@ function TimeRangeActions(props) {
             let startNanos = 0;
             if (props.timeUnitsType === "nanoseconds") {
                 startNanos = endNanos - Number(props.timeUnits);
-                if (startNanos < 0) {
-                    startNanos = startNanos + 999000000;
-                    startEpochs = startEpochs - 1;
-                }
+            } else if (props.timeUnitsType === "microseconds") {
+                startNanos = endNanos - Number(props.timeUnits) * 1000;
+            } else if (props.timeUnitsType === "milliseconds") {
+                startNanos = endNanos - Number(props.timeUnits) * 1000000;
+            }
+
+            if (startNanos < 0) {
+                startNanos = startNanos + 999000000;
+                startEpochs = startEpochs - 1;
             }
 
             props.setTimeRange({
@@ -234,257 +256,78 @@ function TimeRangeActions(props) {
             });
         }
 
-        // props.setIsOpen(false);
+        props.setIsOpen(false);
     }
 
     return (
         <div className="flex flex-col items-center">
-            <Combobox
-                options={rangeTypeOptions}
-                optionsName="Select Time Range Type"
-                search={false}
-                valueState={props.rangeType}
-                setValueState={props.setRangeType}
-                buttonClassName="w-full"
-                className="mb-2 w-60"
-            />
+            <div
+                className={cn(
+                    "w-full",
+                    props.rangeType !== "" && "pb-4 mb-4 border-b"
+                )}
+            >
+                <Combobox
+                    options={rangeTypeOptions}
+                    optionsName="Select Time Range Type"
+                    search={false}
+                    valueState={props.rangeType}
+                    setValueState={props.setRangeType}
+                    buttonClassName="w-full"
+                    className="w-60"
+                />
+            </div>
             <div className="flex flex-row items-start gap-4">
                 {props.rangeType === "absolute" && (
-                    <Fragment>
-                        <div className="flex flex-col">
-                            <span className="text-sm font-medium">From</span>
-                            <input
-                                aria-label="Date and time"
-                                name="start-time"
-                                type="datetime-local"
-                                value={props.startDatetime}
-                                max={maxDate}
-                                step="1"
-                                onChange={(e) =>
-                                    props.setStartDatetime(e.target.value)
-                                }
-                                onFocus={() => setStartDateErrClass("")}
-                                className={cn(
-                                    "input-std mt-2 mb-2",
-                                    startDateErrClass
-                                )}
-                            />
-                            <input
-                                type="number"
-                                name="start-nanos"
-                                placeholder="Nanoseconds"
-                                value={props.startNanos}
-                                onChange={(e) =>
-                                    props.setStartNanos(e.target.value)
-                                }
-                                onFocus={() => setStartNanosErrClass("")}
-                                className={cn("input-std", startNanosErrClass)}
-                            />
-                        </div>
-                        <div className="flex flex-col">
-                            <span className="text-sm font-medium">To</span>
-                            <input
-                                aria-label="Date and time"
-                                name="end-time"
-                                type="datetime-local"
-                                value={props.endDatetime}
-                                max={maxDate}
-                                step="1"
-                                onChange={(e) =>
-                                    props.setEndDatetime(e.target.value)
-                                }
-                                onFocus={() => setEndDateErrClass("")}
-                                className={cn(
-                                    "input-std mt-2 mb-2",
-                                    endDateErrClass
-                                )}
-                            />
-                            <input
-                                type="number"
-                                name="end-nanos"
-                                placeholder="Nanoseconds"
-                                step="1"
-                                value={props.endNanos}
-                                onChange={(e) =>
-                                    props.setEndNanos(e.target.value)
-                                }
-                                onFocus={() => setEndNanosErrClass("")}
-                                className={cn("input-std", endNanosErrClass)}
-                            />
-                        </div>
-                    </Fragment>
+                    <AbsoluteRange
+                        {...props}
+                        startDateErrClass={startDateErrClass}
+                        setStartDateErrClass={setStartDateErrClass}
+                        startNanosErrClass={startNanosErrClass}
+                        setStartNanosErrClass={setStartNanosErrClass}
+                        endDateErrClass={endDateErrClass}
+                        setEndDateErrClass={setEndDateErrClass}
+                        endNanosErrClass={endNanosErrClass}
+                        setEndNanosErrClass={setEndNanosErrClass}
+                        maxDate={maxDate}
+                    />
                 )}
                 {props.rangeType === "relativeStart" && (
-                    <Fragment>
-                        <div className="flex flex-col">
-                            <span className="text-sm font-medium">From</span>
-                            <input
-                                aria-label="Date and time"
-                                name="start-time"
-                                type="datetime-local"
-                                value={props.startDatetime}
-                                max={maxDate}
-                                step="1"
-                                onChange={(e) =>
-                                    props.setStartDatetime(e.target.value)
-                                }
-                                onFocus={() => setStartDateErrClass("")}
-                                className={cn(
-                                    "input-std mt-2 mb-2",
-                                    startDateErrClass
-                                )}
-                            />
-                            <input
-                                type="number"
-                                name="start-nanos"
-                                placeholder="Nanoseconds"
-                                value={props.startNanos}
-                                onChange={(e) =>
-                                    props.setStartNanos(e.target.value)
-                                }
-                                onFocus={() => setStartNanosErrClass("")}
-                                className={cn("input-std", startNanosErrClass)}
-                            />
-                        </div>
-                        <div className="flex flex-col">
-                            <span className="text-sm font-medium">To</span>
-                            <span className="mt-2 h-9 flex items-center text-sm text-muted-foreground">
-                                {props.startDatetime !== "" ? (
-                                    <Fragment>
-                                        {props.startDatetime}
-                                        {props.startNanos !== "" && (
-                                            <Fragment>
-                                                , {props.startNanos}ns
-                                            </Fragment>
-                                        )}
-                                    </Fragment>
-                                ) : (
-                                    "Start Time"
-                                )}
-                            </span>
-                            <div className="w-full mt-2 flex flex-row items-center gap-2">
-                                <span className="text-sm font-medium">
-                                    Plus
-                                </span>
-                                <input
-                                    type="number"
-                                    step="1"
-                                    placeholder="123..."
-                                    className={cn(
-                                        "input-std w-32",
-                                        timeUnitsErrClass
-                                    )}
-                                    value={props.timeUnits}
-                                    onChange={(e) =>
-                                        props.setTimeUnits(e.target.value)
-                                    }
-                                    onFocus={() => setTimeUnitsErrClass("")}
-                                />
-                                <Combobox
-                                    options={timeUnitsTypeOptions}
-                                    optionsName="Select Units"
-                                    search={false}
-                                    valueState={props.timeUnitsType}
-                                    setValueState={props.setTimeUnitsType}
-                                    buttonClassName={cn(
-                                        "w-40",
-                                        timeUnitsTypeErrClass
-                                    )}
-                                    onFocus={() => setTimeUnitsTypeErrClass("")}
-                                />
-                            </div>
-                        </div>
-                    </Fragment>
+                    <StartAnchorRange
+                        {...props}
+                        startDateErrClass={startDateErrClass}
+                        setStartDateErrClass={setStartDateErrClass}
+                        startNanosErrClass={startNanosErrClass}
+                        setStartNanosErrClass={setStartNanosErrClass}
+                        timeUnitsTypeOptions={timeUnitsTypeOptions}
+                        timeUnitsErrClass={timeUnitsErrClass}
+                        setTimeUnitsErrClass={setTimeUnitsErrClass}
+                        timeUnitsTypeErrClass={timeUnitsTypeErrClass}
+                        setTimeUnitsTypeErrClass={setTimeUnitsTypeErrClass}
+                        maxDate={maxDate}
+                    />
                 )}
                 {props.rangeType === "relativeEnd" && (
-                    <Fragment>
-                        <div className="flex flex-col">
-                            <span className="text-sm font-medium">From</span>
-                            <span className="mt-2 h-9 flex items-center text-sm text-muted-foreground">
-                                {props.endDatetime !== "" ? (
-                                    <Fragment>
-                                        {props.endDatetime}
-                                        {props.endNanos !== "" && (
-                                            <Fragment>
-                                                , {props.endNanos}ns
-                                            </Fragment>
-                                        )}
-                                    </Fragment>
-                                ) : (
-                                    "End Time"
-                                )}
-                            </span>
-                            <div className="w-full mt-2 flex flex-row items-center gap-2">
-                                <span className="text-sm font-medium">
-                                    Minus
-                                </span>
-                                <input
-                                    type="number"
-                                    step="1"
-                                    placeholder="123..."
-                                    className={cn(
-                                        "input-std w-32",
-                                        timeUnitsErrClass
-                                    )}
-                                    value={props.timeUnits}
-                                    onChange={(e) =>
-                                        props.setTimeUnits(e.target.value)
-                                    }
-                                    onFocus={() => setTimeUnitsErrClass("")}
-                                />
-                                <Combobox
-                                    options={timeUnitsTypeOptions}
-                                    optionsName="Select Units"
-                                    search={false}
-                                    valueState={props.timeUnitsType}
-                                    setValueState={props.setTimeUnitsType}
-                                    buttonClassName={cn(
-                                        "w-40",
-                                        timeUnitsTypeErrClass
-                                    )}
-                                    onFocus={() => setTimeUnitsTypeErrClass("")}
-                                />
-                            </div>
-                        </div>
-                        <div className="flex flex-col">
-                            <span className="text-sm font-medium">To</span>
-                            <input
-                                aria-label="Date and time"
-                                name="end-time"
-                                type="datetime-local"
-                                value={props.endDatetime}
-                                max={maxDate}
-                                step="1"
-                                onChange={(e) =>
-                                    props.setEndDatetime(e.target.value)
-                                }
-                                onFocus={() => setEndDateErrClass("")}
-                                className={cn(
-                                    "input-std mt-2 mb-2",
-                                    endDateErrClass
-                                )}
-                            />
-                            <input
-                                type="number"
-                                name="end-nanos"
-                                placeholder="Nanoseconds"
-                                step="1"
-                                value={props.endNanos}
-                                onChange={(e) =>
-                                    props.setEndNanos(e.target.value)
-                                }
-                                onFocus={() => setEndNanosErrClass("")}
-                                className={cn("input-std", endNanosErrClass)}
-                            />
-                        </div>
-                    </Fragment>
+                    <EndAnchorRange
+                        {...props}
+                        endDateErrClass={endDateErrClass}
+                        setEndDateErrClass={setEndDateErrClass}
+                        endNanosErrClass={endNanosErrClass}
+                        setEndNanosErrClass={setEndNanosErrClass}
+                        timeUnitsTypeOptions={timeUnitsTypeOptions}
+                        timeUnitsErrClass={timeUnitsErrClass}
+                        setTimeUnitsErrClass={setTimeUnitsErrClass}
+                        timeUnitsTypeErrClass={timeUnitsTypeErrClass}
+                        setTimeUnitsTypeErrClass={setTimeUnitsTypeErrClass}
+                        maxDate={maxDate}
+                    />
                 )}
             </div>
-            <FilterErrorMessage>{errText}</FilterErrorMessage>
+            <FilterErrorMessage className="">{errText}</FilterErrorMessage>
             {(props.rangeType === "absolute" ||
                 props.rangeType === "relativeStart" ||
                 props.rangeType === "relativeEnd") && (
-                <button onClick={handleApply} className="btn-std w-60">
+                <button onClick={handleApply} className="btn-std w-60 mt-4">
                     Apply
                 </button>
             )}

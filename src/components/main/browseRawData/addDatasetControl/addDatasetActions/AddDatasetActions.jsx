@@ -31,6 +31,7 @@ function AddDatasetActions({ setIsOpen, customSelection }) {
     const [dataBlocks, setDataBlocks] = useState([]);
     const [errText, setErrText] = useState("");
 
+    const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [startDatetime, setStartDatetime] = useState("");
     const [startNanos, setStartNanos] = useState("");
@@ -38,6 +39,7 @@ function AddDatasetActions({ setIsOpen, customSelection }) {
     const [endNanos, setEndNanos] = useState("");
     const [dataSourcesString, setDataSourcesString] = useState("");
 
+    const [nameErrClass, setNameErrClass] = useState("");
     const [descriptionErrClass, setDescriptionErrClass] = useState("");
     const [addDbErrClass, setAddDbErrClass] = useState("");
     const [startDateErrClass, setStartDateErrClass] = useState("");
@@ -115,7 +117,8 @@ function AddDatasetActions({ setIsOpen, customSelection }) {
     }
 
     async function handleAddSet() {
-        if (description === "" || dataBlocks.length === 0) {
+        if (name === "" || description === "" || dataBlocks.length === 0) {
+            if (name === "") setNameErrClass("border-destructive");
             if (description === "")
                 setDescriptionErrClass("border-destructive");
             if (dataBlocks.length === 0) setAddDbErrClass("text-destructive");
@@ -123,6 +126,7 @@ function AddDatasetActions({ setIsOpen, customSelection }) {
         }
 
         const queryParams = {
+            name: name,
             description: description,
             dataBlocks: dataBlocks,
         };
@@ -131,26 +135,48 @@ function AddDatasetActions({ setIsOpen, customSelection }) {
         let toastTitle = "";
         let toastDescription = "";
         let toastVariant = "default";
-        let toastAction = null;
+        let toastActions = null;
+
+        const FileFormats = Object.freeze({
+            HDF5: 1,
+            CSV: 2,
+            XLSX: 3,
+        });
 
         switch (typeof result) {
             case "object":
                 if (result.oneofKind === "createDataSetResult") {
                     setIsOpen(false);
+                    const dataSetId = result.createDataSetResult?.dataSetId;
+                    navigator.clipboard.writeText(dataSetId);
                     toastTitle = "Data Set Successfully Created";
-                    toastDescription = `Copy ${result.createDataSetResult?.dataSetId} to clipboard for annotation creation?`;
-                    toastAction = (
+                    toastDescription = `Copied data set id ${dataSetId} to clipboard. Export this data set?`;
+                    toastActions = [
                         <ToastAction
                             onClick={() =>
-                                navigator.clipboard.writeText(
-                                    result.createDataSetResult?.dataSetId
-                                )
+                                exportDataSet(dataSetId, FileFormats.HDF5)
                             }
-                            altText="Copy"
+                            altText="HDF5"
                         >
-                            Copy
-                        </ToastAction>
-                    );
+                            HDF5
+                        </ToastAction>,
+                        <ToastAction
+                            onClick={() =>
+                                exportDataSet(dataSetId, FileFormats.CSV)
+                            }
+                            altText="CSV"
+                        >
+                            CSV
+                        </ToastAction>,
+                        <ToastAction
+                            onClick={() =>
+                                exportDataSet(dataSetId, FileFormats.XLSX)
+                            }
+                            altText="XLSX"
+                        >
+                            XLSX
+                        </ToastAction>,
+                    ];
                 }
                 break;
             case "string":
@@ -170,8 +196,18 @@ function AddDatasetActions({ setIsOpen, customSelection }) {
             title: toastTitle,
             description: toastDescription,
             variant: toastVariant,
-            action: toastAction,
+            actions: toastActions,
+            newlineActions: true,
         });
+
+        async function exportDataSet(dataSetId, outputFormat) {
+            const result = await api.exportDataSet({
+                dataSetId: dataSetId,
+                outputFormat: outputFormat,
+            });
+            window.open(result.exportDataSetResult?.fileUrl, "_blank");
+            console.log(result);
+        }
     }
 
     // useEffect(() => {
@@ -259,7 +295,7 @@ function AddDatasetActions({ setIsOpen, customSelection }) {
                             endNanosErrClass
                         )}
                     />
-                    <div className="w-full mt-2 mb-4 border-b"></div>
+                    <div className="w-full mt-2 mb-2 border-b"></div>
                     {/* <span className="mb-2 font-medium">--</span> */}
                     {/* <input
                         placeholder="Data Sources"
@@ -269,14 +305,13 @@ function AddDatasetActions({ setIsOpen, customSelection }) {
                         onFocus={() => setDataSourcesErrClass("")}
                         className={cn("input-std w-full", dataSourcesErrClass)}
                     /> */}
-                    {/* <div className="flex flex-col w-full items-start border border-red-100"> */}
                     <div className="w-full mb-2 flex flex-col items-start justify-center max-h-24 overflow-scroll">
                         {[...dataSources].map((dataSource) => (
                             <div
                                 key={dataSource}
                                 className="w-full px-2 flex flex-row items-center justify-between text-foreground"
                             >
-                                <text className="text-sm">{dataSource}</text>
+                                <span className="text-sm">{dataSource}</span>
                                 <MinusCircledIcon
                                     className="hover:text-foreground/70 hover:cursor-pointer"
                                     onClick={() => {
@@ -291,8 +326,8 @@ function AddDatasetActions({ setIsOpen, customSelection }) {
                     <DatasetPicker
                         dataSources={dataSources}
                         setDataSources={setDataSources}
+                        className="mb-2"
                     />
-                    {/* </div> */}
                     <FilterErrorMessage>{errText}</FilterErrorMessage>
                     <button
                         onClick={handleAddBlock}
@@ -306,6 +341,13 @@ function AddDatasetActions({ setIsOpen, customSelection }) {
                 </div>
             ) : (
                 <div className="mx-5 mb-5 flex flex-col">
+                    <input
+                        className={cn("input-std w-full mb-2", nameErrClass)}
+                        placeholder="Data Set Name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        onFocus={() => setNameErrClass("")}
+                    />
                     <textarea
                         className={cn(
                             "input-std w-full max-h-40",

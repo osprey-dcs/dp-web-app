@@ -10,7 +10,6 @@ const transport = new GrpcWebFetchTransport({
 export default class DataPlatformApi {
 
     constructor() {
-        console.log("DataPlatform(): hostname: " + hostname);
         this.queryClient = new DpQueryServiceClient(transport);
         this.annotationClient = new DpAnnotationServiceClient(transport);
     }
@@ -167,6 +166,8 @@ export default class DataPlatformApi {
     createDataSet = async (setParams) => {
         const query = {
             dataSet: {
+                name: setParams.name,
+                ownerId: 100,
                 description: setParams.description,
                 dataBlocks: []
             }
@@ -189,6 +190,23 @@ export default class DataPlatformApi {
         }
 
         const { status, response } = await this.annotationClient.createDataSet(query);
+        const result = response.result;
+
+        if (!this.handleStatus(status)) return;
+        const exceptionalResult = this.handleExceptionalResult(result);
+        if (!exceptionalResult.status) return exceptionalResult.message;
+
+        return result;
+    }
+
+    exportDataSet = async (exportParams) => {
+        const query = {
+            dataSetId: exportParams.dataSetId,
+            outputFormat: exportParams.outputFormat
+        }
+        console.log("QUERY")
+        console.log(query)
+        const { status, response } = await this.annotationClient.exportDataSet(query);
         const result = response.result;
 
         if (!this.handleStatus(status)) return;

@@ -69,9 +69,9 @@ export const reducer = (state, action) => {
         toasts: state.toasts.map((t) =>
           t.id === toastId || toastId === undefined
             ? {
-                ...t,
-                open: false,
-              }
+              ...t,
+              open: false,
+            }
             : t),
       };
     }
@@ -103,6 +103,7 @@ function dispatch(action) {
 function toast({
   ...props
 }) {
+  console.log(props)
   const id = genId()
 
   const update = (props) =>
@@ -151,4 +152,5 @@ function useToast() {
   };
 }
 
-export { useToast, toast }
+export { toast, useToast }
+

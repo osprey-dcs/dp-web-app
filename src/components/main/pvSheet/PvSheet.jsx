@@ -48,7 +48,7 @@ function PvSheet() {
                 </SheetHeader>
                 <div className="w-full mt-4 mb-4 flex flex-col items-start justify-center text-sm">
                     {pvs.size === 0 ? (
-                        <text>No PVs to show.</text>
+                        <span>No PVs to show.</span>
                     ) : (
                         <div className="w-full max-h-72 overflow-scroll p-2 flex flex-col items-start justify-center gap-1 rounded border">
                             {[...pvs].map((pv) => (
