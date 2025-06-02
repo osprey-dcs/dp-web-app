@@ -78,7 +78,7 @@ function BrowseMenu() {
                             className="py-3 px-3 flex flex-col items-start border rounded bg-background shadow-md"
                         >
                             <NavLink
-                                href="metadata"
+                                href="/browse/metadata"
                                 onClick={() => setIsOpen(false)}
                                 className="mb-1"
                             >
@@ -92,7 +92,13 @@ function BrowseMenu() {
                                 Raw Data
                             </NavLink>
                             <NavLink
-                                href="annotations"
+                                href="/browse/data-sets"
+                                onClick={() => setIsOpen(false)}
+                            >
+                                Data Sets
+                            </NavLink>
+                            <NavLink
+                                href="/browse/annotations"
                                 onClick={() => setIsOpen(false)}
                             >
                                 Annotations

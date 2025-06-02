@@ -9,11 +9,11 @@ function AddAnnotationActions({ setIsOpen }) {
 
     const [dataSetId, setDataSetId] = useState("");
     const [ownerId, setOwnerId] = useState("");
-    const [comment, setComment] = useState("");
+    const [name, setName] = useState("");
 
     const [dataSetIdErrClass, setDataSetIdErrClass] = useState("");
     const [ownerIdErrClass, setOwnerIdErrClass] = useState("");
-    const [commentErrClass, setCommentErrClass] = useState("");
+    const [nameErrClass, setNameErrClass] = useState("");
 
     function validInput(input, setInputErrClass) {
         if (input === "") {
@@ -33,7 +33,13 @@ function AddAnnotationActions({ setIsOpen }) {
                 if (result.oneofKind === "createAnnotationResult") {
                     setIsOpen(false);
                     toastTitle = "Annotation Successfully Created";
-                    toastDescription = `Comment '${comment}' added to data set with id ${dataSetId}`;
+                    toastDescription = `Annotation '${name}' added to data set with id ${dataSetId}`;
+                }
+                if (result instanceof Error) {
+                    console.log(result);
+                    toastTitle = `Error: ${result.constructor.name}`;
+                    toastDescription = result.message;
+                    toastVariant = "destructive";
                 }
                 break;
             case "string":
@@ -49,8 +55,6 @@ function AddAnnotationActions({ setIsOpen }) {
                 break;
         }
 
-        console.log(typeof result);
-
         toast({
             title: toastTitle,
             description: toastDescription,
@@ -62,7 +66,7 @@ function AddAnnotationActions({ setIsOpen }) {
         if (
             !validInput(dataSetId, setDataSetIdErrClass) ||
             !validInput(ownerId, setOwnerIdErrClass) ||
-            !validInput(comment, setCommentErrClass)
+            !validInput(name, setNameErrClass)
         ) {
             return;
         }
@@ -70,7 +74,7 @@ function AddAnnotationActions({ setIsOpen }) {
         const queryParams = {
             dataSetId: dataSetId,
             ownerId: ownerId,
-            comment: comment,
+            name: name,
         };
         const result = await api.createAnnotation(queryParams);
         showResultToast(result);
@@ -97,11 +101,11 @@ function AddAnnotationActions({ setIsOpen }) {
                     className={cn("input-std mb-2", ownerIdErrClass)}
                 />
                 <textarea
-                    value={comment}
-                    placeholder="Comment"
-                    onChange={(e) => setComment(e.target.value)}
-                    onFocus={() => setCommentErrClass("")}
-                    className={cn("input-std mb-4", commentErrClass)}
+                    value={name}
+                    placeholder="Annotation Name"
+                    onChange={(e) => setName(e.target.value)}
+                    onFocus={() => setNameErrClass("")}
+                    className={cn("input-std mb-4", nameErrClass)}
                 />
                 <button onClick={handleSubmit} className="btn-std w-full">
                     Create Annotation

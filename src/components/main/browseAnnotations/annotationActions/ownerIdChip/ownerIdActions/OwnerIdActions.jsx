@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
-function IdActions({
+function OwnerIdActions({
     ownerId,
     setOwnerId,
     setIsOpen,
@@ -38,4 +38,4 @@ function IdActions({
     );
 }
 
-export default IdActions;
+export default OwnerIdActions;

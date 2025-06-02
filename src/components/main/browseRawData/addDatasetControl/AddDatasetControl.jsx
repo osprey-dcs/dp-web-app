@@ -16,7 +16,7 @@ import {
 import { PlusIcon } from "@radix-ui/react-icons";
 import PropTypes from "prop-types";
 import { Fragment, useState } from "react";
-import AddDatasetActions from "./addDatasetActions/AddDatasetActions";
+import AddDatasetActions from "../../pvSheet/addDatasetActions/AddDatasetActions";
 
 const propTypes = {
     resultData: PropTypes.object,
@@ -44,10 +44,9 @@ function AddDatasetControl({ resultData, customSelection }) {
         dismiss,
         role,
     ]);
+    const [dataBlocks, setDataBlocks] = useState([]);
 
     return (
-        // resultData !== undefined &&
-        // Object.keys(resultData).length !== 0 && (
         <Fragment>
             <button
                 ref={refs.setReference}
@@ -74,7 +73,8 @@ function AddDatasetControl({ resultData, customSelection }) {
                         >
                             <AddDatasetActions
                                 setIsOpen={setIsOpen}
-                                customSelection={customSelection}
+                                resultData={resultData}
+                                dataBlocks={dataBlocks}
                             />
                         </div>
                     </div>
@@ -82,7 +82,6 @@ function AddDatasetControl({ resultData, customSelection }) {
             )}
         </Fragment>
     );
-    // );
 }
 
 AddDatasetControl.propTypes = propTypes;

@@ -101,17 +101,47 @@ export class DpQueryServiceClient {
     }
     /**
      *
-     * queryMetadata: Unary (non-streaming) metadata query.
+     * queryPvMetadata(): Unary (non-streaming) metadata query.
      *
      * This RPC is used by clients to learn about data sources (PVs/columns) available in the archive.  Client sends
-     * a single QueryMetadataRequest with the query parameters, and receives a single QueryMetadataResponse
+     * a single QueryPvMetadataRequest with the query parameters, and receives a single QueryPvMetadataResponse
      * with the query results. The response may indicate rejection, error in handling, no data matching query, or
      * otherwise contains the data matching the query specification.
      *
-     * @generated from protobuf rpc: queryMetadata(dp.service.query.QueryMetadataRequest) returns (dp.service.query.QueryMetadataResponse);
+     * @generated from protobuf rpc: queryPvMetadata(dp.service.query.QueryPvMetadataRequest) returns (dp.service.query.QueryPvMetadataResponse);
      */
-    queryMetadata(input, options) {
+    queryPvMetadata(input, options) {
         const method = this.methods[4], opt = this._transport.mergeOptions(options);
+        return stackIntercept("unary", this._transport, method, opt, input);
+    }
+    /**
+     *
+     * queryProviders(): Unary Providers query.
+     *
+     * This rpc is used by clients to retrieve details about ingestion data Providers defined in the archive.
+     * It accepts a single "QueryProvidersRequest" containing the query parameters and returns a single
+     * "QueryProvidersResponse".  The response may indicate an exceptional result such as rejection or error in handling
+     * the request, otherwise it contains information about each Provider matching the query criteria.
+     *
+     * @generated from protobuf rpc: queryProviders(dp.service.query.QueryProvidersRequest) returns (dp.service.query.QueryProvidersResponse);
+     */
+    queryProviders(input, options) {
+        const method = this.methods[5], opt = this._transport.mergeOptions(options);
+        return stackIntercept("unary", this._transport, method, opt, input);
+    }
+    /**
+     *
+     * queryProviderMetadata(): Unary Provider metadata query.
+     *
+     * This rpc is used by clients to retrieve ingestion statistics for data Providers defined in the archive.
+     * It accepts a single "QueryProviderMetadataRequest" message containing the query parameters, and returns a single
+     * "QueryProviderMetadataResponse".  The response may indicate an exceptional result such as rejection or error in
+     * handling the request, otherwise it contains ingestion metadata for the specified data provider.
+     *
+     * @generated from protobuf rpc: queryProviderMetadata(dp.service.query.QueryProviderMetadataRequest) returns (dp.service.query.QueryProviderMetadataResponse);
+     */
+    queryProviderMetadata(input, options) {
+        const method = this.methods[6], opt = this._transport.mergeOptions(options);
         return stackIntercept("unary", this._transport, method, opt, input);
     }
 }

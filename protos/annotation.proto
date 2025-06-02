@@ -62,14 +62,41 @@ service DpAnnotationService {
   rpc queryAnnotations(QueryAnnotationsRequest) returns (QueryAnnotationsResponse);
 
   /*
-   * exportDataSet(): Export a DataSet.
+   * exportData(): Export data to common file formats.
    *
-   * This RPC is used by clients to export a DataSet to file.  Client sends a single ExportDataSetRequest specifying
-   * the id of the DataSet to be exported and the desired output file format, and receives a single response.  The
-   * response may indicate a problem handling the request, or otherwise contains details about the exported file
-   * including the path and optional (if configured) URL for accessing the file.
+   * This RPC is used by clients to export data (both DataSets and Calculations) to file.  Client sends a single
+   * ExportDataRequest specifying the details of the data to be exported and the desired output file format,
+   * and receives a single response.  The response may indicate a problem handling the request, or otherwise contains
+   * details about the exported file including the path and optional (if configured) URL for accessing the file.
    */
-  rpc exportDataSet(ExportDataSetRequest) returns (ExportDataSetResponse);
+  rpc exportData(ExportDataRequest) returns (ExportDataResponse);
+}
+
+
+//
+// ------------------- DataSet / DataBlock Model ---------------------------
+//
+
+/*
+ * Mechanism for identifying a set of data within the archive.  This will be used to support other features
+ * such as adding annotations to data sets or exporting data sets.
+ *
+ * A DataSet specifies archived data across multiple DataBlocks.  Each DataBlock specifies a time range and list of
+ * data sources (columns/PVs).
+ *
+ */
+message DataSet {
+  string id = 1; // Query results contain id of existing dataSet object, field is ignored when creating a new dataset via createDataSet().
+  string name = 2; // required name
+  string ownerId = 3; // required owner
+  string description = 4; // optional textual description
+  repeated DataBlock dataBlocks = 5; // required list of DataBlocks identifying data to include in DataSet.
+}
+
+message DataBlock {
+  Timestamp beginTime = 1; // Required, specifies beginning of time range for basis set.
+  Timestamp endTime = 2; // Required, specifies end of time range for basis set.
+  repeated string pvNames = 3; // Required, contains list of data source names for basis set.
 }
 
 
@@ -122,10 +149,9 @@ message CreateDataSetResponse {
  * Query DataSet Request.
  *
  * Contains parameters for a query over existing DataSets.  A query includes a list of
- * (one or more) QueryDataSetsCriterion. OwnerCriterion, NameCriterion, and DescriptionCriterion are used to perform
- * queries over DataSet owner, name, and description, respectively.  The criterion can be used individually or combined
- * for compound queries.  E.g., a query request might use an OwnerCriterion and NameCriterion to find DataSets
- * for the specified owner matching the name filter.
+ * (one or more) criteria. The criterion can be used individually or combined for compound queries.
+ * E.g., a query request might use an OwnerCriterion and TextCriterion to find DataSets
+ * for the specified owner matching containing the specified text.
  */
 message QueryDataSetsRequest {
 
@@ -134,9 +160,17 @@ message QueryDataSetsRequest {
   message QueryDataSetsCriterion {
 
     oneof criterion {
-      OwnerCriterion ownerCriterion = 10;
-      NameCriterion nameCriterion = 11;
-      DescriptionCriterion descriptionCriterion = 12;
+      IdCriterion idCriterion = 10; // Query by DataSet id.
+      OwnerCriterion ownerCriterion = 11; // Query by owner.
+      TextCriterion textCriterion = 12; // Full text query over name and description fields.
+      PvNameCriterion pvNameCriterion = 13; // Query by PV name.
+    }
+
+    /*
+     * Criterion used to search dataset id field.  "And" operator is used to combine with other criteria.
+     */
+    message IdCriterion {
+      string id = 1;
     }
 
     /*
@@ -147,17 +181,17 @@ message QueryDataSetsRequest {
     }
 
     /*
-     * Criterion used to search dataset description field.  "Or" operator is used to combine with other criteria.
+     * Criterion used to search dataset name and description fields.  "Or" operator is used to combine with other criteria.
      */
-    message NameCriterion {
-      string namePattern = 1;
+    message TextCriterion {
+      string text = 1;
     }
 
     /*
-     * Criterion used to search dataset description field.  "Or" operator is used to combine with other criteria.
+     * Criterion used to search data blocks for the specified PV name.  "Or" operator is used to combine with other criteria.
      */
-    message DescriptionCriterion {
-      string descriptionText = 1;
+    message PvNameCriterion {
+      string name = 1;
     }
   }
 }
@@ -192,24 +226,74 @@ message QueryDataSetsResponse {
 
 
 //
+// ------------------- Calculations Model ---------------------------
+//
+
+/*
+ * Calculations.
+ *
+ * Defines the data structure used for representing Calculations in both creating and querying Annotations.
+ * To the extent possible, it parallels the data structures used in the ingestion of regular time-series data in order
+ * that user-defined Calculations can be treated in a similar fashion for the purposes of querying and exporting data
+ * that includes both PV data and user-defined Calculations.
+ *
+ * The Calculations object includes a list of CalculationsDataFrames.  Each CalculationsDataFrame includes
+ * a name, a DataTimestamps object, and a list of DataColumns, each of which contains a vector of data values for a
+ * single Calculation and specifies a DataValue for each timestamp specified by the corresponding DataTimestamps object.
+ *
+ * It might be helpful to use the analogy of an Excel workbook.  The Calculations object is the workbook, and each
+ * CalculationDataFrame is a worksheet in that workbook that contains a column of timestamps and columns of calculated
+ * data with a value for each timestamp.
+ */
+message Calculations {
+
+  string id = 1;
+  repeated CalculationsDataFrame calculationDataFrames = 2;
+
+  message CalculationsDataFrame {
+    string name = 1; // Required, name of data frame.
+    DataTimestamps dataTimestamps = 2; // Required, specifies timestamps for data values.
+    repeated DataColumn dataColumns = 3; // Required list of columns, each containing a data value for each timestamp.
+  }
+}
+
+//
 // ------------------- Annotation Creation Request/Response ---------------------------
 //
 
 /*
- * Create Annotation Request.
+ * CreateAnnotationRequest.
  *
- * Contains details for adding an annotation to a DataSet with fields common to all requests for creating annotations,
- * plus details specific to each type of annotation that is supported (via annotation oneof field).
+ * A CreateAnnotationRequest message includes three required fields: ownerId (unique id of owner), dataSetIds (list of
+ * unique ids of associated DataSets), and name (brief annotation name).  It includes several optional fields used
+ * for linking to associated Annotations, adding descriptive information, associating with an event / experiment, and
+ * attaching user-defined Calculations.
+ *
+ * The lists of associated DataSet ids and Annotation ids are an initial attempt to meet the requirement for tracking
+ * data provenance.  To add Calculations that are derived from (or related to) regular PV time-series data in the
+ * archive, the following steps are taken:
+ *
+ * - Create a DataSet that contains one or more Data Blocks that reference the PVs and time range(s) from the
+ *   archive used in the calculation.
+ * - Create an Annotation containing the unique id of that DataSet in the list of dataSetIds, and includes the desired
+ *   Calculations.
+ *
+ * To add Calculations that are derived from other user-defined Calculations (that are part of another Annotation like
+ * the one crated above), the following step is taken:
+ *
+ * - Create an Annotation containing the unique id of the Annotation that contains the original Calculations in the
+ *   list of associated annotationIds, and includes the new Calculations derived from the original.
  */
 message CreateAnnotationRequest {
-
   string ownerId = 1; // required annotation owner
-  string dataSetId = 2;
-
-  // annotation: Contains details specific to type of annotation being created.
-  oneof annotation {
-    CommentAnnotation commentAnnotation = 10;
-  }
+  repeated string dataSetIds = 2; // required list of associated datasets, might contain a single dataset
+  string name = 3; // required brief name
+  repeated string annotationIds = 4; // optional list of associated annotations, for provenance / linking of calculations
+  string	comment = 5; // optional free-form comment text
+  repeated string tags = 6; // optional list of keywords / tags for cataloging Annotation
+  repeated Attribute attributes = 7; // optional list of key/value attribute pairs for cataloging Annotation
+  EventMetadata eventMetadata = 8; // used to associate annotation with an experiment / event
+  Calculations calculations = 9; // optional user-defined calculations
 }
 
 /*
@@ -249,8 +333,8 @@ message CreateAnnotationResponse {
  * Annotations Query Request.
  *
  * Contains a list of QueryAnnotationsCriterion for querying annotations. List can include a single criterion,
- * or multiple criteria for a compound query. E.g., a query request might use an OwnerCriterion and CommentCriterion
- * to find annotations for the specified owner matching the comment filter.
+ * or multiple criteria for a compound query. E.g., a query request might use an OwnerCriterion and TextCriterion
+ * to find annotations for the specified owner matching the text filter.
  */
 message QueryAnnotationsRequest {
 
@@ -259,41 +343,73 @@ message QueryAnnotationsRequest {
   message QueryAnnotationsCriterion {
 
     oneof criterion {
-      OwnerCriterion ownerCriterion = 10;
-      DataSetCriterion dataSetCriterion = 11;
-      CommentCriterion commentCriterion = 12;
+      IdCriterion idCriterion = 10;  // Query by Annotation unique id.
+      OwnerCriterion ownerCriterion = 11;  // Query by owner.
+      DataSetsCriterion dataSetsCriterion = 12; // Query by unique id of associated DataSet.
+      AnnotationsCriterion annotationsCriterion = 13; // Query by unique id of associated Annotation.
+      TextCriterion textCriterion = 14; // Full text query over name, comment, and event description fields.
+      TagsCriterion tagsCriterion = 15; // Query by tag / keyword value.
+      AttributesCriterion attributesCriterion = 16; // Query attribute pairs by key and value.
     }
 
     /*
-     * Criterion used to search ownerId field of Annotations.
+     * Criterion used to query annotations by id.
+     */
+    message IdCriterion {
+      string id = 1;
+    }
+
+    /*
+     * Criterion used to query annotations by owner id.
      */
     message OwnerCriterion {
       string ownerId = 1;
     }
 
     /*
-     * Criterion used to search dataSetId field Annotations.
+     * Criterion used to query annotations by id of associated dataset.
      */
-    message DataSetCriterion {
+    message DataSetsCriterion {
       string dataSetId = 1;
     }
 
     /*
-     * Criterion used to search commentText field of Comment Annotations.
+     * Criterion used to query annotations by id of associated annotation.
      */
-    message CommentCriterion {
-      string commentText = 1;
+    message AnnotationsCriterion {
+      string annotationId = 1;
+    }
+
+    /*
+     * Criterion used to query annotations by text contained in the name, comment, and eventMetadata description fields.
+     */
+    message TextCriterion {
+      string text = 1;
+    }
+
+    /*
+     * Criterion used to query annotations by tag value.
+     */
+    message TagsCriterion {
+      string tagValue = 1;
+    }
+
+    /*
+     * Criterion used to query annotations by attribute key and value.
+     */
+    message AttributesCriterion {
+      string key = 1;
+      string value = 2;
     }
   }
 }
 
-
 /*
- * Annotations Query Response.
+ * QueryAnnotationsResponse.
  *
  * Contains results from queryAnnotations() API request.  Message payload is either ExceptionalResult indicating
  * rejection, an error handling the request, or an empty query result, otherwise contains an AnnotationsResult with
- * the query results.
+ * an entry for each Annotation matching the query criteria.
  */
 message QueryAnnotationsResponse {
 
@@ -309,42 +425,45 @@ message QueryAnnotationsResponse {
   /*
    * Annotations Query Result Content.
    *
-   * Result contains a list of Annotation messages, one for each annotation matching the query parameters.
+   * Result contains a list of Annotation messages, one for each annotation matching the query criteria.
    */
   message AnnotationsResult {
 
     repeated Annotation annotations = 1;
 
     message Annotation {
-
-      string annotationId = 1;
-      string ownerId = 2;
-      string dataSetId = 3;
-      DataSet dataSet = 4;
-
-      // annotation: Contains details specific to type of annotation.
-      oneof annotation {
-        CommentAnnotation commentAnnotation = 10;
-      }
+      string id = 1; // unique id
+      string ownerId = 2; // owner unique id
+      repeated string dataSetIds = 3; // list of unique ids of associated DataSets, might contain a single DataSet
+      repeated DataSet dataSets = 4; // content for list of associated DataSets
+      string name = 5; // brief name / description
+      repeated string annotationIds = 6; // list of unique ids for associated Annotations
+      string	comment = 7; // free-form comment text
+      repeated string tags = 8; // list of keywords / tags
+      repeated Attribute attributes = 9; // list of key/value attribute pairs
+      EventMetadata eventMetadata = 10; // event metadata to associate Annotation with an experiment / event
+      Calculations calculations = 11; // user-defined calculations
     }
   }
 }
 
 
 //
-//
+// ------------------- Export ---------------------------
 //
 
 /*
- * ExportDataSetRequest
+ * ExportDataRequest
  *
- * Used as parameter to the exportDataSet() method.  Includes fields for specifying the id of the DataSet to be
- * exported, and an enum for specifying output format.
+ * Used as parameter to the exportData() method.  Includes fields for specifying the id of the DataSet or
+ * Calculations object to be exported, and an enum for specifying output format.  Both datasetId and calculationsSpec
+ * are optional, but one or the other must be specified.
  */
-message ExportDataSetRequest {
+message ExportDataRequest {
 
   string dataSetId = 1;  // Required, specifies id of DataSet to be exported.
-  ExportOutputFormat outputFormat = 2;  // Required, specifies export output file format.
+  CalculationsSpec calculationsSpec = 2; // Optional, specifies details of Calculations to include in export.
+  ExportOutputFormat outputFormat = 3;  // Optional, specifies export output file format.
 
   enum ExportOutputFormat {
     EXPORT_FORMAT_UNSPECIFIED = 0; // Indicates no enum value has been specified, and the request will be rejected.
@@ -355,62 +474,25 @@ message ExportDataSetRequest {
 }
 
 /*
- * ExportDataSetResponse
+ * ExportDataResponse
  *
- * Used as response from the exportDataSet() method.  Payload includes either an ExceptionalResult indicating a problem
- * in handling the export request, or an ExportDataSetResult for a successful request.
+ * Used as response from the exportData() method.  Payload includes either an ExceptionalResult indicating a problem
+ * in handling the export request, or an ExportDataResult for a successful request.
  *
- * ExportDataSetResult includes fields specifying the full path for the export output file and
+ * ExportDataResult includes fields specifying the full path for the export output file and
  * (optionally if configured) the URL for accessing the file via a web server.
  */
-message ExportDataSetResponse {
+message ExportDataResponse {
 
   Timestamp responseTime = 1; // Indicates time response was generated.
 
   oneof result {
     ExceptionalResult exceptionalResult = 10; // Indicates a problem was encountered in handling the request.
-    ExportDataSetResult exportDataSetResult = 11; // Indicates the request was handled successfully.
+    ExportDataResult exportDataResult = 11; // Indicates the request was handled successfully.
   }
 
-  message ExportDataSetResult {
+  message ExportDataResult {
     string filePath = 1; // Specifies full path to export output file.
     string fileUrl = 2; // (If configured to generate URLs) Specifies URL for accessing file via web server.
   }
-}
-
-
-
-//
-// ------------------- DataSet / DataBlock ---------------------------
-//
-
-/*
- * Mechanism for identifying a set of data within the archive.  This will be used to support other features
- * such as adding annotations to data sets or exporting data sets.
- *
- * A DataSet specifies archived data across multiple DataBlocks.  Each DataBlock specifies a time range and list of
- * data sources (columns/PVs).
- *
- */
-message DataSet {
-  string dataSetId = 1; // Query results contain id of existing dataSet object, field is ignored when creating a new dataset via createDataSet().
-  string name = 2; // required name
-  string ownerId = 3; // required owner
-  string description = 4; // optional textual description
-  repeated DataBlock dataBlocks = 5; // required list of DataBlocks identifying data to include in DataSet.
-}
-
-message DataBlock {
-  Timestamp beginTime = 1; // Required, specifies beginning of time range for basis set.
-  Timestamp endTime = 2; // Required, specifies end of time range for basis set.
-  repeated string pvNames = 3; // Required, contains list of data source names for basis set.
-}
-
-
-//
-// ------------------- Annotation Types (common to creating and retrieving) ---------------------------
-//
-
-message CommentAnnotation {
-  string	comment = 1;			// narrative comment text
 }

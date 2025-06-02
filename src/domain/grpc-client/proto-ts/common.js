@@ -29,17 +29,11 @@ export var ExceptionalResult_ExceptionalResultStatus;
      */
     ExceptionalResult_ExceptionalResultStatus[ExceptionalResult_ExceptionalResultStatus["RESULT_STATUS_ERROR"] = 1] = "RESULT_STATUS_ERROR";
     /**
-     * Indicates the query returned no data.
-     *
-     * @generated from protobuf enum value: RESULT_STATUS_EMPTY = 2;
-     */
-    ExceptionalResult_ExceptionalResultStatus[ExceptionalResult_ExceptionalResultStatus["RESULT_STATUS_EMPTY"] = 2] = "RESULT_STATUS_EMPTY";
-    /**
      * Indicates an invalid bidirectional stream query cursor operation request.
      *
-     * @generated from protobuf enum value: RESULT_STATUS_NOT_READY = 3;
+     * @generated from protobuf enum value: RESULT_STATUS_NOT_READY = 2;
      */
-    ExceptionalResult_ExceptionalResultStatus[ExceptionalResult_ExceptionalResultStatus["RESULT_STATUS_NOT_READY"] = 3] = "RESULT_STATUS_NOT_READY";
+    ExceptionalResult_ExceptionalResultStatus[ExceptionalResult_ExceptionalResultStatus["RESULT_STATUS_NOT_READY"] = 2] = "RESULT_STATUS_NOT_READY";
 })(ExceptionalResult_ExceptionalResultStatus || (ExceptionalResult_ExceptionalResultStatus = {}));
 /**
  *
@@ -635,6 +629,61 @@ class DataColumn$Type extends MessageType {
  */
 export const DataColumn = new DataColumn$Type();
 // @generated message type with reflection information, may provide speed optimized methods
+class SerializedDataColumn$Type extends MessageType {
+    constructor() {
+        super("SerializedDataColumn", [
+            { no: 1, name: "name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "dataColumnBytes", kind: "scalar", T: 12 /*ScalarType.BYTES*/ }
+        ]);
+    }
+    create(value) {
+        const message = globalThis.Object.create((this.messagePrototype));
+        message.name = "";
+        message.dataColumnBytes = new Uint8Array(0);
+        if (value !== undefined)
+            reflectionMergePartial(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string name */ 1:
+                    message.name = reader.string();
+                    break;
+                case /* bytes dataColumnBytes */ 2:
+                    message.dataColumnBytes = reader.bytes();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* string name = 1; */
+        if (message.name !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.name);
+        /* bytes dataColumnBytes = 2; */
+        if (message.dataColumnBytes.length)
+            writer.tag(2, WireType.LengthDelimited).bytes(message.dataColumnBytes);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message SerializedDataColumn
+ */
+export const SerializedDataColumn = new SerializedDataColumn$Type();
+// @generated message type with reflection information, may provide speed optimized methods
 class DataValue$Type extends MessageType {
     constructor() {
         super("DataValue", [
@@ -1077,3 +1126,125 @@ class Image$Type extends MessageType {
  * @generated MessageType for protobuf message Image
  */
 export const Image = new Image$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class CalculationsSpec$Type extends MessageType {
+    constructor() {
+        super("CalculationsSpec", [
+            { no: 1, name: "calculationsId", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "dataFrameColumns", kind: "map", K: 9 /*ScalarType.STRING*/, V: { kind: "message", T: () => CalculationsSpec_ColumnNameList } }
+        ]);
+    }
+    create(value) {
+        const message = globalThis.Object.create((this.messagePrototype));
+        message.calculationsId = "";
+        message.dataFrameColumns = {};
+        if (value !== undefined)
+            reflectionMergePartial(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string calculationsId */ 1:
+                    message.calculationsId = reader.string();
+                    break;
+                case /* map<string, CalculationsSpec.ColumnNameList> dataFrameColumns */ 2:
+                    this.binaryReadMap2(message.dataFrameColumns, reader, options);
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    binaryReadMap2(map, reader, options) {
+        let len = reader.uint32(), end = reader.pos + len, key, val;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case 1:
+                    key = reader.string();
+                    break;
+                case 2:
+                    val = CalculationsSpec_ColumnNameList.internalBinaryRead(reader, reader.uint32(), options);
+                    break;
+                default: throw new globalThis.Error("unknown map entry field for field CalculationsSpec.dataFrameColumns");
+            }
+        }
+        map[key ?? ""] = val ?? CalculationsSpec_ColumnNameList.create();
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* string calculationsId = 1; */
+        if (message.calculationsId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.calculationsId);
+        /* map<string, CalculationsSpec.ColumnNameList> dataFrameColumns = 2; */
+        for (let k of globalThis.Object.keys(message.dataFrameColumns)) {
+            writer.tag(2, WireType.LengthDelimited).fork().tag(1, WireType.LengthDelimited).string(k);
+            writer.tag(2, WireType.LengthDelimited).fork();
+            CalculationsSpec_ColumnNameList.internalBinaryWrite(message.dataFrameColumns[k], writer, options);
+            writer.join().join();
+        }
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message CalculationsSpec
+ */
+export const CalculationsSpec = new CalculationsSpec$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class CalculationsSpec_ColumnNameList$Type extends MessageType {
+    constructor() {
+        super("CalculationsSpec.ColumnNameList", [
+            { no: 1, name: "columnNames", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value) {
+        const message = globalThis.Object.create((this.messagePrototype));
+        message.columnNames = [];
+        if (value !== undefined)
+            reflectionMergePartial(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* repeated string columnNames */ 1:
+                    message.columnNames.push(reader.string());
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* repeated string columnNames = 1; */
+        for (let i = 0; i < message.columnNames.length; i++)
+            writer.tag(1, WireType.LengthDelimited).string(message.columnNames[i]);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message CalculationsSpec.ColumnNameList
+ */
+export const CalculationsSpec_ColumnNameList = new CalculationsSpec_ColumnNameList$Type();

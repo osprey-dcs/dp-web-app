@@ -9,8 +9,12 @@
 //
 import type { RpcTransport } from "@protobuf-ts/runtime-rpc";
 import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
-import type { QueryMetadataResponse } from "./query";
-import type { QueryMetadataRequest } from "./query";
+import type { QueryProviderMetadataResponse } from "./query";
+import type { QueryProviderMetadataRequest } from "./query";
+import type { QueryProvidersResponse } from "./query";
+import type { QueryProvidersRequest } from "./query";
+import type { QueryPvMetadataResponse } from "./query";
+import type { QueryPvMetadataRequest } from "./query";
 import type { QueryTableResponse } from "./query";
 import type { QueryTableRequest } from "./query";
 import type { DuplexStreamingCall } from "@protobuf-ts/runtime-rpc";
@@ -90,16 +94,40 @@ export interface IDpQueryServiceClient {
     queryTable(input: QueryTableRequest, options?: RpcOptions): UnaryCall<QueryTableRequest, QueryTableResponse>;
     /**
      *
-     * queryMetadata: Unary (non-streaming) metadata query.
+     * queryPvMetadata(): Unary (non-streaming) metadata query.
      *
      * This RPC is used by clients to learn about data sources (PVs/columns) available in the archive.  Client sends
-     * a single QueryMetadataRequest with the query parameters, and receives a single QueryMetadataResponse
+     * a single QueryPvMetadataRequest with the query parameters, and receives a single QueryPvMetadataResponse
      * with the query results. The response may indicate rejection, error in handling, no data matching query, or
      * otherwise contains the data matching the query specification.
      *
-     * @generated from protobuf rpc: queryMetadata(dp.service.query.QueryMetadataRequest) returns (dp.service.query.QueryMetadataResponse);
+     * @generated from protobuf rpc: queryPvMetadata(dp.service.query.QueryPvMetadataRequest) returns (dp.service.query.QueryPvMetadataResponse);
      */
-    queryMetadata(input: QueryMetadataRequest, options?: RpcOptions): UnaryCall<QueryMetadataRequest, QueryMetadataResponse>;
+    queryPvMetadata(input: QueryPvMetadataRequest, options?: RpcOptions): UnaryCall<QueryPvMetadataRequest, QueryPvMetadataResponse>;
+    /**
+     *
+     * queryProviders(): Unary Providers query.
+     *
+     * This rpc is used by clients to retrieve details about ingestion data Providers defined in the archive.
+     * It accepts a single "QueryProvidersRequest" containing the query parameters and returns a single
+     * "QueryProvidersResponse".  The response may indicate an exceptional result such as rejection or error in handling
+     * the request, otherwise it contains information about each Provider matching the query criteria.
+     *
+     * @generated from protobuf rpc: queryProviders(dp.service.query.QueryProvidersRequest) returns (dp.service.query.QueryProvidersResponse);
+     */
+    queryProviders(input: QueryProvidersRequest, options?: RpcOptions): UnaryCall<QueryProvidersRequest, QueryProvidersResponse>;
+    /**
+     *
+     * queryProviderMetadata(): Unary Provider metadata query.
+     *
+     * This rpc is used by clients to retrieve ingestion statistics for data Providers defined in the archive.
+     * It accepts a single "QueryProviderMetadataRequest" message containing the query parameters, and returns a single
+     * "QueryProviderMetadataResponse".  The response may indicate an exceptional result such as rejection or error in
+     * handling the request, otherwise it contains ingestion metadata for the specified data provider.
+     *
+     * @generated from protobuf rpc: queryProviderMetadata(dp.service.query.QueryProviderMetadataRequest) returns (dp.service.query.QueryProviderMetadataResponse);
+     */
+    queryProviderMetadata(input: QueryProviderMetadataRequest, options?: RpcOptions): UnaryCall<QueryProviderMetadataRequest, QueryProviderMetadataResponse>;
 }
 /**
  *
@@ -177,14 +205,38 @@ export declare class DpQueryServiceClient implements IDpQueryServiceClient, Serv
     queryTable(input: QueryTableRequest, options?: RpcOptions): UnaryCall<QueryTableRequest, QueryTableResponse>;
     /**
      *
-     * queryMetadata: Unary (non-streaming) metadata query.
+     * queryPvMetadata(): Unary (non-streaming) metadata query.
      *
      * This RPC is used by clients to learn about data sources (PVs/columns) available in the archive.  Client sends
-     * a single QueryMetadataRequest with the query parameters, and receives a single QueryMetadataResponse
+     * a single QueryPvMetadataRequest with the query parameters, and receives a single QueryPvMetadataResponse
      * with the query results. The response may indicate rejection, error in handling, no data matching query, or
      * otherwise contains the data matching the query specification.
      *
-     * @generated from protobuf rpc: queryMetadata(dp.service.query.QueryMetadataRequest) returns (dp.service.query.QueryMetadataResponse);
+     * @generated from protobuf rpc: queryPvMetadata(dp.service.query.QueryPvMetadataRequest) returns (dp.service.query.QueryPvMetadataResponse);
      */
-    queryMetadata(input: QueryMetadataRequest, options?: RpcOptions): UnaryCall<QueryMetadataRequest, QueryMetadataResponse>;
+    queryPvMetadata(input: QueryPvMetadataRequest, options?: RpcOptions): UnaryCall<QueryPvMetadataRequest, QueryPvMetadataResponse>;
+    /**
+     *
+     * queryProviders(): Unary Providers query.
+     *
+     * This rpc is used by clients to retrieve details about ingestion data Providers defined in the archive.
+     * It accepts a single "QueryProvidersRequest" containing the query parameters and returns a single
+     * "QueryProvidersResponse".  The response may indicate an exceptional result such as rejection or error in handling
+     * the request, otherwise it contains information about each Provider matching the query criteria.
+     *
+     * @generated from protobuf rpc: queryProviders(dp.service.query.QueryProvidersRequest) returns (dp.service.query.QueryProvidersResponse);
+     */
+    queryProviders(input: QueryProvidersRequest, options?: RpcOptions): UnaryCall<QueryProvidersRequest, QueryProvidersResponse>;
+    /**
+     *
+     * queryProviderMetadata(): Unary Provider metadata query.
+     *
+     * This rpc is used by clients to retrieve ingestion statistics for data Providers defined in the archive.
+     * It accepts a single "QueryProviderMetadataRequest" message containing the query parameters, and returns a single
+     * "QueryProviderMetadataResponse".  The response may indicate an exceptional result such as rejection or error in
+     * handling the request, otherwise it contains ingestion metadata for the specified data provider.
+     *
+     * @generated from protobuf rpc: queryProviderMetadata(dp.service.query.QueryProviderMetadataRequest) returns (dp.service.query.QueryProviderMetadataResponse);
+     */
+    queryProviderMetadata(input: QueryProviderMetadataRequest, options?: RpcOptions): UnaryCall<QueryProviderMetadataRequest, QueryProviderMetadataResponse>;
 }

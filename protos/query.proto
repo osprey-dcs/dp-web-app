@@ -77,14 +77,34 @@ service DpQueryService {
   rpc queryTable(QueryTableRequest) returns (QueryTableResponse);
 
   /*
-   * queryMetadata: Unary (non-streaming) metadata query.
+   * queryPvMetadata(): Unary (non-streaming) metadata query.
    *
    * This RPC is used by clients to learn about data sources (PVs/columns) available in the archive.  Client sends
-   * a single QueryMetadataRequest with the query parameters, and receives a single QueryMetadataResponse
+   * a single QueryPvMetadataRequest with the query parameters, and receives a single QueryPvMetadataResponse
    * with the query results. The response may indicate rejection, error in handling, no data matching query, or
    * otherwise contains the data matching the query specification.
    */
-  rpc queryMetadata(QueryMetadataRequest) returns (QueryMetadataResponse);
+  rpc queryPvMetadata(QueryPvMetadataRequest) returns (QueryPvMetadataResponse);
+
+  /*
+   * queryProviders(): Unary Providers query.
+   *
+   * This rpc is used by clients to retrieve details about ingestion data Providers defined in the archive.
+   * It accepts a single "QueryProvidersRequest" containing the query parameters and returns a single
+   * "QueryProvidersResponse".  The response may indicate an exceptional result such as rejection or error in handling
+   * the request, otherwise it contains information about each Provider matching the query criteria.
+   */
+  rpc queryProviders(QueryProvidersRequest) returns (QueryProvidersResponse);
+
+  /*
+   * queryProviderMetadata(): Unary Provider metadata query.
+   *
+   * This rpc is used by clients to retrieve ingestion statistics for data Providers defined in the archive.
+   * It accepts a single "QueryProviderMetadataRequest" message containing the query parameters, and returns a single
+   * "QueryProviderMetadataResponse".  The response may indicate an exceptional result such as rejection or error in
+   * handling the request, otherwise it contains ingestion metadata for the specified data provider.
+   */
+  rpc queryProviderMetadata(QueryProviderMetadataRequest) returns (QueryProviderMetadataResponse);
 
 }
 
@@ -125,6 +145,7 @@ message QueryDataRequest {
     Timestamp beginTime = 1; // Required, specifies query start time.
     Timestamp endTime = 2; // Required, specifies query end time.
     repeated string pvNames = 3; // Required, contains list of PV names to query for specified time range.
+    bool useSerializedDataColumns = 4; // Required, specifies if the result should use SerializedDataColumns for maximum performance.
   }
 
   /*
@@ -141,9 +162,9 @@ message QueryDataRequest {
 }
 
 /*
- * Time Series Data Query Response.
+ * QueryDataResponse
  *
- * Contains results from a time series data query.  Sent as single response to unary method queryData(),
+ * Contains results from a time-series data query.  Sent as single response to unary method queryData(),
  * or in the response streams from queryDataStream() and queryDataBidiStream().
 
  * Contains either ExceptionalResult indicating a problem handling the request, or QueryData
@@ -163,13 +184,19 @@ message QueryDataResponse {
   }
 
   /*
-   * Time Series Query Result Data.
+   * QueryData
    *
    * Contains the data for a time series data query result, as a list of DataBucket objects. Each DataBucket minimally
    * includes a vector of PV data values (in a DataColumn) and a DataTimestamps object specifying the timestamps
    * for the data vector values using either a SamplingClock (with start time, sample period, and number of samples or
    * an explicit list of timestamps) or a TimestampsList (with an explicit list of timestamps). The DataBucket also
    * includes key/value Attributes and/or EventMetadata if defined for the data in ingestion.
+   *
+   * By default, each DataBucket contains a regular DataColumn object with the vector of data for the bucket.
+   * if the useSerializedDataColumns flag is set in the QueryDataRequest's QuerySpec, each DataBucket in the result
+   * contains a SerializedDataColumn that contains a byte data representation of the corresponding DataColumn object.
+   * Clients seeking maximum query performance should use SerializedDataColumns in the query result in order to avoid
+   * extra serialization operations performed by the gRPC communication framework.
    */
   message QueryData {
 
@@ -177,9 +204,13 @@ message QueryDataResponse {
 
     message DataBucket {
       DataTimestamps dataTimestamps = 1; // Specifies timestamps for bucket, using SamplingClock or explicit Timestamp list.
-      repeated Attribute attributes = 2; // Specifies list of key/value attributes for bucket, if any.
-      EventMetadata eventMetadata = 3; // Specifies event metadata for bucket, if any.
-      DataColumn dataColumn = 4; // Vector of data values corresponding to data timestamps.
+      repeated string tags = 2; // Specifies list of tags for bucket, if any.
+      repeated Attribute attributes = 3; // Specifies list of key/value attributes for bucket, if any.
+      EventMetadata eventMetadata = 4; // Specifies event metadata for bucket, if any.
+      oneof data {
+        DataColumn dataColumn = 10; // Vector of data values corresponding to data timestamps.
+        SerializedDataColumn serializedDataColumn = 11; // Serialized DataColumn byte data to avoid redundant serialization ops.
+      }
     }
   }
 }
@@ -274,14 +305,14 @@ message QueryTableResponse {
 //
 
 /*
- * Metadata Query Request.
+ * QueryPvMetadataRequest
  *
  * Describes the parameters for querying metadata for PVs managed in the archive.
  *
  * A request may contain one of two payloads, either a PvNameList with an explicit list of
  * column/PV names, or a PvNamePattern with a regular expression pattern used to match against column/PV names.
  */
-message QueryMetadataRequest {
+message QueryPvMetadataRequest {
 
   // pvNameSpec: Contains either a list of column/PV names, or a single regex pattern string.
   oneof pvNameSpec {
@@ -292,12 +323,12 @@ message QueryMetadataRequest {
 }
 
 /*
- * Metadata Query Response.
+ * QueryPvMetadataResponse
  *
- * Contains results from a metadata query. Payload is an ExceptionalResult if a rejection, error, or empty query
+ * Contains results from a PV metadata query. Payload is an ExceptionalResult if a rejection, error, or empty query
  * result is encountered, otherwise is a MetadataResult containing results of query.
  */
-message QueryMetadataResponse {
+message QueryPvMetadataResponse {
 
   Timestamp responseTime = 1; // Indicates time response was generated.
 
@@ -309,7 +340,7 @@ message QueryMetadataResponse {
   }
 
   /*
-   * Metadata Query Result Content.
+   * MetadataResult
    *
    * Contains a list of PvInfo metadata objects, one for each column/PV name matching the query specification.
    */
@@ -328,6 +359,7 @@ message QueryMetadataResponse {
       uint64 lastBucketSamplePeriod = 9; // Sample period in nanos for PV's most recent bucket (zero if DataTimestamps is TimestampList).
       Timestamp firstDataTimestamp = 10; // Timestamp of first data value for PV.
       Timestamp lastDataTimestamp = 11; // Timestamp of most recent data value for PV.
+      int32 numBuckets = 12; // Number of buckets for this PV.
     }
   }
 }
@@ -339,3 +371,149 @@ message PvNameList {
 message PvNamePattern {
   string pattern = 1; // Specifies regex pattern to use for matching column/PV names to return metadata for.
 }
+
+
+//
+// ------------------- Providers Query ---------------------------
+//
+
+/*
+ * QueryProvidersRequest.
+ *
+ * Contains a list of criteria for querying Providers. List can include a single criterion,
+ * or multiple criteria for a compound query.  For example, query might include both a TagsCriterion and
+ * AttributesCriterion to specify a query over both the tags and attributes fields, respectively.
+ */
+message QueryProvidersRequest {
+
+  repeated Criterion criteria = 1;
+
+  message Criterion {
+
+    oneof criterion {
+      IdCriterion idCriterion = 10; // Query by provider id.
+      TextCriterion textCriterion = 14; // Full text search over provider name and description fields.
+      TagsCriterion tagsCriterion = 15; // Query by tag value.
+      AttributesCriterion attributesCriterion = 16; // Query by attribute key and value.
+    }
+
+    /*
+     * Criterion used to query Providers by id.
+     */
+    message IdCriterion {
+      string id = 1;
+    }
+
+    /*
+     * Criterion used to query Providers by text contained in the name and description fields.
+     */
+    message TextCriterion {
+      string text = 1;
+    }
+
+    /*
+     * Criterion used to query Providers by tag value.
+     */
+    message TagsCriterion {
+      string tagValue = 1;
+    }
+
+    /*
+     * Criterion used to query Providers by attribute key and value.
+     */
+    message AttributesCriterion {
+      string key = 1;
+      string value = 2;
+    }
+  }
+}
+
+/*
+ * QueryProvidersResponse
+ *
+ * Contains results from a queryProviders() API method request.  Message payload is either an ExceptionalResult
+ * indicating rejection or an error handling the request, or a ProvidersResult with a ProviderInfo entry for each
+ * Provider matching the query criteria.
+ */
+message QueryProvidersResponse {
+
+  Timestamp responseTime = 1; // Indicates time response was generated.
+
+  // result: Response contains either an ExceptionalResult indicating a problem handling the request,
+  // or ProvidersResult with query result.
+  oneof result {
+    ExceptionalResult exceptionalResult = 10;
+    ProvidersResult providersResult = 11;
+  }
+
+  /*
+   * ProvidersResult
+   *
+   * Contains a list of ProviderInfo objects, one for each provider matching the query specification.
+   */
+  message ProvidersResult {
+
+    repeated ProviderInfo providerInfos = 1; // List of metadata objects matching query specificiation.
+
+    message ProviderInfo {
+      string id = 1; // Provider unique id.
+      string name = 2; // Provider name.
+      string	description = 3; // Provider description.
+      repeated string tags = 4; // List of tags.
+      repeated Attribute attributes = 5; // List of key/value attributes.
+    }
+  }
+}
+
+
+//
+// ------------------- Provider Metadata Query ---------------------------
+//
+
+/*
+ * QueryProviderMetadataRequest
+ *
+ * Encapsulates the single parameter for a queryProviderMetadata() request, the unique id of a data Provider.
+ */
+message QueryProviderMetadataRequest {
+  string providerId = 1;
+}
+
+/*
+ * QueryProviderMetadataResponse
+ *
+ * Contains results from a queryProviderMetadata() API method request.  Message payload is either an
+ * ExceptionalResult indicating rejection or an error handling the request, or a MetadataResult with a
+ * ProviderMetadata entry for the Provider matching the id specified in the request.
+ */
+message QueryProviderMetadataResponse {
+
+  Timestamp responseTime = 1; // Indicates time response was generated.
+
+  // result: Response contains either an ExceptionalResult indicating a problem handling the request,
+  // or MetadataResult with query result.
+  oneof result {
+    ExceptionalResult exceptionalResult = 10;
+    MetadataResult metadataResult = 11;
+  }
+
+  /*
+   * Metadata Query Result Content.
+   *
+   * Contains a list of ProviderInfo metadata objects, one for each provider matching the query specification.
+   */
+  message MetadataResult {
+
+    repeated ProviderMetadata providerMetadatas = 1; // List of metadata objects matching query specificiation.
+
+    message ProviderMetadata {
+      string id = 1; // Provider id.
+      repeated string pvNames = 2; // List of PV names with buckets using provider.
+      Timestamp firstBucketTime = 3; // Timstamp of first bucket using provider.
+      Timestamp lastBucketTime = 4; // Timestamp of most recent bucket using provider.
+      int32 numBuckets = 5; // Number of buckets using provider.
+    }
+  }
+}
+
+

@@ -14,12 +14,19 @@ import {
     PlusIcon,
 } from "@radix-ui/react-icons";
 import { useState } from "react";
+import { useResultData } from "../ResultDataContext";
+import AddDatasetActions from "./addDatasetActions/AddDatasetActions";
 
 function PvSheet() {
     const [newPV, setNewPV] = useState("");
     const [newPVErrClass, setNewPVErrClass] = useState("");
     const dispatch = usePVsDispatch();
     const pvs = usePVs();
+    const resultData = useResultData();
+    const [showDataSetActions, setShowDataSetActions] = useState(false);
+    const [dataBlocks, setDataBlocks] = useState([]);
+    const [dataSetName, setDataSetName] = useState("");
+    const [dataSetDescription, setDataSetDescription] = useState("");
 
     function onAddPV() {
         if (newPV === "") {
@@ -39,7 +46,7 @@ function PvSheet() {
             <SheetTrigger className="fixed top-1/4 right-0 bg-primary hover:bg-primary/90 rounded-l shadow-sm">
                 <ChevronLeftIcon className="w-5 h-10 text-primary-foreground" />
             </SheetTrigger>
-            <SheetContent>
+            <SheetContent className="bg-background">
                 <SheetHeader>
                     <SheetTitle>PV List</SheetTitle>
                     <SheetDescription>
@@ -85,6 +92,29 @@ function PvSheet() {
                     <button onClick={() => onAddPV()}>
                         <PlusIcon className="w-5 h-5 text-muted-foreground hover:text-foreground" />
                     </button>
+                </div>
+                <div className="w-full mt-4 border-b" />
+                <div className="w-64 bg-background">
+                    {showDataSetActions ? (
+                        <AddDatasetActions
+                            setIsOpen={null}
+                            resultData={resultData}
+                            dataBlocks={dataBlocks}
+                            setDataBlocks={setDataBlocks}
+                            name={dataSetName}
+                            setName={setDataSetName}
+                            description={dataSetDescription}
+                            setDescription={setDataSetDescription}
+                            setShowDataSetActions={setShowDataSetActions}
+                        />
+                    ) : (
+                        <button
+                            className="btn-std w-3/4 mt-4"
+                            onClick={() => setShowDataSetActions(true)}
+                        >
+                            Create Data Set
+                        </button>
+                    )}
                 </div>
             </SheetContent>
         </Sheet>

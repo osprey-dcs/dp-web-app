@@ -85,7 +85,13 @@ const TimeRangeChip = memo(function TimeRangeChip(props) {
                                 Time Range
                             </span>
                             <span className="text-foreground text-nowrap">
-                                {startDatetime} - {endDatetime}
+                                {rangeType === "absolute"
+                                    ? `${startDatetime} - ${endDatetime}`
+                                    : rangeType === "relativeStart"
+                                    ? `${startDatetime} :plus: ${timeUnits} ${timeUnitsType}`
+                                    : rangeType === "relativeEnd"
+                                    ? `${timeUnits} ${timeUnitsType} :until: ${endDatetime}`
+                                    : ""}
                             </span>
                         </Fragment>
                     ) : (

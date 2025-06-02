@@ -2,6 +2,7 @@ import { useToast } from "@/components/ui/use-toast";
 import DataPlatformApi from "@/domain/grpc-client/DataPlatformApi";
 import PropTypes from "prop-types";
 import { memo, useMemo, useState } from "react";
+import { useResultDataDispatch } from "../../ResultDataContext";
 import DataSourcesChip from "./datasourceschip/DataSourcesChip";
 import TimeRangeChip from "./timechip/TimeRangeChip";
 
@@ -17,6 +18,7 @@ const QueryActions = memo(function QueryActions({
     const [dataSources, setDataSources] = useState({});
     const api = useMemo(() => new DataPlatformApi(), []);
     const { toast } = useToast();
+    const dispatch = useResultDataDispatch();
 
     async function runQuery(queryParams) {
         setResultData(undefined);
@@ -30,8 +32,19 @@ const QueryActions = memo(function QueryActions({
                 description: result,
                 variant: "destructive",
             });
+        } else if (result instanceof Error) {
+            setResultData({});
+            toast({
+                title: `Error: ${result.constructor.name}`,
+                description: result.message,
+                variant: "destructive",
+            });
         } else {
             setResultData(result);
+            dispatch({
+                type: "changed",
+                resultData: result,
+            });
         }
     }
 

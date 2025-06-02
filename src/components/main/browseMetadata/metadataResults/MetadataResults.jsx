@@ -9,6 +9,7 @@ function MetadataResults({ resultData }) {
     const gridRef = useRef();
     const [rowData, setRowData] = useState([]);
     const [colDefs, setColDefs] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     const { toast } = useToast();
 
@@ -28,12 +29,12 @@ function MetadataResults({ resultData }) {
 
     useMemo(() => {
         if (resultData === undefined) {
-            gridRef.current?.api.showLoadingOverlay();
+            setIsLoading(true);
         } else if (Object.keys(resultData).length === 0) {
-            gridRef.current?.api.showNoRowsOverlay();
+            setIsLoading(false);
         } else if (typeof resultData === "object") {
+            setIsLoading(false);
             setColDefs(getMetadataColDefs(resultData.pvInfos[0]));
-            console.log(resultData.pvInfos[0]);
             setRowData(resultData.pvInfos);
         }
     }, [resultData]);
@@ -45,6 +46,8 @@ function MetadataResults({ resultData }) {
                 rowData={rowData}
                 columnDefs={colDefs}
                 onCellClicked={(e) => onCellClicked(e)}
+                loading={isLoading}
+                enableCellTextSelection={true}
             />
         </div>
     );

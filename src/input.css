@@ -104,6 +104,10 @@
         @apply py-2 border rounded text-sm font-medium text-foreground bg-background hover:bg-accent hover:text-accent-foreground;
     }
 
+    .btn-disabled {
+        @apply py-2 rounded text-sm font-medium text-muted-foreground bg-muted shadow-sm hover:cursor-default;
+    }
+
     .input-std {
         @apply px-2 py-1 h-9 text-sm rounded border border-input focus:outline outline-1 outline-ring bg-transparent placeholder:text-muted-foreground;
     }

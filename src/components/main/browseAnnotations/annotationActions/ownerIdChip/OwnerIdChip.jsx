@@ -11,9 +11,9 @@ import {
     useTransitionStyles,
 } from "@floating-ui/react";
 import { Fragment, memo, useState } from "react";
-import IdActions from "./idActions/IdActions";
+import OwnerIdActions from "./ownerIdActions";
 
-const IdChip = memo(function IdChip({ queryParams, setQueryParams }) {
+const OwnerIdChip = memo(function OwnerIdChip({ queryParams, setQueryParams }) {
     const [ownerId, setOwnerId] = useState("");
 
     const [isOpen, setIsOpen] = useState();
@@ -36,10 +36,10 @@ const IdChip = memo(function IdChip({ queryParams, setQueryParams }) {
     ]);
 
     function handleClear() {
-        setQueryParams({
-            ...queryParams,
+        setQueryParams((prevQueryParams) => ({
+            ...prevQueryParams,
             ownerId: "",
-        });
+        }));
         setOwnerId("");
     }
 
@@ -68,7 +68,7 @@ const IdChip = memo(function IdChip({ queryParams, setQueryParams }) {
                         "Owner ID"
                     ) : (
                         <Fragment>
-                            <span className=" mr-1 pr-1 border-r border-muted-foreground text-nowrap">
+                            <span className="mr-1 pr-1 border-r border-muted-foreground text-nowrap">
                                 Owner ID
                             </span>
                             <span className="text-foreground text-nowrap">
@@ -89,7 +89,7 @@ const IdChip = memo(function IdChip({ queryParams, setQueryParams }) {
                             style={transitionStyles}
                             className="p-5 w-64 border rounded bg-background shadow-md"
                         >
-                            <IdActions
+                            <OwnerIdActions
                                 ownerId={ownerId}
                                 setOwnerId={setOwnerId}
                                 setIsOpen={setIsOpen}
@@ -104,4 +104,4 @@ const IdChip = memo(function IdChip({ queryParams, setQueryParams }) {
     );
 });
 
-export default IdChip;
+export default OwnerIdChip;

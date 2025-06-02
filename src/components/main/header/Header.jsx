@@ -11,12 +11,18 @@ function Header() {
     useEffect(() => {
         let location = params[0].substring(1);
         if (location === "") {
-            location = "Raw Data";
+            location = "Browse Raw Data";
+        } else if (location.includes("view/data-set")) {
+            console.log(location);
+            location = "Data Set " + location.split("/").pop();
         } else {
-            location = location.charAt(0).toUpperCase() + location.slice(1);
+            location = location
+                .replace(/-/g, " ")
+                .replace(/\//g, " ")
+                .split(" ")
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(" ");
         }
-
-        location = "Browse " + location;
 
         setBreadcrumb(location);
     }, [params]);

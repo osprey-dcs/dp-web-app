@@ -4,7 +4,7 @@ import AnnotationActions from "./annotationActions/AnnotationActions";
 import AnnotationResults from "./annotationResults/AnnotationResults";
 
 function BrowseAnnotations() {
-    const [resultData, setResultData] = useState();
+    const [resultData, setResultData] = useState({});
 
     return (
         <div className="h-full flex flex-col">

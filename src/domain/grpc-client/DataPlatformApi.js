@@ -59,15 +59,18 @@ export default class DataPlatformApi {
                 }
             }
         }
+        try {
+            const { status, response } = await this.queryClient.queryTable(query);
+            const result = response.result;
 
-        const { status, response } = await this.queryClient.queryTable(query);
-        const result = response.result;
+            if (!this.handleStatus(status)) return;
+            const exceptionalResult = this.handleExceptionalResult(result);
+            if (!exceptionalResult.status) return exceptionalResult.message;
 
-        if (!this.handleStatus(status)) return;
-        const exceptionalResult = this.handleExceptionalResult(result);
-        if (!exceptionalResult.status) return exceptionalResult.message;
-
-        return result.tableResult;
+            return result.tableResult;
+        } catch (e) {
+            return e
+        }
     }
 
     queryMetadata = async (queryParams) => {
@@ -87,15 +90,18 @@ export default class DataPlatformApi {
                 }
             }
         }
+        try {
+            const { status, response } = await this.queryClient.queryPvMetadata(query);
+            const result = response.result;
 
-        const { status, response } = await this.queryClient.queryMetadata(query);
-        const result = response.result;
+            if (!this.handleStatus(status)) return;
+            const exceptionalResult = this.handleExceptionalResult(result);
+            if (!exceptionalResult.status) return exceptionalResult.message;
 
-        if (!this.handleStatus(status)) return;
-        const exceptionalResult = this.handleExceptionalResult(result);
-        if (!exceptionalResult.status) return exceptionalResult.message;
-
-        return result.metadataResult;
+            return result.metadataResult;
+        } catch (e) {
+            return e
+        }
     }
 
     queryAnnotations = async (queryParams) => {
@@ -120,47 +126,96 @@ export default class DataPlatformApi {
                     if (queryParams.comment === "") break;
                     query.criteria.push({
                         criterion: {
-                            oneofKind: "commentCriterion",
-                            commentCriterion: {
-                                commentText: queryParams.comment
+                            oneofKind: "textCriterion",
+                            textCriterion: {
+                                text: queryParams.comment
                             }
                         }
                     })
             }
         }
 
-        const { status, response } = await this.annotationClient.queryAnnotations(query);
-        const result = response.result;
+        try {
+            const { status, response } = await this.annotationClient.queryAnnotations(query);
+            const result = response.result;
 
-        if (!this.handleStatus(status)) return;
-        const exceptionalResult = this.handleExceptionalResult(result);
-        if (!exceptionalResult.status) return exceptionalResult.message;
+            if (!this.handleStatus(status)) return;
+            const exceptionalResult = this.handleExceptionalResult(result);
+            if (!exceptionalResult.status) return exceptionalResult.message;
 
-        return result;
+            return result;
+        } catch (e) {
+            return e
+        }
     }
 
     createAnnotation = async (queryParams) => {
         const query = {
             ownerId: queryParams.ownerId,
-            dataSetId: queryParams.dataSetId,
-            annotation: {
-                oneofKind: "commentAnnotation",
-                commentAnnotation: {
-                    comment: queryParams.comment
-                }
+            dataSetIds: [queryParams.dataSetId],
+            name: queryParams.name,
+            annotationIds: [],
+            tags: [],
+            attributes: []
+        }
+
+        try {
+            const { status, response } = await this.annotationClient.createAnnotation(query)
+            const result = response.result
+
+            if (!this.handleStatus(status)) return;
+            const exceptionalResult = this.handleExceptionalResult(result);
+            if (!exceptionalResult.status) return exceptionalResult.message;
+
+            return result;
+        } catch (e) {
+            return e
+        }
+    }
+
+    queryDataSets = async (queryParams) => {
+        const query = {
+            criteria: []
+        }
+
+        for (let key in queryParams) {
+            switch (key) {
+                case "ownerId":
+                    if (queryParams.ownerId === "") break;
+                    query.criteria.push({
+                        criterion: {
+                            oneofKind: "ownerCriterion",
+                            ownerCriterion: {
+                                ownerId: queryParams.ownerId
+                            }
+                        }
+                    })
+                    break;
+                case "dataSetName":
+                    if (queryParams.dataSetName === "") break;
+                    query.criteria.push({
+                        criterion: {
+                            oneofKind: "textCriterion",
+                            textCriterion: {
+                                text: queryParams.dataSetName
+                            }
+                        }
+                    })
             }
         }
 
-        const { status, response } = await this.annotationClient.createAnnotation(query)
-        const result = response.result
+        try {
+            const { status, response } = await this.annotationClient.queryDataSets(query);
+            const result = response.result;
 
-        console.log(result);
+            if (!this.handleStatus(status)) return;
+            const exceptionalResult = this.handleExceptionalResult(result);
+            if (!exceptionalResult.status) return exceptionalResult.message;
 
-        if (!this.handleStatus(status)) return;
-        const exceptionalResult = this.handleExceptionalResult(result);
-        if (!exceptionalResult.status) return exceptionalResult.message;
-
-        return result;
+            return result;
+        } catch (e) {
+            return e
+        }
     }
 
     createDataSet = async (setParams) => {
@@ -188,15 +243,19 @@ export default class DataPlatformApi {
             }
             query.dataSet.dataBlocks.push(queryBlock);
         }
+        try {
+            const { status, response } = await this.annotationClient.createDataSet(query);
+            const result = response.result;
 
-        const { status, response } = await this.annotationClient.createDataSet(query);
-        const result = response.result;
+            if (!this.handleStatus(status)) return;
+            const exceptionalResult = this.handleExceptionalResult(result);
+            if (!exceptionalResult.status) return exceptionalResult.message;
 
-        if (!this.handleStatus(status)) return;
-        const exceptionalResult = this.handleExceptionalResult(result);
-        if (!exceptionalResult.status) return exceptionalResult.message;
+            return result;
+        } catch (e) {
+            return e
 
-        return result;
+        }
     }
 
     exportDataSet = async (exportParams) => {
@@ -204,15 +263,18 @@ export default class DataPlatformApi {
             dataSetId: exportParams.dataSetId,
             outputFormat: exportParams.outputFormat
         }
-        console.log("QUERY")
-        console.log(query)
-        const { status, response } = await this.annotationClient.exportDataSet(query);
-        const result = response.result;
 
-        if (!this.handleStatus(status)) return;
-        const exceptionalResult = this.handleExceptionalResult(result);
-        if (!exceptionalResult.status) return exceptionalResult.message;
+        try {
+            const { status, response } = await this.annotationClient.exportData(query);
+            const result = response.result;
 
-        return result;
+            if (!this.handleStatus(status)) return;
+            const exceptionalResult = this.handleExceptionalResult(result);
+            if (!exceptionalResult.status) return exceptionalResult.message;
+
+            return result;
+        } catch (e) {
+            return e
+        }
     }
 }

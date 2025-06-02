@@ -103,7 +103,6 @@ function dispatch(action) {
 function toast({
   ...props
 }) {
-  console.log(props)
   const id = genId()
 
   const update = (props) =>

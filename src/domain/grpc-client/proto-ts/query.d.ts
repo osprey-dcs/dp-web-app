@@ -14,6 +14,7 @@ import type { IBinaryReader } from "@protobuf-ts/runtime";
 import type { PartialMessage } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
 import { DataValue } from "./common";
+import { SerializedDataColumn } from "./common";
 import { DataColumn } from "./common";
 import { EventMetadata } from "./common";
 import { Attribute } from "./common";
@@ -78,6 +79,10 @@ export interface QueryDataRequest_QuerySpec {
      * @generated from protobuf field: repeated string pvNames = 3;
      */
     pvNames: string[];
+    /**
+     * @generated from protobuf field: bool useSerializedDataColumns = 4;
+     */
+    useSerializedDataColumns: boolean;
 }
 /**
  *
@@ -105,9 +110,9 @@ export declare enum QueryDataRequest_CursorOperation_CursorOperationType {
 }
 /**
  *
- * Time Series Data Query Response.
+ * QueryDataResponse
  *
- * Contains results from a time series data query.  Sent as single response to unary method queryData(),
+ * Contains results from a time-series data query.  Sent as single response to unary method queryData(),
  * or in the response streams from queryDataStream() and queryDataBidiStream().
  *
  * Contains either ExceptionalResult indicating a problem handling the request, or QueryData
@@ -143,13 +148,19 @@ export interface QueryDataResponse {
 }
 /**
  *
- * Time Series Query Result Data.
+ * QueryData
  *
  * Contains the data for a time series data query result, as a list of DataBucket objects. Each DataBucket minimally
  * includes a vector of PV data values (in a DataColumn) and a DataTimestamps object specifying the timestamps
  * for the data vector values using either a SamplingClock (with start time, sample period, and number of samples or
  * an explicit list of timestamps) or a TimestampsList (with an explicit list of timestamps). The DataBucket also
  * includes key/value Attributes and/or EventMetadata if defined for the data in ingestion.
+ *
+ * By default, each DataBucket contains a regular DataColumn object with the vector of data for the bucket.
+ * if the useSerializedDataColumns flag is set in the QueryDataRequest's QuerySpec, each DataBucket in the result
+ * contains a SerializedDataColumn that contains a byte data representation of the corresponding DataColumn object.
+ * Clients seeking maximum query performance should use SerializedDataColumns in the query result in order to avoid
+ * extra serialization operations performed by the gRPC communication framework.
  *
  * @generated from protobuf message dp.service.query.QueryDataResponse.QueryData
  */
@@ -168,17 +179,35 @@ export interface QueryDataResponse_QueryData_DataBucket {
      */
     dataTimestamps?: DataTimestamps;
     /**
-     * @generated from protobuf field: repeated Attribute attributes = 2;
+     * @generated from protobuf field: repeated string tags = 2;
+     */
+    tags: string[];
+    /**
+     * @generated from protobuf field: repeated Attribute attributes = 3;
      */
     attributes: Attribute[];
     /**
-     * @generated from protobuf field: EventMetadata eventMetadata = 3;
+     * @generated from protobuf field: EventMetadata eventMetadata = 4;
      */
     eventMetadata?: EventMetadata;
     /**
-     * @generated from protobuf field: DataColumn dataColumn = 4;
+     * @generated from protobuf oneof: data
      */
-    dataColumn?: DataColumn;
+    data: {
+        oneofKind: "dataColumn";
+        /**
+         * @generated from protobuf field: DataColumn dataColumn = 10;
+         */
+        dataColumn: DataColumn;
+    } | {
+        oneofKind: "serializedDataColumn";
+        /**
+         * @generated from protobuf field: SerializedDataColumn serializedDataColumn = 11;
+         */
+        serializedDataColumn: SerializedDataColumn;
+    } | {
+        oneofKind: undefined;
+    };
 }
 /**
  *
@@ -354,16 +383,16 @@ export interface QueryTableResponse_RowMapTable_DataRow {
 }
 /**
  *
- * Metadata Query Request.
+ * QueryPvMetadataRequest
  *
  * Describes the parameters for querying metadata for PVs managed in the archive.
  *
  * A request may contain one of two payloads, either a PvNameList with an explicit list of
  * column/PV names, or a PvNamePattern with a regular expression pattern used to match against column/PV names.
  *
- * @generated from protobuf message dp.service.query.QueryMetadataRequest
+ * @generated from protobuf message dp.service.query.QueryPvMetadataRequest
  */
-export interface QueryMetadataRequest {
+export interface QueryPvMetadataRequest {
     /**
      * @generated from protobuf oneof: pvNameSpec
      */
@@ -385,14 +414,14 @@ export interface QueryMetadataRequest {
 }
 /**
  *
- * Metadata Query Response.
+ * QueryPvMetadataResponse
  *
- * Contains results from a metadata query. Payload is an ExceptionalResult if a rejection, error, or empty query
+ * Contains results from a PV metadata query. Payload is an ExceptionalResult if a rejection, error, or empty query
  * result is encountered, otherwise is a MetadataResult containing results of query.
  *
- * @generated from protobuf message dp.service.query.QueryMetadataResponse
+ * @generated from protobuf message dp.service.query.QueryPvMetadataResponse
  */
-export interface QueryMetadataResponse {
+export interface QueryPvMetadataResponse {
     /**
      * @generated from protobuf field: Timestamp responseTime = 1;
      */
@@ -409,31 +438,31 @@ export interface QueryMetadataResponse {
     } | {
         oneofKind: "metadataResult";
         /**
-         * @generated from protobuf field: dp.service.query.QueryMetadataResponse.MetadataResult metadataResult = 11;
+         * @generated from protobuf field: dp.service.query.QueryPvMetadataResponse.MetadataResult metadataResult = 11;
          */
-        metadataResult: QueryMetadataResponse_MetadataResult;
+        metadataResult: QueryPvMetadataResponse_MetadataResult;
     } | {
         oneofKind: undefined;
     };
 }
 /**
  *
- * Metadata Query Result Content.
+ * MetadataResult
  *
  * Contains a list of PvInfo metadata objects, one for each column/PV name matching the query specification.
  *
- * @generated from protobuf message dp.service.query.QueryMetadataResponse.MetadataResult
+ * @generated from protobuf message dp.service.query.QueryPvMetadataResponse.MetadataResult
  */
-export interface QueryMetadataResponse_MetadataResult {
+export interface QueryPvMetadataResponse_MetadataResult {
     /**
-     * @generated from protobuf field: repeated dp.service.query.QueryMetadataResponse.MetadataResult.PvInfo pvInfos = 1;
+     * @generated from protobuf field: repeated dp.service.query.QueryPvMetadataResponse.MetadataResult.PvInfo pvInfos = 1;
      */
-    pvInfos: QueryMetadataResponse_MetadataResult_PvInfo[];
+    pvInfos: QueryPvMetadataResponse_MetadataResult_PvInfo[];
 }
 /**
- * @generated from protobuf message dp.service.query.QueryMetadataResponse.MetadataResult.PvInfo
+ * @generated from protobuf message dp.service.query.QueryPvMetadataResponse.MetadataResult.PvInfo
  */
-export interface QueryMetadataResponse_MetadataResult_PvInfo {
+export interface QueryPvMetadataResponse_MetadataResult_PvInfo {
     /**
      * @generated from protobuf field: string pvName = 1;
      */
@@ -474,6 +503,10 @@ export interface QueryMetadataResponse_MetadataResult_PvInfo {
      * @generated from protobuf field: Timestamp lastDataTimestamp = 11;
      */
     lastDataTimestamp?: Timestamp;
+    /**
+     * @generated from protobuf field: int32 numBuckets = 12;
+     */
+    numBuckets: number;
 }
 /**
  * @generated from protobuf message dp.service.query.PvNameList
@@ -492,6 +525,269 @@ export interface PvNamePattern {
      * @generated from protobuf field: string pattern = 1;
      */
     pattern: string;
+}
+/**
+ *
+ * QueryProvidersRequest.
+ *
+ * Contains a list of criteria for querying Providers. List can include a single criterion,
+ * or multiple criteria for a compound query.  For example, query might include both a TagsCriterion and
+ * AttributesCriterion to specify a query over both the tags and attributes fields, respectively.
+ *
+ * @generated from protobuf message dp.service.query.QueryProvidersRequest
+ */
+export interface QueryProvidersRequest {
+    /**
+     * @generated from protobuf field: repeated dp.service.query.QueryProvidersRequest.Criterion criteria = 1;
+     */
+    criteria: QueryProvidersRequest_Criterion[];
+}
+/**
+ * @generated from protobuf message dp.service.query.QueryProvidersRequest.Criterion
+ */
+export interface QueryProvidersRequest_Criterion {
+    /**
+     * @generated from protobuf oneof: criterion
+     */
+    criterion: {
+        oneofKind: "idCriterion";
+        /**
+         * @generated from protobuf field: dp.service.query.QueryProvidersRequest.Criterion.IdCriterion idCriterion = 10;
+         */
+        idCriterion: QueryProvidersRequest_Criterion_IdCriterion;
+    } | {
+        oneofKind: "textCriterion";
+        /**
+         * @generated from protobuf field: dp.service.query.QueryProvidersRequest.Criterion.TextCriterion textCriterion = 14;
+         */
+        textCriterion: QueryProvidersRequest_Criterion_TextCriterion;
+    } | {
+        oneofKind: "tagsCriterion";
+        /**
+         * @generated from protobuf field: dp.service.query.QueryProvidersRequest.Criterion.TagsCriterion tagsCriterion = 15;
+         */
+        tagsCriterion: QueryProvidersRequest_Criterion_TagsCriterion;
+    } | {
+        oneofKind: "attributesCriterion";
+        /**
+         * @generated from protobuf field: dp.service.query.QueryProvidersRequest.Criterion.AttributesCriterion attributesCriterion = 16;
+         */
+        attributesCriterion: QueryProvidersRequest_Criterion_AttributesCriterion;
+    } | {
+        oneofKind: undefined;
+    };
+}
+/**
+ *
+ * Criterion used to query Providers by id.
+ *
+ * @generated from protobuf message dp.service.query.QueryProvidersRequest.Criterion.IdCriterion
+ */
+export interface QueryProvidersRequest_Criterion_IdCriterion {
+    /**
+     * @generated from protobuf field: string id = 1;
+     */
+    id: string;
+}
+/**
+ *
+ * Criterion used to query Providers by text contained in the name and description fields.
+ *
+ * @generated from protobuf message dp.service.query.QueryProvidersRequest.Criterion.TextCriterion
+ */
+export interface QueryProvidersRequest_Criterion_TextCriterion {
+    /**
+     * @generated from protobuf field: string text = 1;
+     */
+    text: string;
+}
+/**
+ *
+ * Criterion used to query Providers by tag value.
+ *
+ * @generated from protobuf message dp.service.query.QueryProvidersRequest.Criterion.TagsCriterion
+ */
+export interface QueryProvidersRequest_Criterion_TagsCriterion {
+    /**
+     * @generated from protobuf field: string tagValue = 1;
+     */
+    tagValue: string;
+}
+/**
+ *
+ * Criterion used to query Providers by attribute key and value.
+ *
+ * @generated from protobuf message dp.service.query.QueryProvidersRequest.Criterion.AttributesCriterion
+ */
+export interface QueryProvidersRequest_Criterion_AttributesCriterion {
+    /**
+     * @generated from protobuf field: string key = 1;
+     */
+    key: string;
+    /**
+     * @generated from protobuf field: string value = 2;
+     */
+    value: string;
+}
+/**
+ *
+ * QueryProvidersResponse
+ *
+ * Contains results from a queryProviders() API method request.  Message payload is either an ExceptionalResult
+ * indicating rejection or an error handling the request, or a ProvidersResult with a ProviderInfo entry for each
+ * Provider matching the query criteria.
+ *
+ * @generated from protobuf message dp.service.query.QueryProvidersResponse
+ */
+export interface QueryProvidersResponse {
+    /**
+     * @generated from protobuf field: Timestamp responseTime = 1;
+     */
+    responseTime?: Timestamp;
+    /**
+     * @generated from protobuf oneof: result
+     */
+    result: {
+        oneofKind: "exceptionalResult";
+        /**
+         * @generated from protobuf field: ExceptionalResult exceptionalResult = 10;
+         */
+        exceptionalResult: ExceptionalResult;
+    } | {
+        oneofKind: "providersResult";
+        /**
+         * @generated from protobuf field: dp.service.query.QueryProvidersResponse.ProvidersResult providersResult = 11;
+         */
+        providersResult: QueryProvidersResponse_ProvidersResult;
+    } | {
+        oneofKind: undefined;
+    };
+}
+/**
+ *
+ * ProvidersResult
+ *
+ * Contains a list of ProviderInfo objects, one for each provider matching the query specification.
+ *
+ * @generated from protobuf message dp.service.query.QueryProvidersResponse.ProvidersResult
+ */
+export interface QueryProvidersResponse_ProvidersResult {
+    /**
+     * @generated from protobuf field: repeated dp.service.query.QueryProvidersResponse.ProvidersResult.ProviderInfo providerInfos = 1;
+     */
+    providerInfos: QueryProvidersResponse_ProvidersResult_ProviderInfo[];
+}
+/**
+ * @generated from protobuf message dp.service.query.QueryProvidersResponse.ProvidersResult.ProviderInfo
+ */
+export interface QueryProvidersResponse_ProvidersResult_ProviderInfo {
+    /**
+     * @generated from protobuf field: string id = 1;
+     */
+    id: string;
+    /**
+     * @generated from protobuf field: string name = 2;
+     */
+    name: string;
+    /**
+     * @generated from protobuf field: string description = 3;
+     */
+    description: string;
+    /**
+     * @generated from protobuf field: repeated string tags = 4;
+     */
+    tags: string[];
+    /**
+     * @generated from protobuf field: repeated Attribute attributes = 5;
+     */
+    attributes: Attribute[];
+}
+/**
+ *
+ * QueryProviderMetadataRequest
+ *
+ * Encapsulates the single parameter for a queryProviderMetadata() request, the unique id of a data Provider.
+ *
+ * @generated from protobuf message dp.service.query.QueryProviderMetadataRequest
+ */
+export interface QueryProviderMetadataRequest {
+    /**
+     * @generated from protobuf field: string providerId = 1;
+     */
+    providerId: string;
+}
+/**
+ *
+ * QueryProviderMetadataResponse
+ *
+ * Contains results from a queryProviderMetadata() API method request.  Message payload is either an
+ * ExceptionalResult indicating rejection or an error handling the request, or a MetadataResult with a
+ * ProviderMetadata entry for the Provider matching the id specified in the request.
+ *
+ * @generated from protobuf message dp.service.query.QueryProviderMetadataResponse
+ */
+export interface QueryProviderMetadataResponse {
+    /**
+     * @generated from protobuf field: Timestamp responseTime = 1;
+     */
+    responseTime?: Timestamp;
+    /**
+     * @generated from protobuf oneof: result
+     */
+    result: {
+        oneofKind: "exceptionalResult";
+        /**
+         * @generated from protobuf field: ExceptionalResult exceptionalResult = 10;
+         */
+        exceptionalResult: ExceptionalResult;
+    } | {
+        oneofKind: "metadataResult";
+        /**
+         * @generated from protobuf field: dp.service.query.QueryProviderMetadataResponse.MetadataResult metadataResult = 11;
+         */
+        metadataResult: QueryProviderMetadataResponse_MetadataResult;
+    } | {
+        oneofKind: undefined;
+    };
+}
+/**
+ *
+ * Metadata Query Result Content.
+ *
+ * Contains a list of ProviderInfo metadata objects, one for each provider matching the query specification.
+ *
+ * @generated from protobuf message dp.service.query.QueryProviderMetadataResponse.MetadataResult
+ */
+export interface QueryProviderMetadataResponse_MetadataResult {
+    /**
+     * @generated from protobuf field: repeated dp.service.query.QueryProviderMetadataResponse.MetadataResult.ProviderMetadata providerMetadatas = 1;
+     */
+    providerMetadatas: QueryProviderMetadataResponse_MetadataResult_ProviderMetadata[];
+}
+/**
+ * @generated from protobuf message dp.service.query.QueryProviderMetadataResponse.MetadataResult.ProviderMetadata
+ */
+export interface QueryProviderMetadataResponse_MetadataResult_ProviderMetadata {
+    /**
+     * @generated from protobuf field: string id = 1;
+     */
+    id: string;
+    /**
+     * @generated from protobuf field: repeated string pvNames = 2;
+     */
+    pvNames: string[];
+    /**
+     * @generated from protobuf field: Timestamp firstBucketTime = 3;
+     */
+    firstBucketTime?: Timestamp;
+    /**
+     * @generated from protobuf field: Timestamp lastBucketTime = 4;
+     */
+    lastBucketTime?: Timestamp;
+    /**
+     * @generated from protobuf field: int32 numBuckets = 5;
+     */
+    numBuckets: number;
 }
 declare class QueryDataRequest$Type extends MessageType<QueryDataRequest> {
     constructor();
@@ -614,46 +910,46 @@ declare class QueryTableResponse_RowMapTable_DataRow$Type extends MessageType<Qu
  * @generated MessageType for protobuf message dp.service.query.QueryTableResponse.RowMapTable.DataRow
  */
 export declare const QueryTableResponse_RowMapTable_DataRow: QueryTableResponse_RowMapTable_DataRow$Type;
-declare class QueryMetadataRequest$Type extends MessageType<QueryMetadataRequest> {
+declare class QueryPvMetadataRequest$Type extends MessageType<QueryPvMetadataRequest> {
     constructor();
-    create(value?: PartialMessage<QueryMetadataRequest>): QueryMetadataRequest;
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryMetadataRequest): QueryMetadataRequest;
-    internalBinaryWrite(message: QueryMetadataRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+    create(value?: PartialMessage<QueryPvMetadataRequest>): QueryPvMetadataRequest;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryPvMetadataRequest): QueryPvMetadataRequest;
+    internalBinaryWrite(message: QueryPvMetadataRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
 }
 /**
- * @generated MessageType for protobuf message dp.service.query.QueryMetadataRequest
+ * @generated MessageType for protobuf message dp.service.query.QueryPvMetadataRequest
  */
-export declare const QueryMetadataRequest: QueryMetadataRequest$Type;
-declare class QueryMetadataResponse$Type extends MessageType<QueryMetadataResponse> {
+export declare const QueryPvMetadataRequest: QueryPvMetadataRequest$Type;
+declare class QueryPvMetadataResponse$Type extends MessageType<QueryPvMetadataResponse> {
     constructor();
-    create(value?: PartialMessage<QueryMetadataResponse>): QueryMetadataResponse;
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryMetadataResponse): QueryMetadataResponse;
-    internalBinaryWrite(message: QueryMetadataResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+    create(value?: PartialMessage<QueryPvMetadataResponse>): QueryPvMetadataResponse;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryPvMetadataResponse): QueryPvMetadataResponse;
+    internalBinaryWrite(message: QueryPvMetadataResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
 }
 /**
- * @generated MessageType for protobuf message dp.service.query.QueryMetadataResponse
+ * @generated MessageType for protobuf message dp.service.query.QueryPvMetadataResponse
  */
-export declare const QueryMetadataResponse: QueryMetadataResponse$Type;
-declare class QueryMetadataResponse_MetadataResult$Type extends MessageType<QueryMetadataResponse_MetadataResult> {
+export declare const QueryPvMetadataResponse: QueryPvMetadataResponse$Type;
+declare class QueryPvMetadataResponse_MetadataResult$Type extends MessageType<QueryPvMetadataResponse_MetadataResult> {
     constructor();
-    create(value?: PartialMessage<QueryMetadataResponse_MetadataResult>): QueryMetadataResponse_MetadataResult;
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryMetadataResponse_MetadataResult): QueryMetadataResponse_MetadataResult;
-    internalBinaryWrite(message: QueryMetadataResponse_MetadataResult, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+    create(value?: PartialMessage<QueryPvMetadataResponse_MetadataResult>): QueryPvMetadataResponse_MetadataResult;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryPvMetadataResponse_MetadataResult): QueryPvMetadataResponse_MetadataResult;
+    internalBinaryWrite(message: QueryPvMetadataResponse_MetadataResult, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
 }
 /**
- * @generated MessageType for protobuf message dp.service.query.QueryMetadataResponse.MetadataResult
+ * @generated MessageType for protobuf message dp.service.query.QueryPvMetadataResponse.MetadataResult
  */
-export declare const QueryMetadataResponse_MetadataResult: QueryMetadataResponse_MetadataResult$Type;
-declare class QueryMetadataResponse_MetadataResult_PvInfo$Type extends MessageType<QueryMetadataResponse_MetadataResult_PvInfo> {
+export declare const QueryPvMetadataResponse_MetadataResult: QueryPvMetadataResponse_MetadataResult$Type;
+declare class QueryPvMetadataResponse_MetadataResult_PvInfo$Type extends MessageType<QueryPvMetadataResponse_MetadataResult_PvInfo> {
     constructor();
-    create(value?: PartialMessage<QueryMetadataResponse_MetadataResult_PvInfo>): QueryMetadataResponse_MetadataResult_PvInfo;
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryMetadataResponse_MetadataResult_PvInfo): QueryMetadataResponse_MetadataResult_PvInfo;
-    internalBinaryWrite(message: QueryMetadataResponse_MetadataResult_PvInfo, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+    create(value?: PartialMessage<QueryPvMetadataResponse_MetadataResult_PvInfo>): QueryPvMetadataResponse_MetadataResult_PvInfo;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryPvMetadataResponse_MetadataResult_PvInfo): QueryPvMetadataResponse_MetadataResult_PvInfo;
+    internalBinaryWrite(message: QueryPvMetadataResponse_MetadataResult_PvInfo, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
 }
 /**
- * @generated MessageType for protobuf message dp.service.query.QueryMetadataResponse.MetadataResult.PvInfo
+ * @generated MessageType for protobuf message dp.service.query.QueryPvMetadataResponse.MetadataResult.PvInfo
  */
-export declare const QueryMetadataResponse_MetadataResult_PvInfo: QueryMetadataResponse_MetadataResult_PvInfo$Type;
+export declare const QueryPvMetadataResponse_MetadataResult_PvInfo: QueryPvMetadataResponse_MetadataResult_PvInfo$Type;
 declare class PvNameList$Type extends MessageType<PvNameList> {
     constructor();
     create(value?: PartialMessage<PvNameList>): PvNameList;
@@ -674,6 +970,136 @@ declare class PvNamePattern$Type extends MessageType<PvNamePattern> {
  * @generated MessageType for protobuf message dp.service.query.PvNamePattern
  */
 export declare const PvNamePattern: PvNamePattern$Type;
+declare class QueryProvidersRequest$Type extends MessageType<QueryProvidersRequest> {
+    constructor();
+    create(value?: PartialMessage<QueryProvidersRequest>): QueryProvidersRequest;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryProvidersRequest): QueryProvidersRequest;
+    internalBinaryWrite(message: QueryProvidersRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.query.QueryProvidersRequest
+ */
+export declare const QueryProvidersRequest: QueryProvidersRequest$Type;
+declare class QueryProvidersRequest_Criterion$Type extends MessageType<QueryProvidersRequest_Criterion> {
+    constructor();
+    create(value?: PartialMessage<QueryProvidersRequest_Criterion>): QueryProvidersRequest_Criterion;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryProvidersRequest_Criterion): QueryProvidersRequest_Criterion;
+    internalBinaryWrite(message: QueryProvidersRequest_Criterion, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.query.QueryProvidersRequest.Criterion
+ */
+export declare const QueryProvidersRequest_Criterion: QueryProvidersRequest_Criterion$Type;
+declare class QueryProvidersRequest_Criterion_IdCriterion$Type extends MessageType<QueryProvidersRequest_Criterion_IdCriterion> {
+    constructor();
+    create(value?: PartialMessage<QueryProvidersRequest_Criterion_IdCriterion>): QueryProvidersRequest_Criterion_IdCriterion;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryProvidersRequest_Criterion_IdCriterion): QueryProvidersRequest_Criterion_IdCriterion;
+    internalBinaryWrite(message: QueryProvidersRequest_Criterion_IdCriterion, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.query.QueryProvidersRequest.Criterion.IdCriterion
+ */
+export declare const QueryProvidersRequest_Criterion_IdCriterion: QueryProvidersRequest_Criterion_IdCriterion$Type;
+declare class QueryProvidersRequest_Criterion_TextCriterion$Type extends MessageType<QueryProvidersRequest_Criterion_TextCriterion> {
+    constructor();
+    create(value?: PartialMessage<QueryProvidersRequest_Criterion_TextCriterion>): QueryProvidersRequest_Criterion_TextCriterion;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryProvidersRequest_Criterion_TextCriterion): QueryProvidersRequest_Criterion_TextCriterion;
+    internalBinaryWrite(message: QueryProvidersRequest_Criterion_TextCriterion, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.query.QueryProvidersRequest.Criterion.TextCriterion
+ */
+export declare const QueryProvidersRequest_Criterion_TextCriterion: QueryProvidersRequest_Criterion_TextCriterion$Type;
+declare class QueryProvidersRequest_Criterion_TagsCriterion$Type extends MessageType<QueryProvidersRequest_Criterion_TagsCriterion> {
+    constructor();
+    create(value?: PartialMessage<QueryProvidersRequest_Criterion_TagsCriterion>): QueryProvidersRequest_Criterion_TagsCriterion;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryProvidersRequest_Criterion_TagsCriterion): QueryProvidersRequest_Criterion_TagsCriterion;
+    internalBinaryWrite(message: QueryProvidersRequest_Criterion_TagsCriterion, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.query.QueryProvidersRequest.Criterion.TagsCriterion
+ */
+export declare const QueryProvidersRequest_Criterion_TagsCriterion: QueryProvidersRequest_Criterion_TagsCriterion$Type;
+declare class QueryProvidersRequest_Criterion_AttributesCriterion$Type extends MessageType<QueryProvidersRequest_Criterion_AttributesCriterion> {
+    constructor();
+    create(value?: PartialMessage<QueryProvidersRequest_Criterion_AttributesCriterion>): QueryProvidersRequest_Criterion_AttributesCriterion;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryProvidersRequest_Criterion_AttributesCriterion): QueryProvidersRequest_Criterion_AttributesCriterion;
+    internalBinaryWrite(message: QueryProvidersRequest_Criterion_AttributesCriterion, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.query.QueryProvidersRequest.Criterion.AttributesCriterion
+ */
+export declare const QueryProvidersRequest_Criterion_AttributesCriterion: QueryProvidersRequest_Criterion_AttributesCriterion$Type;
+declare class QueryProvidersResponse$Type extends MessageType<QueryProvidersResponse> {
+    constructor();
+    create(value?: PartialMessage<QueryProvidersResponse>): QueryProvidersResponse;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryProvidersResponse): QueryProvidersResponse;
+    internalBinaryWrite(message: QueryProvidersResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.query.QueryProvidersResponse
+ */
+export declare const QueryProvidersResponse: QueryProvidersResponse$Type;
+declare class QueryProvidersResponse_ProvidersResult$Type extends MessageType<QueryProvidersResponse_ProvidersResult> {
+    constructor();
+    create(value?: PartialMessage<QueryProvidersResponse_ProvidersResult>): QueryProvidersResponse_ProvidersResult;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryProvidersResponse_ProvidersResult): QueryProvidersResponse_ProvidersResult;
+    internalBinaryWrite(message: QueryProvidersResponse_ProvidersResult, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.query.QueryProvidersResponse.ProvidersResult
+ */
+export declare const QueryProvidersResponse_ProvidersResult: QueryProvidersResponse_ProvidersResult$Type;
+declare class QueryProvidersResponse_ProvidersResult_ProviderInfo$Type extends MessageType<QueryProvidersResponse_ProvidersResult_ProviderInfo> {
+    constructor();
+    create(value?: PartialMessage<QueryProvidersResponse_ProvidersResult_ProviderInfo>): QueryProvidersResponse_ProvidersResult_ProviderInfo;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryProvidersResponse_ProvidersResult_ProviderInfo): QueryProvidersResponse_ProvidersResult_ProviderInfo;
+    internalBinaryWrite(message: QueryProvidersResponse_ProvidersResult_ProviderInfo, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.query.QueryProvidersResponse.ProvidersResult.ProviderInfo
+ */
+export declare const QueryProvidersResponse_ProvidersResult_ProviderInfo: QueryProvidersResponse_ProvidersResult_ProviderInfo$Type;
+declare class QueryProviderMetadataRequest$Type extends MessageType<QueryProviderMetadataRequest> {
+    constructor();
+    create(value?: PartialMessage<QueryProviderMetadataRequest>): QueryProviderMetadataRequest;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryProviderMetadataRequest): QueryProviderMetadataRequest;
+    internalBinaryWrite(message: QueryProviderMetadataRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.query.QueryProviderMetadataRequest
+ */
+export declare const QueryProviderMetadataRequest: QueryProviderMetadataRequest$Type;
+declare class QueryProviderMetadataResponse$Type extends MessageType<QueryProviderMetadataResponse> {
+    constructor();
+    create(value?: PartialMessage<QueryProviderMetadataResponse>): QueryProviderMetadataResponse;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryProviderMetadataResponse): QueryProviderMetadataResponse;
+    internalBinaryWrite(message: QueryProviderMetadataResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.query.QueryProviderMetadataResponse
+ */
+export declare const QueryProviderMetadataResponse: QueryProviderMetadataResponse$Type;
+declare class QueryProviderMetadataResponse_MetadataResult$Type extends MessageType<QueryProviderMetadataResponse_MetadataResult> {
+    constructor();
+    create(value?: PartialMessage<QueryProviderMetadataResponse_MetadataResult>): QueryProviderMetadataResponse_MetadataResult;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryProviderMetadataResponse_MetadataResult): QueryProviderMetadataResponse_MetadataResult;
+    internalBinaryWrite(message: QueryProviderMetadataResponse_MetadataResult, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.query.QueryProviderMetadataResponse.MetadataResult
+ */
+export declare const QueryProviderMetadataResponse_MetadataResult: QueryProviderMetadataResponse_MetadataResult$Type;
+declare class QueryProviderMetadataResponse_MetadataResult_ProviderMetadata$Type extends MessageType<QueryProviderMetadataResponse_MetadataResult_ProviderMetadata> {
+    constructor();
+    create(value?: PartialMessage<QueryProviderMetadataResponse_MetadataResult_ProviderMetadata>): QueryProviderMetadataResponse_MetadataResult_ProviderMetadata;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: QueryProviderMetadataResponse_MetadataResult_ProviderMetadata): QueryProviderMetadataResponse_MetadataResult_ProviderMetadata;
+    internalBinaryWrite(message: QueryProviderMetadataResponse_MetadataResult_ProviderMetadata, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message dp.service.query.QueryProviderMetadataResponse.MetadataResult.ProviderMetadata
+ */
+export declare const QueryProviderMetadataResponse_MetadataResult_ProviderMetadata: QueryProviderMetadataResponse_MetadataResult_ProviderMetadata$Type;
 /**
  * @generated ServiceType for protobuf service dp.service.query.DpQueryService
  */

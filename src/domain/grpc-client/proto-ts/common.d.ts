@@ -176,17 +176,11 @@ export declare enum ExceptionalResult_ExceptionalResultStatus {
      */
     RESULT_STATUS_ERROR = 1,
     /**
-     * Indicates the query returned no data.
-     *
-     * @generated from protobuf enum value: RESULT_STATUS_EMPTY = 2;
-     */
-    RESULT_STATUS_EMPTY = 2,
-    /**
      * Indicates an invalid bidirectional stream query cursor operation request.
      *
-     * @generated from protobuf enum value: RESULT_STATUS_NOT_READY = 3;
+     * @generated from protobuf enum value: RESULT_STATUS_NOT_READY = 2;
      */
-    RESULT_STATUS_NOT_READY = 3
+    RESULT_STATUS_NOT_READY = 2
 }
 /**
  *
@@ -206,6 +200,47 @@ export interface DataColumn {
      * @generated from protobuf field: repeated DataValue dataValues = 2;
      */
     dataValues: DataValue[];
+}
+/**
+ *
+ * SerializedDataColumn
+ *
+ * Contains the bytes for a serialized protobuf DataColumn object, used to avoid redundant serialization operations
+ * for maximum API performance.  Use of SerializedDataColumns instead of regular DataColumns is supported in the
+ * APIs for ingestion, query, and subscription.
+ *
+ * To create a SerializedDataColumn (e.g., for use in the ingestion API methods), the user should first create
+ * a regular DataColumn and then manually serialize it to the dataColumnBytes field of a SerializedDataColumn object.
+ * Example Java code to create a SerializedDataColumn from a regular DataColumn is shown below:
+ *
+ *            SerializedDataColumn.newBuilder()
+ *                  .setName(dataColumn.getName())
+ *                  .setDataColumnBytes(dataColumn.toByteString())
+ *                  .build();
+ *
+ * To create a regular DataColumn from a SerializedDataColumn (e.g., for clients of the query or subscription APIs),
+ * the user should create a DataColumn by parsing (deserializing) the content of the SerializedDataColumn's
+ * dataColumnBytes field.  Example Java code is shown below:
+ *
+ *  DataColumn responseDataColumn = null;
+ *  try {
+ *      responseDataColumn = DataColumn.parseFrom(responseBucket.getSerializedDataColumn().getDataColumnBytes());
+ *  } catch (InvalidProtocolBufferException e) {
+ *      fail("exception parsing DataColumn from SerializedDataColumn: " + e.getMessage());
+ *  }
+ *
+ *
+ * @generated from protobuf message SerializedDataColumn
+ */
+export interface SerializedDataColumn {
+    /**
+     * @generated from protobuf field: string name = 1;
+     */
+    name: string;
+    /**
+     * @generated from protobuf field: bytes dataColumnBytes = 2;
+     */
+    dataColumnBytes: Uint8Array;
 }
 /**
  *
@@ -559,6 +594,41 @@ export declare enum Image_FileType {
      */
     PDF = 8
 }
+/**
+ *
+ * CalculationsSpec
+ *
+ * Provides a mechanism for using Annotation Calculations in APIs for export and query etc.
+ *
+ * @generated from protobuf message CalculationsSpec
+ */
+export interface CalculationsSpec {
+    /**
+     * @generated from protobuf field: string calculationsId = 1;
+     */
+    calculationsId: string;
+    /**
+     * dataFrameColumns: Optional, map of CalculationsDataFrame name to the columns in that frame to include in the result.
+     *
+     * @generated from protobuf field: map<string, CalculationsSpec.ColumnNameList> dataFrameColumns = 2;
+     */
+    dataFrameColumns: {
+        [key: string]: CalculationsSpec_ColumnNameList;
+    };
+}
+/**
+ * @generated from protobuf message CalculationsSpec.ColumnNameList
+ */
+export interface CalculationsSpec_ColumnNameList {
+    /**
+     *
+     * Defining list of strings as a data type that can be used as the value in a map, since we can't use
+     * "repeated string" directly.
+     *
+     * @generated from protobuf field: repeated string columnNames = 1;
+     */
+    columnNames: string[];
+}
 declare class Attribute$Type extends MessageType<Attribute> {
     constructor();
     create(value?: PartialMessage<Attribute>): Attribute;
@@ -639,6 +709,16 @@ declare class DataColumn$Type extends MessageType<DataColumn> {
  * @generated MessageType for protobuf message DataColumn
  */
 export declare const DataColumn: DataColumn$Type;
+declare class SerializedDataColumn$Type extends MessageType<SerializedDataColumn> {
+    constructor();
+    create(value?: PartialMessage<SerializedDataColumn>): SerializedDataColumn;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: SerializedDataColumn): SerializedDataColumn;
+    internalBinaryWrite(message: SerializedDataColumn, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message SerializedDataColumn
+ */
+export declare const SerializedDataColumn: SerializedDataColumn$Type;
 declare class DataValue$Type extends MessageType<DataValue> {
     constructor();
     create(value?: PartialMessage<DataValue>): DataValue;
@@ -699,4 +779,25 @@ declare class Image$Type extends MessageType<Image> {
  * @generated MessageType for protobuf message Image
  */
 export declare const Image: Image$Type;
+declare class CalculationsSpec$Type extends MessageType<CalculationsSpec> {
+    constructor();
+    create(value?: PartialMessage<CalculationsSpec>): CalculationsSpec;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CalculationsSpec): CalculationsSpec;
+    private binaryReadMap2;
+    internalBinaryWrite(message: CalculationsSpec, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message CalculationsSpec
+ */
+export declare const CalculationsSpec: CalculationsSpec$Type;
+declare class CalculationsSpec_ColumnNameList$Type extends MessageType<CalculationsSpec_ColumnNameList> {
+    constructor();
+    create(value?: PartialMessage<CalculationsSpec_ColumnNameList>): CalculationsSpec_ColumnNameList;
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CalculationsSpec_ColumnNameList): CalculationsSpec_ColumnNameList;
+    internalBinaryWrite(message: CalculationsSpec_ColumnNameList, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter;
+}
+/**
+ * @generated MessageType for protobuf message CalculationsSpec.ColumnNameList
+ */
+export declare const CalculationsSpec_ColumnNameList: CalculationsSpec_ColumnNameList$Type;
 export {};

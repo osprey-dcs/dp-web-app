@@ -32,7 +32,7 @@ function DatasetPicker({ dataSources, setDataSources, className }) {
     }
 
     return (
-        <Popover open={open} onOpenChange={setOpen}>
+        <Popover open={open} onOpenChange={setOpen} modal={false}>
             <PopoverTrigger asChild>
                 <button
                     className={cn(
@@ -44,7 +44,7 @@ function DatasetPicker({ dataSources, setDataSources, className }) {
                     &nbsp; Add Data Sources
                 </button>
             </PopoverTrigger>
-            <PopoverContent className="w-full p-1" side="top">
+            <PopoverContent className="w-full p-1" side="top" portalled={false}>
                 <Command>
                     <CommandInput
                         placeholder="Search Data Sources..."

@@ -13,14 +13,12 @@ const propTypes = {
     resultData: PropTypes.object,
 };
 
-function QueryResults({ resultData, setCustomSelection }) {
+function QueryResults({ resultData }) {
     const gridRef = useRef();
+    const [isLoading, setIsLoading] = useState(false);
     const [rowData, setRowData] = useState([]);
     const [colDefs, setColDefs] = useState([]);
-    // const [firstCell, setFirstCell] = useState(null);
-    // const [lastCell, setLastCell] = useState(null);
-    // const [timeRange, setTimeRange] = useState({});
-    // const [dataSources, setDataSources] = useState([]);
+
     const { toast } = useToast();
 
     const dispatch = usePVsDispatch();
@@ -31,102 +29,13 @@ function QueryResults({ resultData, setCustomSelection }) {
         []
     );
 
-    // function selectRow(rowNode, columnIds) {
-    //     let newRow = { ...rowNode.data };
-    //     for (let index in columnIds) {
-    //         const colId = columnIds[index];
-    //         newRow[colId] = {
-    //             value: {
-    //                 oneofKind: "doubleValue",
-    //                 doubleValue: rowNode.data[colId].value.doubleValue,
-    //                 selected:
-    //                     rowNode.data[colId].value.selected === undefined
-    //                         ? true
-    //                         : !rowNode.data[colId].value.selected,
-    //             },
-    //         };
-    //     }
-    //     rowNode.updateData(newRow);
-    // }
-
-    // function getColNames(columns, firstCol, lastCol) {
-    //     const firstIndex = columns.indexOf(firstCol);
-    //     const lastIndex = columns.indexOf(lastCol);
-
-    //     if (firstIndex > lastIndex) {
-    //         console.error("Start index cannot be greater than end index.");
-    //         return;
-    //     }
-    //     const subArray = columns.splice(firstIndex, lastIndex - firstIndex + 1);
-    //     return subArray;
-    // }
-
-    // function onCellClicked(event) {
-    //     if (event.colDef.field === "timestamp") {
-    //         return;
-    //     }
-    //     if (!firstCell || lastCell) {
-    //         setFirstCell({
-    //             row: { index: event.rowIndex },
-    //             column: {
-    //                 instanceId: event.column.instanceId,
-    //                 name: event.column.colId,
-    //             },
-    //         });
-    //         setLastCell(null);
-    //     } else {
-    //         setLastCell({
-    //             row: { index: event.rowIndex },
-    //             column: {
-    //                 instanceId: event.column.instanceId,
-    //                 name: event.column.colId,
-    //             },
-    //         });
-    //     }
-    // }
-
-    // useEffect(() => {
-    //     if (lastCell) {
-    //         let firstRow = gridRef.current?.api.getRowNode(firstCell.row.index);
-    //         let cols = getColNames(
-    //             Object.keys(firstRow.data),
-    //             firstCell.column.name,
-    //             lastCell.column.name
-    //         );
-    //         setDataSources(cols);
-    //         let newTimeRange = {
-    //             startTime: {},
-    //             endTime: {},
-    //         };
-    //         for (let i = firstCell.row.index; i <= lastCell.row.index; ++i) {
-    //             const rowNode = gridRef.current?.api.getRowNode(i);
-    //             if (i === firstCell.row.index) {
-    //                 newTimeRange.startTime.epochSeconds =
-    //                     rowNode.data.timestamp.value.timestampValue.epochSeconds;
-    //                 newTimeRange.startTime.nanoseconds =
-    //                     rowNode.data.timestamp.value.timestampValue.nanoseconds.toString();
-    //             } else if (i === lastCell.row.index) {
-    //                 newTimeRange.endTime.epochSeconds =
-    //                     rowNode.data.timestamp.value.timestampValue.epochSeconds;
-    //                 newTimeRange.endTime.nanoseconds =
-    //                     rowNode.data.timestamp.value.timestampValue.nanoseconds.toString();
-    //             }
-    //             selectRow(rowNode, cols);
-    //         }
-    //         setTimeRange(timeRange);
-    //         setCustomSelection({
-    //             dataSources: cols,
-    //             timeRange: newTimeRange,
-    //         });
-    //     }
-    // }, [lastCell]);
-
     useMemo(() => {
         if (resultData === undefined) {
-            gridRef.current?.api.showLoadingOverlay();
+            setIsLoading(true);
         } else if (Object.keys(resultData).length === 0) {
-            gridRef.current?.api.showNoRowsOverlay();
+            setIsLoading(false);
         } else if (typeof resultData === "object") {
+            setIsLoading(false);
             setColDefs(getDataColDefs(resultData));
             setRowData(
                 resultData.tableResult.rowMapTable.rows.map(
@@ -143,6 +52,8 @@ function QueryResults({ resultData, setCustomSelection }) {
                 components={components}
                 rowData={rowData}
                 columnDefs={colDefs}
+                loading={isLoading}
+                enableCellTextSelection={true}
                 onColumnHeaderClicked={(e) =>
                     onPVSelected(
                         e.column.colId,

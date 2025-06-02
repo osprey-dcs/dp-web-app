@@ -2,7 +2,7 @@ import { useToast } from "@/components/ui/use-toast";
 import DataPlatformApi from "@/domain/grpc-client/DataPlatformApi";
 import { memo, useMemo, useState } from "react";
 import CommentChip from "./commentChip/CommentChip";
-import IdChip from "./idChip/IdChip";
+import OwnerIdChip from "./ownerIdChip/OwnerIdChip";
 
 const AnnotationActions = memo(function AnnotationActions({ setResultData }) {
     const [queryParams, setQueryParams] = useState({});
@@ -17,7 +17,7 @@ const AnnotationActions = memo(function AnnotationActions({ setResultData }) {
             toast({
                 title: "Error: Invalid Query",
                 description:
-                    "Specify an owner id or comment string to run a query",
+                    "Specify an owner ID or comment string to run a query",
                 variant: "destructive",
             });
             return;
@@ -32,6 +32,13 @@ const AnnotationActions = memo(function AnnotationActions({ setResultData }) {
                 description: result,
                 variant: "destructive",
             });
+        } else if (result instanceof Error) {
+            setResultData({});
+            toast({
+                title: `Error: ${result.constructor.name}`,
+                description: result.message,
+                variant: "destructive",
+            });
         } else {
             setResultData(result);
         }
@@ -40,7 +47,7 @@ const AnnotationActions = memo(function AnnotationActions({ setResultData }) {
     return (
         <div className="py-3 flex items-center justify-between">
             <div className="flex flex-row z-10">
-                <IdChip
+                <OwnerIdChip
                     queryParams={queryParams}
                     setQueryParams={setQueryParams}
                 />

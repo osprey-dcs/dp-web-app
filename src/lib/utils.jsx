@@ -1,3 +1,4 @@
+import DataSetIdCellRenderer from "@/components/main/browseDataSets/dataSetResults/dataSetIdCellRenderer/DataSetIdCellRenderer";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -267,6 +268,47 @@ export function getAnnotationColDefs(annotation) {
         }
     }
 
+    return colDefs;
+}
+
+export function getDataSetColDefs(dataSet) {
+    // console.log(dataSet);
+    let colDefs = [];
+    for (let attribute in dataSet) {
+        switch (attribute) {
+            case "id":
+                colDefs.push({
+                    field: "id",
+                    headerName: "ID",
+                    cellRenderer: DataSetIdCellRenderer,
+                    cellRendererParams: { cellType: "ID" },
+                    flex: 1,
+                });
+                break;
+            case "dataBlocks":
+                colDefs.push({
+                    field: "dataBlocks",
+                    headerName: "Data Blocks",
+                    cellRenderer: DataSetIdCellRenderer,
+                    cellRendererParams: { cellType: "dataBlocks" },
+                    sortable: false,
+                    flex: 1,
+                });
+                break;
+            default:
+                let headerWords = attribute.split(/(?=[A-Z])/);
+                let headerName = headerWords
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(" ");
+
+                colDefs.push({
+                    field: attribute,
+                    headerName: headerName,
+                    flex: 1,
+                });
+                break;
+        }
+    }
     return colDefs;
 }
 

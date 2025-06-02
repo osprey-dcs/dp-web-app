@@ -9,8 +9,8 @@
 //
 import type { RpcTransport } from "@protobuf-ts/runtime-rpc";
 import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
-import type { ExportDataSetResponse } from "./annotation";
-import type { ExportDataSetRequest } from "./annotation";
+import type { ExportDataResponse } from "./annotation";
+import type { ExportDataRequest } from "./annotation";
 import type { QueryAnnotationsResponse } from "./annotation";
 import type { QueryAnnotationsRequest } from "./annotation";
 import type { CreateAnnotationResponse } from "./annotation";
@@ -77,16 +77,16 @@ export interface IDpAnnotationServiceClient {
     queryAnnotations(input: QueryAnnotationsRequest, options?: RpcOptions): UnaryCall<QueryAnnotationsRequest, QueryAnnotationsResponse>;
     /**
      *
-     * exportDataSet(): Export a DataSet.
+     * exportData(): Export data to common file formats.
      *
-     * This RPC is used by clients to export a DataSet to file.  Client sends a single ExportDataSetRequest specifying
-     * the id of the DataSet to be exported and the desired output file format, and receives a single response.  The
-     * response may indicate a problem handling the request, or otherwise contains details about the exported file
-     * including the path and optional (if configured) URL for accessing the file.
+     * This RPC is used by clients to export data (both DataSets and Calculations) to file.  Client sends a single
+     * ExportDataRequest specifying the details of the data to be exported and the desired output file format,
+     * and receives a single response.  The response may indicate a problem handling the request, or otherwise contains
+     * details about the exported file including the path and optional (if configured) URL for accessing the file.
      *
-     * @generated from protobuf rpc: exportDataSet(dp.service.annotation.ExportDataSetRequest) returns (dp.service.annotation.ExportDataSetResponse);
+     * @generated from protobuf rpc: exportData(dp.service.annotation.ExportDataRequest) returns (dp.service.annotation.ExportDataResponse);
      */
-    exportDataSet(input: ExportDataSetRequest, options?: RpcOptions): UnaryCall<ExportDataSetRequest, ExportDataSetResponse>;
+    exportData(input: ExportDataRequest, options?: RpcOptions): UnaryCall<ExportDataRequest, ExportDataResponse>;
 }
 /**
  *
@@ -149,14 +149,14 @@ export declare class DpAnnotationServiceClient implements IDpAnnotationServiceCl
     queryAnnotations(input: QueryAnnotationsRequest, options?: RpcOptions): UnaryCall<QueryAnnotationsRequest, QueryAnnotationsResponse>;
     /**
      *
-     * exportDataSet(): Export a DataSet.
+     * exportData(): Export data to common file formats.
      *
-     * This RPC is used by clients to export a DataSet to file.  Client sends a single ExportDataSetRequest specifying
-     * the id of the DataSet to be exported and the desired output file format, and receives a single response.  The
-     * response may indicate a problem handling the request, or otherwise contains details about the exported file
-     * including the path and optional (if configured) URL for accessing the file.
+     * This RPC is used by clients to export data (both DataSets and Calculations) to file.  Client sends a single
+     * ExportDataRequest specifying the details of the data to be exported and the desired output file format,
+     * and receives a single response.  The response may indicate a problem handling the request, or otherwise contains
+     * details about the exported file including the path and optional (if configured) URL for accessing the file.
      *
-     * @generated from protobuf rpc: exportDataSet(dp.service.annotation.ExportDataSetRequest) returns (dp.service.annotation.ExportDataSetResponse);
+     * @generated from protobuf rpc: exportData(dp.service.annotation.ExportDataRequest) returns (dp.service.annotation.ExportDataResponse);
      */
-    exportDataSet(input: ExportDataSetRequest, options?: RpcOptions): UnaryCall<ExportDataSetRequest, ExportDataSetResponse>;
+    exportData(input: ExportDataRequest, options?: RpcOptions): UnaryCall<ExportDataRequest, ExportDataResponse>;
 }

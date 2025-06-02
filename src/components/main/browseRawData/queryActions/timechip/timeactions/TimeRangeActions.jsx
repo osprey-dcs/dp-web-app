@@ -120,13 +120,12 @@ function TimeRangeActions(props) {
 
             setErrText("");
 
-            const ptToGMT = 25200;
-            const startEpochs =
-                Math.floor(new Date(props.startDatetime).getTime() / 1000) -
-                ptToGMT;
-            const endEpochs =
-                Math.floor(new Date(props.endDatetime).getTime() / 1000) -
-                ptToGMT;
+            const startEpochs = Math.floor(
+                new Date(props.startDatetime).getTime() / 1000
+            );
+            const endEpochs = Math.floor(
+                new Date(props.endDatetime).getTime() / 1000
+            );
 
             props.setTimeRange({
                 startEpochs: startEpochs,
@@ -173,10 +172,9 @@ function TimeRangeActions(props) {
             setTimeUnitsTypeErrClass("");
             setErrText("");
 
-            const ptToGMT = 25200;
-            const startEpochs =
-                Math.floor(new Date(props.startDatetime).getTime() / 1000) -
-                ptToGMT;
+            const startEpochs = Math.floor(
+                new Date(props.startDatetime).getTime() / 1000
+            );
             const endEpochs =
                 startEpochs +
                 props.timeUnits * epochsOffset[props.timeUnitsType];
@@ -227,10 +225,9 @@ function TimeRangeActions(props) {
             setTimeUnitsTypeErrClass("");
             setErrText("");
 
-            const ptToGMT = 25200;
-            const endEpochs =
-                Math.floor(new Date(props.endDatetime).getTime() / 1000) -
-                ptToGMT;
+            const endEpochs = Math.floor(
+                new Date(props.endDatetime).getTime() / 1000
+            );
             let startEpochs =
                 endEpochs - props.timeUnits * epochsOffset[props.timeUnitsType];
             const endNanos = Number(props.endNanos);

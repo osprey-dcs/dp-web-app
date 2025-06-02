@@ -30,12 +30,13 @@ export function Toaster() {
                                     {description}
                                 </ToastDescription>
                             )}
-                            <div className="w-full mt-2 flex gap-4">
-                                {actions}
-                            </div>
-                            {/* {newLineActions && <div>{actions}</div>} */}
+                            {newLineActions && (
+                                <div className="w-full mt-2 flex gap-4">
+                                    {actions}
+                                </div>
+                            )}
                         </div>
-                        {/* {!newLineActions && actions} */}
+                        {!newLineActions && actions}
                         <ToastClose />
                     </Toast>
                 );
